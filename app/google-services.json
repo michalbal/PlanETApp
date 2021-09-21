@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "222604268476",
+    "project_id": "planet-1e742",
+    "storage_bucket": "planet-1e742.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222604268476:android:41c88f37cb697f714791b9",
+        "android_client_info": {
+          "package_name": "net.planner.planetapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222604268476-gk5djcddkph0b7vrm36ieafe3u72ro21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiVwUZJxCaW1T12Eg60g4OsO2BsxD8jG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222604268476-gk5djcddkph0b7vrm36ieafe3u72ro21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
