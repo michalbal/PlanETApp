@@ -12,7 +12,10 @@ class MainActivity : AppCompatActivity() {
 
         val thread = Thread {
             try {
-                val manager = TasksManager() //TODO: add your credentials
+                val manager = TasksManager() //TODO: add your credentials or token
+
+                manager.getMoodleCourses()
+
                 manager.getMoodleTasks()
             } catch (e: Exception) {
                 e.printStackTrace()
