@@ -19,7 +19,7 @@ public class TasksManager {
         token = userToken;
     }
 
-    public HashMap<String, LinkedList<PlannerTask>> getMoodleCourses() {
+    public HashMap<String, LinkedList<PlannerTask>> parseMoodleCourses() {
         if (token != null && !token.equals("")) {
             HashMap<String, LinkedList<PlannerTask>> parsedCourseNames = connector.parseAssignments(
                     token, true);
@@ -34,7 +34,7 @@ public class TasksManager {
         return null;
     }
 
-    public HashMap<String, LinkedList<PlannerTask>> getMoodleTasks() {
+    public HashMap<String, LinkedList<PlannerTask>> parseMoodleTasks() {
         // TODO normal moodle as an option as well
         if (token != null && !token.equals("")) {
             HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseAssignments(
@@ -45,11 +45,27 @@ public class TasksManager {
 //                System.out.print(parsedAssignment.getKey() + "\t-\t");
 //                System.out.println(parsedAssignment.getValue());
 //            }
+            // TODO remove unwanted courses and tasks
             return parsedAssignments;
-        } else {
-            // TODO handle couldn't log in
         }
         return null;
     }
 
+    public LinkedList<PlannerEvent> planSchedule(LinkedList<PlannerTask> plannerTasks){
+        LinkedList<PlannerEvent> subtasks = null;
+        //TODO run the algorithm
+        return subtasks;
+    }
+
+    public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents){
+        //TODO write to GC and to the db
+    }
+
+    public void addTaskToUnwanted(PlannerTask task){
+        // TODO upd db
+    }
+
+    public void removeTaskFromUnwanted(PlannerTask task){
+        // TODO upd db
+    }
 }
