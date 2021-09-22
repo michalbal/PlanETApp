@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/HomeFragment">
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="net.planner.planetapp.fragments.HomeFragment"
+        android:label="@string/home_label"
+        tools:layout="@layout/home_fragment">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/DayFragment"
+        android:name="net.planner.planetapp.fragments.DayFragment"
+        android:label="@string/day_label"
+        tools:layout="@layout/day_fragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/AccountsFragment"
+        android:name="net.planner.planetapp.fragments.AccountsFragment"
+        android:label="@string/accounts_label"
+        tools:layout="@layout/accounts_fragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/PreferancesFragment"
+        android:name="net.planner.planetapp.fragments.PreferancesFragment"
+        android:label="@string/preferances_label"
+        tools:layout="@layout/fragment_preferances">
+    </fragment>
+
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="net.planner.planetapp.fragments.SettingsFragment"
+        android:label="@string/settings_label"
+        tools:layout="@layout/settings_fragment">
+    </fragment>
+</navigation>

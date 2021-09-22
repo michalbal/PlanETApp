@@ -1,0 +1,29 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/HomeFragment"
+        android:icon="@drawable/home_icon"
+        android:title="@string/home_label" />
+
+    <item
+        android:id="@id/DayFragment"
+        android:icon="@drawable/day_icon"
+        android:title="@string/day_label" />
+
+    <item
+        android:id="@id/PreferancesFragment"
+        android:icon="@drawable/pref_icon"
+        android:title="@string/preferances_label" />
+
+    <item
+        android:id="@id/AccountsFragment"
+        android:icon="@drawable/accounts_icon"
+        android:title="@string/accounts_label" />
+
+    <item
+        android:id="@id/SettingsFragment"
+        android:icon="@drawable/settings_icon"
+        android:title="@string/settings_label" />
+
+</menu>
