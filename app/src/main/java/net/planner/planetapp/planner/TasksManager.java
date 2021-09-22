@@ -2,12 +2,15 @@ package net.planner.planetapp.planner;
 
 import net.planner.planetapp.networking.MoodleCommunicator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class TasksManager {
     private final String token;
     private final MoodleCommunicator connector;
+    private ArrayList<String> unwantedCourseIds;
+    private ArrayList<String> unwantedTaskIds;
 
     public TasksManager(String username, String password) {
         connector = new MoodleCommunicator();
@@ -44,6 +47,9 @@ public class TasksManager {
                     .entrySet()) {
                 System.out.print(parsedAssignment.getKey() + "\t-\t");
                 System.out.println(parsedAssignment.getValue());
+                if (unwantedCourseIds.contains(parsedAssignment.getKey())){
+                    parsedAssignments.remove(parsedAssignment.getKey());
+                }
             }
             // TODO remove unwanted courses and tasks
             return parsedAssignments;
@@ -62,10 +68,22 @@ public class TasksManager {
     }
 
     public void addTaskToUnwanted(PlannerTask task){
+        unwantedTaskIds.add(task.getMoodleId());
         // TODO upd db
     }
 
     public void removeTaskFromUnwanted(PlannerTask task){
+        unwantedTaskIds.remove(task.getMoodleId());
+        // TODO upd db
+    }
+
+    public void addCourseToUnwanted(String courseId){
+        unwantedCourseIds.add(courseId);
+        // TODO upd db
+    }
+
+    public void removeCourseFromUnwanted(String courseId){
+        unwantedCourseIds.remove(courseId);
         // TODO upd db
     }
 }

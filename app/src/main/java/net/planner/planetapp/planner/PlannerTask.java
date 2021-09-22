@@ -10,7 +10,7 @@ import java.util.Objects;
 public class PlannerTask extends PlannerObject {
     private static final String TAG = "PlannerTask";
 
-    private int moodleId;
+    private String moodleId;
     private long deadline;
     protected int priority; //1-10
     private int maxSessionTimeInMinutes;
@@ -186,11 +186,11 @@ public class PlannerTask extends PlannerObject {
                             getMaxSessionTimeInMinutes(), getMaxDivisionsNumber(), getPriority());
     }
 
-    public int getMoodleId() {
+    public String getMoodleId() {
         return moodleId;
     }
 
-    public void setMoodleId(int moodleId) {
+    public void setMoodleId(String moodleId) {
         this.moodleId = moodleId;
     }
 }

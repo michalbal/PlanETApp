@@ -55,6 +55,7 @@ public class MoodleCommunicator {
     public HashMap parseFromMoodle(String token, Boolean onlyCourseNames) {
         String serverurl = MOODLE_URL + "/webservice/rest/server.php" + "?wstoken=" + token +
                            "&wsfunction=mod_assign_get_assignments";
+        System.out.println(serverurl);
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(serverurl).openConnection();
             con.setConnectTimeout(30000);
@@ -162,7 +163,7 @@ public class MoodleCommunicator {
         while (parser.nextTag() != XmlPullParser.END_TAG) {
             parser.require(XmlPullParser.START_TAG, null, "SINGLE");
             String name = "";
-            int id = 0;
+            String id = "";
             long duedate = 0L;
             while (parser.nextTag() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG || !parser.getName().equals(
@@ -175,7 +176,7 @@ public class MoodleCommunicator {
                 } else if (assignmentAttrName != null && assignmentAttrName.equals("duedate")) {
                     duedate = Long.parseLong(readText(parser));
                 } else if (assignmentAttrName != null && assignmentAttrName.equals("id")) {
-                    id = Integer.parseInt(readText(parser));
+                    id = readText(parser);
                 } else {
                     skip(parser);
                 }
