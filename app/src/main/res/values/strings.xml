@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">PlanETApp</string>
+    <string name="app_name">PlanEt</string>
+    <string name="home_label">Home</string>
+    <string name="day_label">Day View</string>
+    <string name="accounts_label">Accounts</string>
+    <string name="preferances_label">Preferances</string>
+    <string name="settings_label">Settings</string>
 </resources>
