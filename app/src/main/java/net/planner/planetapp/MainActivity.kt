@@ -39,18 +39,18 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
-//        val thread = Thread {
-//            try {
-//                val manager = TasksManager() //TODO: add your credentials or token
-//
-//                manager.getMoodleCourses()
-//
-//                manager.getMoodleTasks()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//        thread.start()
+        val thread = Thread {
+            try {
+                val manager = TasksManager() //TODO: add your credentials or token
+
+                manager.parseMoodleCourses()
+
+                manager.parseMoodleTasks()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        thread.start()
     }
 
 //    private fun setupNavigationMenu(navController: NavController){

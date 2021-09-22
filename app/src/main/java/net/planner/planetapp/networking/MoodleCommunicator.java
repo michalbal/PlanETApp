@@ -52,7 +52,7 @@ public class MoodleCommunicator {
         return doHTTPRequest(url);
     }
 
-    public HashMap<String, LinkedList<PlannerTask>> parseAssignments(String token, Boolean onlyCourseNames) {
+    public HashMap parseFromMoodle(String token, Boolean onlyCourseNames) {
         String serverurl = MOODLE_URL + "/webservice/rest/server.php" + "?wstoken=" + token +
                            "&wsfunction=mod_assign_get_assignments";
         try {
@@ -73,9 +73,7 @@ public class MoodleCommunicator {
             parser.setInput(is, null);
             parser.nextTag();
 
-            HashMap<String, LinkedList<PlannerTask>> parsedAssignments = new HashMap<>();
-            parseXML(parser, parsedAssignments, onlyCourseNames);
-            return parsedAssignments;
+            return parseXML(parser, onlyCourseNames);
 
         } catch (TransformerFactoryConfigurationError | IOException | XmlPullParserException e) {
             e.printStackTrace();
@@ -84,9 +82,11 @@ public class MoodleCommunicator {
     }
 
 
-    private void parseXML(XmlPullParser parser, HashMap parsedData, Boolean onlyCourseNames)
+    private HashMap parseXML(XmlPullParser parser, Boolean onlyCourseNames)
             throws XmlPullParserException, IOException {
         String ns = null;
+        HashMap<String, LinkedList<PlannerTask>> parsedAssignments = new HashMap<>();
+        HashMap<String, String> parsedCourses = new HashMap<>();
 
         parser.require(XmlPullParser.START_TAG, ns, "RESPONSE");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -96,12 +96,13 @@ public class MoodleCommunicator {
             String name = parser.getName();
             if (name.equals("SINGLE") && parser.getDepth() == 5) {
                 if (onlyCourseNames) {
-                    parsedData.putAll(readCourseNames(parser));
+                    parsedCourses.putAll(readCourseNames(parser));
                 } else {
-                    parsedData.putAll(readCourse(parser));
+                    parsedAssignments.putAll(readCourse(parser));
                 }
             }
         }
+        return onlyCourseNames ? parsedCourses : parsedAssignments;
     }
 
     private HashMap<String, String> readCourseNames(XmlPullParser parser)
@@ -120,7 +121,7 @@ public class MoodleCommunicator {
                 courseId = readText(parser);
             } else if (attrName != null && attrName.equals("fullname")) {
                 courseFullname = readText(parser);
-                courseNames.put(courseId, courseFullname);
+                courseNames.put(courseFullname, courseId);
             } else {
                 skip(parser);
             }
@@ -161,6 +162,7 @@ public class MoodleCommunicator {
         while (parser.nextTag() != XmlPullParser.END_TAG) {
             parser.require(XmlPullParser.START_TAG, null, "SINGLE");
             String name = "";
+            int id = 0;
             long duedate = 0L;
             while (parser.nextTag() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG || !parser.getName().equals(
@@ -172,13 +174,15 @@ public class MoodleCommunicator {
                     name = courseId + ": " + readText(parser);
                 } else if (assignmentAttrName != null && assignmentAttrName.equals("duedate")) {
                     duedate = Long.parseLong(readText(parser));
+                } else if (assignmentAttrName != null && assignmentAttrName.equals("id")) {
+                    id = Integer.parseInt(readText(parser));
                 } else {
                     skip(parser);
                 }
             }
-            // TODO default duration - move or get from the db here?
             PlannerTask task = new PlannerTask(name, duedate, 5 * 60);
             task.setTagName(courseId);
+            task.setMoodleId(id);
             assignments.add(task);
         }
         parser.require(XmlPullParser.END_TAG, null, "MULTIPLE");

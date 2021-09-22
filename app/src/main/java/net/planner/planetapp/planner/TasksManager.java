@@ -19,16 +19,16 @@ public class TasksManager {
         token = userToken;
     }
 
-    public HashMap<String, LinkedList<PlannerTask>> parseMoodleCourses() {
+    public HashMap<String, String> parseMoodleCourses() {
         if (token != null && !token.equals("")) {
-            HashMap<String, LinkedList<PlannerTask>> parsedCourseNames = connector.parseAssignments(
+            HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(
                     token, true);
 
-//            for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedCourseName : parsedCourseNames
-//                    .entrySet()) {
-//                System.out.print(parsedCourseName.getKey() + "\t-\t");
-//                System.out.println(parsedCourseName.getValue());
-//            }
+            for (HashMap.Entry<String, String> parsedCourseName : parsedCourseNames
+                    .entrySet()) {
+                System.out.print(parsedCourseName.getKey() + "\t-\t");
+                System.out.println(parsedCourseName.getValue());
+            }
             return parsedCourseNames;
         }
         return null;
@@ -37,14 +37,14 @@ public class TasksManager {
     public HashMap<String, LinkedList<PlannerTask>> parseMoodleTasks() {
         // TODO normal moodle as an option as well
         if (token != null && !token.equals("")) {
-            HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseAssignments(
+            HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseFromMoodle(
                     token, false);
 
-//            for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
-//                    .entrySet()) {
-//                System.out.print(parsedAssignment.getKey() + "\t-\t");
-//                System.out.println(parsedAssignment.getValue());
-//            }
+            for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
+                    .entrySet()) {
+                System.out.print(parsedAssignment.getKey() + "\t-\t");
+                System.out.println(parsedAssignment.getValue());
+            }
             // TODO remove unwanted courses and tasks
             return parsedAssignments;
         }
