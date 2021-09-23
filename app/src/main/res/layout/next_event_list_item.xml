@@ -12,60 +12,63 @@
         app:cardBackgroundColor="@color/white"
         app:cardMaxElevation="12dp"
         app:cardPreventCornerOverlap="true"
-        app:cardUseCompatPadding="true">
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/eventName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event Name"
             android:layout_gravity="start|start"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginStart="10dp"
+            android:text="Event Name"
             android:textSize="20sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/eventStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start at: 10:00 AM"
             android:layout_gravity="start|center_horizontal"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginStart="10dp"
+            android:text="Start at: 10:00 AM"
             android:textSize="20sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/eventEnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ends at: 12:00 AM"
             android:layout_gravity="start|bottom"
             android:layout_marginStart="10dp"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="10dp"
+            android:text="Ends at: 12:00 AM"
             android:textSize="20sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/task_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Task"
             android:layout_gravity="end|center"
+            android:layout_marginEnd="30dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="10dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textSize="15sp"
-            android:layout_marginEnd="30dp"
-            android:elevation="10dp"
-            android:backgroundTint="@color/colorPrimary"
-            />
+            android:text="Task"
+            android:textSize="15sp" />
 
 
     </androidx.cardview.widget.CardView>
