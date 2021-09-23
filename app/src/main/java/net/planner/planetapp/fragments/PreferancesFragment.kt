@@ -40,7 +40,7 @@ class PreferancesFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = PreferancesViewAdapter(PlaceholderContent.ITEMS)
+                adapter = PreferancesViewAdapter(listOf())
             }
         }
         return view
