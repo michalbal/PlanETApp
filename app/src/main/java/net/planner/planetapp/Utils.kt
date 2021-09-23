@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val DATE_DATA_FORMAT_SHORT = "dd/MM H:mm"
-private const val DATE_DATA_FORMAT = "dd/MM/yyyy H:mm:ss"
+private const val DATE_DATA_FORMAT = "dd/MM/yyyy H:mm"
 private const val MONTH_DATA_FORMAT = "MMM dd,yyyy H:mm:ss"
 private const val DAY_DATA_FORMAT = "MMM dd"
 private const val HOUR_DATA_FORMAT = "HH:mm" // T0 display as hour:minute AM/PM: hh.mm aa

@@ -24,7 +24,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:layout_marginStart="10dp"
-            android:textSize="40sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             />
 
@@ -32,13 +32,39 @@
             android:id="@+id/taskDueDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Due By:  \n30/09/2021"
+            android:text="Due By: 30/09/2021 23:59"
             android:layout_gravity="start|start"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="60dp"
             android:layout_marginBottom="10dp"
             android:layout_marginStart="10dp"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/preferredTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preference:"
+            android:layout_gravity="center|start"
+            android:layout_marginBottom="0dp"
+            android:layout_marginStart="10dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            />
+
+        <Button
+            android:id="@+id/preference_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tag Title"
+            android:layout_gravity="end|center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textSize="15sp"
+            android:layout_marginEnd="60dp"
+            android:elevation="10dp"
+            android:backgroundTint="@color/white"
             />
 
         <TextView
@@ -49,7 +75,7 @@
             android:layout_gravity="start|center"
             android:layout_marginTop="70dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textSize="15sp"
             />
 
@@ -70,7 +96,7 @@
             android:id="@+id/taskProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="190dp"
             android:indeterminate="false"
