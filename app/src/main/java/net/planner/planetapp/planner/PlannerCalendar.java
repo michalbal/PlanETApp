@@ -24,15 +24,16 @@ import java.util.concurrent.TimeUnit;
 public class PlannerCalendar {
 
     // Constants
-    private static final int MAX_DAYS = 30; // Amount of days in a PlannerCalendar object.
     private static final int SPACE_IN_MINUTES = 15;
     private static final int MIN_SPACE_IN_SECONDS = 1;
+    private static final long DEFAULT_LENGTH = TimeUnit.DAYS.toMillis(30);
     private static final long MIN_SPACE_IN_MILLIS = MIN_SPACE_IN_SECONDS * 1000L;
     public static final long RECOMMENDED_SPACE_IN_MILLIS = SPACE_IN_MINUTES * 60000L;
 
     // Fields
-    private long startTime; // This calendar starts from this time (ms) and ends 30 days after it.
+    private long startTime, endTime; // This calendar tracks the interval [startTime, endTime] (ms).
     private long spaceBetweenTasks;
+    private int calendarLength; // Amount of days in a PlannerCalendar object.
     private IntervalTree occupiedTree;
     private HashMap<String, PlannerTag> tags;
 
@@ -42,58 +43,76 @@ public class PlannerCalendar {
      * Construct a new calendar with the current system time as the start time.
      */
     public PlannerCalendar() {
-        init(System.currentTimeMillis(), MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + DEFAULT_LENGTH;
+
+        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
      * Construct a new calendar with the given start time.
      */
-    public PlannerCalendar(long timeInMillis) {
-        init(timeInMillis, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+    public PlannerCalendar(long startTime) {
+        long endTime = startTime + DEFAULT_LENGTH;
+
+        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
-     * Construct a new calendar with the given start time and the given space to leave between tasks.
+     * Construct a new calendar with the given start and end time.
      */
-    public PlannerCalendar(long timeInMillis, long spaceBetweenTasks) {
+    public PlannerCalendar(long startTime, long endTime) {
+        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
+
+        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+    }
+
+    /**
+     * Construct a new calendar with the given time interval and the given space to leave between tasks.
+     */
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks) {
+        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
         if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
 
-        init(timeInMillis, spaceBetweenTasks, Collections.emptyList(), Collections.emptyList());
+        init(startTime, endTime, spaceBetweenTasks, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
-     * Construct a new calendar with the given start time, the given space between tasks and with the given events.
+     * Construct a new calendar with the given time interval, the given space between tasks and with the given events.
      */
-    public PlannerCalendar(long timeInMillis, long spaceBetweenTasks, List<PlannerEvent> eventList) {
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList) {
+        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
         if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
         if (eventList == null) eventList = Collections.emptyList();
 
-        init(timeInMillis, spaceBetweenTasks, eventList, Collections.emptyList());
+        init(startTime, endTime, spaceBetweenTasks, eventList, Collections.emptyList());
     }
 
     /**
-     * Construct a new calendar with given start time, given space between tasks, given events and given tags.
+     * Construct a new calendar with the given time interval, given space between tasks, given events and given tags.
      */
-    public PlannerCalendar(long timeInMillis, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> newTags) {
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> newTags) {
+        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
         if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
         if (eventList == null) eventList = Collections.emptyList();
         if (newTags == null) newTags = Collections.emptyList();
 
-        init(timeInMillis, spaceBetweenTasks, eventList, newTags);
+        init(startTime, endTime, spaceBetweenTasks, eventList, newTags);
     }
 
     /**
      * Helper function: Actual constructor (receives default values from other constructors).
      */
-    private void init(long timeInMillis, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> tagList) {
+    private void init(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> tagList) {
         // Get time at start of day.
         Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(timeInMillis);
+        startDate.setTimeInMillis(startTime);
         startDate.set(Calendar.HOUR_OF_DAY, 0);
         startDate.set(Calendar.MINUTE, 0);
         startDate.set(Calendar.SECOND, 0);
         startDate.set(Calendar.MILLISECOND, 0);
         this.startTime = startDate.getTimeInMillis();
+        this.endTime = endTime;
 
         // Add tags.
         tags = new HashMap<>(tagList.size());
@@ -167,7 +186,7 @@ public class PlannerCalendar {
      * Attempts to insert the given event into this calendar (interval must not overlap). Returns true if successful.
      */
     public boolean insertEvent(PlannerEvent event) {
-        if (!isValidDate(event.getStartTime()) || !isValidDate(event.getEndTime())) {
+        if (isInvalidDate(event.getStartTime()) || isInvalidDate(event.getEndTime())) {
             return false;
         }
 
@@ -179,7 +198,7 @@ public class PlannerCalendar {
      * Attempts to insert the given event into this calendar (can overlap with others). Returns true if successful.
      */
     public boolean forceInsertEvent(PlannerEvent event) {
-        if (!isValidDate(event.getStartTime()) || !isValidDate(event.getEndTime())) {
+        if (isInvalidDate(event.getStartTime()) || isInvalidDate(event.getEndTime())) {
             return false;
         }
 
@@ -407,12 +426,10 @@ public class PlannerCalendar {
     }
 
     /**
-     * Helper function: Returns true if the given date is within the max range from the start time (30 days).
+     * Helper function: Returns true if the given date is not within the calendar's valid time interval.
      */
-    private boolean isValidDate(long time) {
-        long diffInMillis = time - startTime;
-        return diffInMillis >= 0 &&
-                TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS) <= MAX_DAYS;
+    private boolean isInvalidDate(long time) {
+        return startTime > time || time > endTime;
     }
 
     // Inner classes
@@ -486,7 +503,7 @@ public class PlannerCalendar {
                 if (nextOccupied == null) {
                     if (oneMore) {
                         oneMore = false;
-                        return new LongInterval(lastEndTime, PlannerCalendar.this.startTime + TimeUnit.DAYS.toMillis(MAX_DAYS));
+                        return new LongInterval(lastEndTime, PlannerCalendar.this.endTime);
                     }
                     return null;
                 }
