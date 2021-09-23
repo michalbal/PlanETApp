@@ -7,12 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import net.planner.planetapp.App
-import net.planner.planetapp.R
 import net.planner.planetapp.adapters.NextEventViewAdapter
 import net.planner.planetapp.databinding.DayFragmentBinding
-import net.planner.planetapp.databinding.HomeFragmentBinding
-import net.planner.planetapp.getDate
 import net.planner.planetapp.getDayDate
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.viewmodels.DayFragmentViewModel
