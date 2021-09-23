@@ -9,5 +9,7 @@
     <!-- Home Fragment-->
     <string name="starts_at">Starts at: %s </string>
     <string name="ends_at">Ends at: %s </string>
+    <string name="due_date">Due By: %s </string>
+    <string name="hello_greeting">Hello %s! </string>
 
 </resources>
