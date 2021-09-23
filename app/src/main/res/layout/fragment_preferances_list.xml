@@ -10,4 +10,4 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".fragments.PreferancesFragment"
-    tools:listitem="@layout/fragment_preferances" />
+    tools:listitem="@layout/preferances_list_item" />
