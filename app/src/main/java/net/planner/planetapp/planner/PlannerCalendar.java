@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,8 +34,7 @@ public class PlannerCalendar {
 
     // Fields
     private long startTime, endTime; // This calendar tracks the interval [startTime, endTime] (ms).
-    private long spaceBetweenTasks;
-    private int calendarLength; // Amount of days in a PlannerCalendar object.
+    private long spaceBetweenEvents;
     private IntervalTree occupiedTree;
     private HashMap<String, PlannerTag> tags;
 
@@ -46,7 +47,7 @@ public class PlannerCalendar {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + DEFAULT_LENGTH;
 
-        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+        init(startTime, endTime, RECOMMENDED_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
@@ -55,55 +56,56 @@ public class PlannerCalendar {
     public PlannerCalendar(long startTime) {
         long endTime = startTime + DEFAULT_LENGTH;
 
-        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+        init(startTime, endTime, RECOMMENDED_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
      * Construct a new calendar with the given start and end time.
      */
     public PlannerCalendar(long startTime, long endTime) {
-        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
+        if (endTime <= startTime + RECOMMENDED_SPACE_IN_MILLIS)
+            endTime = startTime + DEFAULT_LENGTH;
 
-        init(startTime, endTime, MIN_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
+        init(startTime, endTime, RECOMMENDED_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
      * Construct a new calendar with the given time interval and the given space to leave between tasks.
      */
-    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks) {
-        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
-        if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenEvents) {
+        if (spaceBetweenEvents < MIN_SPACE_IN_MILLIS) spaceBetweenEvents = MIN_SPACE_IN_MILLIS;
+        if (endTime <= startTime + spaceBetweenEvents) endTime = startTime + DEFAULT_LENGTH;
 
-        init(startTime, endTime, spaceBetweenTasks, Collections.emptyList(), Collections.emptyList());
+        init(startTime, endTime, spaceBetweenEvents, Collections.emptyList(), Collections.emptyList());
     }
 
     /**
      * Construct a new calendar with the given time interval, the given space between tasks and with the given events.
      */
-    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList) {
-        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
-        if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenEvents, List<PlannerEvent> eventList) {
+        if (spaceBetweenEvents < MIN_SPACE_IN_MILLIS) spaceBetweenEvents = MIN_SPACE_IN_MILLIS;
+        if (endTime <= startTime + spaceBetweenEvents) endTime = startTime + DEFAULT_LENGTH;
         if (eventList == null) eventList = Collections.emptyList();
 
-        init(startTime, endTime, spaceBetweenTasks, eventList, Collections.emptyList());
+        init(startTime, endTime, spaceBetweenEvents, eventList, Collections.emptyList());
     }
 
     /**
      * Construct a new calendar with the given time interval, given space between tasks, given events and given tags.
      */
-    public PlannerCalendar(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> newTags) {
-        if (endTime <= startTime + MIN_SPACE_IN_MILLIS) endTime = startTime + DEFAULT_LENGTH;
-        if (spaceBetweenTasks < MIN_SPACE_IN_MILLIS) spaceBetweenTasks = MIN_SPACE_IN_MILLIS;
+    public PlannerCalendar(long startTime, long endTime, long spaceBetweenEvents, List<PlannerEvent> eventList, List<PlannerTag> newTags) {
+        if (spaceBetweenEvents < MIN_SPACE_IN_MILLIS) spaceBetweenEvents = MIN_SPACE_IN_MILLIS;
+        if (endTime <= startTime + spaceBetweenEvents) endTime = startTime + DEFAULT_LENGTH;
         if (eventList == null) eventList = Collections.emptyList();
         if (newTags == null) newTags = Collections.emptyList();
 
-        init(startTime, endTime, spaceBetweenTasks, eventList, newTags);
+        init(startTime, endTime, spaceBetweenEvents, eventList, newTags);
     }
 
     /**
      * Helper function: Actual constructor (receives default values from other constructors).
      */
-    private void init(long startTime, long endTime, long spaceBetweenTasks, List<PlannerEvent> eventList, List<PlannerTag> tagList) {
+    private void init(long startTime, long endTime, long spaceBetweenEvents, List<PlannerEvent> eventList, List<PlannerTag> tagList) {
         // Get time at start of day.
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(startTime);
@@ -132,7 +134,7 @@ public class PlannerCalendar {
         }
 
         // Define space between tasks.
-        this.spaceBetweenTasks = spaceBetweenTasks;
+        this.spaceBetweenEvents = spaceBetweenEvents;
     }
 
     // Methods
@@ -210,25 +212,42 @@ public class PlannerCalendar {
      * Inserts a tagged task into the calendar at the first preferred free time. Returns events it was assigned to. On failure, returns empty list.
      */
     public List<PlannerEvent> preferredInsertTask(PlannerTask task) {
+        PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
+
         PlannerTag tag = safeGetTag(task.getTagName());
         if (tag == null) {
             return new LinkedList<>();
         }
 
-        return insertTaskHelper(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree);
+        insertTaskHelper(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
+        return task.splitIntoEvents(options, spaceBetweenEvents);
     }
 
     /**
-     * Inserts a task into the calendar at the first non-forbidden free time. Returns events it was assigned to. On failure, returns empty list.
+     * Inserts a task into the calendar at best possible time. Returns events it was assigned to. On failure, returns empty list.
      */
     public List<PlannerEvent> insertTask(PlannerTask task) {
+        OccupiedInterval.setMaxSessionTime(task.getMaxSessionTimeInMillis());
+        PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
         FreeTimeIterator freeTimeIt = new FreeTimeIterator();
+
+        // If there is no tag then use specific function for tag-less tasks.
         PlannerTag tag = safeGetTag(task.getTagName());
         if (tag == null) {
-            return insertUntaggedTaskHelper(task, freeTimeIt);
+            insertUntaggedTaskHelper(task, freeTimeIt, options);
+            return task.splitIntoEvents(options, spaceBetweenEvents);
         }
 
-        return insertTaskHelper(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree());
+        // Attempt to insert only in preferred time.
+        insertTaskHelper(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
+        List<PlannerEvent> events = task.splitIntoEvents(options, spaceBetweenEvents);
+        if (!events.isEmpty()) {
+            return events;
+        }
+
+        // Attempt to insert only in non-forbidden free time.
+        insertTaskHelper(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(), options);
+        return task.splitIntoEvents(options, spaceBetweenEvents);
     }
 
     /**
@@ -306,7 +325,7 @@ public class PlannerCalendar {
      */
     private long getSpacedStartTime(LongInterval interval) {
         long startTime = interval.getStart();
-        long maxEnd = startTime - spaceBetweenTasks;
+        long maxEnd = startTime - spaceBetweenEvents;
         Collection<IInterval> untaggedCollisions = getCollisions(maxEnd, startTime);
         for (IInterval untaggedGeneric : untaggedCollisions) {
             LongInterval untagged = (LongInterval) untaggedGeneric;
@@ -315,7 +334,7 @@ public class PlannerCalendar {
                 maxEnd = end;
             }
         }
-        return maxEnd + spaceBetweenTasks;
+        return maxEnd + spaceBetweenEvents;
     }
 
     /**
@@ -325,6 +344,7 @@ public class PlannerCalendar {
         if (intervals.size() <= 1) {
             return intervals;
         }
+
         Iterator<IInterval> it = intervals.iterator();
         LinkedList<IInterval> merged = new LinkedList<>();
 
@@ -347,9 +367,10 @@ public class PlannerCalendar {
     /**
      * Helper function: Inserts an untagged task into the calendar at the first free time. Returns events it was assigned to.
      */
-    private LinkedList<PlannerEvent> insertUntaggedTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator) {
-        LinkedList<PlannerEvent> assignments = new LinkedList<>();
-        long desiredDuration = task.getDurationInMillis() + spaceBetweenTasks;
+    private void insertUntaggedTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator,
+                                          PriorityQueue<OccupiedInterval> options) {
+        long minimalDuration = task.getMinSessionTimeInMillis();
+        long minimalSlot = minimalDuration + spaceBetweenEvents;
 
         // Iterate over possible intervals.
         while (possibleIterator.hasNext()) {
@@ -360,22 +381,19 @@ public class PlannerCalendar {
 
             // Check if tagged interval is long enough.
             long possibleDuration = possibleInterval.getEnd() - startTime;
-            if (possibleDuration >= desiredDuration) {
-                PlannerEvent toAdd = new PlannerEvent(task, startTime, startTime + desiredDuration);
-                assignments.add(toAdd);
-                occupiedTree.add(new OccupiedInterval(toAdd));
-                return assignments;
+            if (possibleDuration >= minimalSlot) {
+                options.add(new OccupiedInterval(startTime, startTime + minimalDuration));
             }
         }
-        return assignments;
     }
 
     /**
      * Helper function: Inserts a task into the calendar at the first possible time that doesn't collide. Returns events it was assigned to.
      */
-    private LinkedList<PlannerEvent> insertTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator, IntervalTree collisionTree) {
-        LinkedList<PlannerEvent> assignments = new LinkedList<>();
-        long desiredDuration = task.getDurationInMillis() + spaceBetweenTasks;
+    private void insertTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator,
+                                  IntervalTree collisionTree, PriorityQueue<OccupiedInterval> options) {
+        long minimalDuration = task.getMinSessionTimeInMillis();
+        long minimalSlot = minimalDuration + spaceBetweenEvents;
 
         // Iterate over possible intervals.
         while (possibleIterator.hasNext()) {
@@ -386,7 +404,7 @@ public class PlannerCalendar {
 
             // Check if tagged interval is long enough.
             long possibleDuration = possibleInterval.getEnd() - startTime;
-            if (possibleDuration < desiredDuration) {
+            if (possibleDuration < minimalSlot) {
                 continue;
             }
 
@@ -394,25 +412,18 @@ public class PlannerCalendar {
             Collection<IInterval> collisions = mergeOverlapping(collisionTree.overlap(possibleInterval));
             if (collisions.isEmpty()) {
                 // The tagged interval is free and its long enough so we can push here.
-                PlannerEvent toAdd = new PlannerEvent(task, startTime, startTime + desiredDuration);
-                assignments.add(toAdd);
-                occupiedTree.add(new OccupiedInterval(toAdd));
-                return assignments;
+                options.add(new OccupiedInterval(startTime, startTime + minimalDuration));
             }
 
             //  Check if we can push task in between a pair of collision intervals.
             for (IInterval collision : collisions) {
-                PlannerEvent possibleEvent = new PlannerEvent(task, startTime, startTime + desiredDuration);
-                OccupiedInterval toCheck = new OccupiedInterval(possibleEvent);
+                OccupiedInterval toCheck = new OccupiedInterval(startTime, startTime + minimalDuration);
                 if (toCheck.irBefore(collision)) {
                     // Found free interval before some event/task so we can push here.
-                    assignments.add(possibleEvent);
-                    occupiedTree.add(toCheck);
-                    return assignments;
+                    options.add(toCheck);
                 }
             }
         }
-        return assignments;
     }
 
     /**
@@ -450,7 +461,7 @@ public class PlannerCalendar {
         public FreeTimeIterator() {
 
             occupiedIt = occupiedTree.iterator();
-            startTime = PlannerCalendar.this.startTime + spaceBetweenTasks;
+            startTime = PlannerCalendar.this.startTime + spaceBetweenEvents;
 
             oneMore = true;
             if (occupiedIt.hasNext()) {
@@ -478,7 +489,7 @@ public class PlannerCalendar {
             LongInterval previous = nextOccupied;
             if (!occupiedIt.hasNext()) {
                 nextOccupied = null;
-                lastEndTime = previous.getEnd() + spaceBetweenTasks;
+                lastEndTime = previous.getEnd() + spaceBetweenEvents;
                 return previous;
             }
 
@@ -516,7 +527,7 @@ public class PlannerCalendar {
                 long endTime = current.getStart() - MIN_SPACE_IN_MILLIS;
                 if (endTime > startTime) {
                     LongInterval free = new LongInterval(startTime, endTime);
-                    startTime = current.getEnd() + spaceBetweenTasks;
+                    startTime = current.getEnd() + spaceBetweenEvents;
                     return free;
                 }
             }
@@ -526,24 +537,69 @@ public class PlannerCalendar {
     /**
      * Closed interval that contains an event.
      */
-    private static class OccupiedInterval extends LongInterval {
+    static class OccupiedInterval extends LongInterval {
+
+        private static long maxSessionTime = 120 * 60000L;
+        private static long next_id = 0;
 
         public PlannerEvent event;
+        private final long id;
+        private final boolean isPreferred;
 
         /**
          * Create an interval with no start or end time and no event.
          */
         public OccupiedInterval() {
             super();
-            event = null;
+            this.event = null;
+            this.id = next_id++;
+            this.isPreferred = false;
         }
 
         /**
-         * Create the closed interval [event.getStartTime(), event.getStartTime()] that point to the given event.
+         * Create the closed interval [event.getStartTime(), event.getEndTime()] that point to the given event.
          */
         public OccupiedInterval(PlannerEvent event) throws IllegalTimeInterval, IllegalTimePoint {
-            super(event.getStartTime(), event.getStartTime(), false, false);
+            super(event.getStartTime(), event.getEndTime(), false, false);
             this.event = event;
+            this.id = next_id++;
+            this.isPreferred = false;
+        }
+
+        /**
+         * Create the closed interval [startTime, endTime] that point to the given event.
+         */
+        public OccupiedInterval(long startTime, long endTime) throws IllegalTimeInterval, IllegalTimePoint {
+            super(startTime, endTime, false, false);
+            this.event = null;
+            this.id = next_id++;
+            this.isPreferred = false;
+        }
+
+        /**
+         * Create the closed interval [startTime, endTime] that point to the given event.
+         */
+        public OccupiedInterval(long startTime, long endTime, long id, boolean isPreferred) throws IllegalTimeInterval, IllegalTimePoint {
+            super(startTime, endTime, false, false);
+            this.event = null;
+            this.id = id;
+            this.isPreferred = isPreferred;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public boolean isPreferred() {
+            return isPreferred;
+        }
+
+        public static long getMaxSessionTime() {
+            return maxSessionTime;
+        }
+
+        public static void setMaxSessionTime(long maxSessionTime) {
+            OccupiedInterval.maxSessionTime = maxSessionTime;
         }
 
         /**
@@ -559,4 +615,30 @@ public class PlannerCalendar {
         }
     }
 
+    /**
+     * Comparator that is used to implement max-heap according to status, length and id.
+     */
+    static class IntervalByLengthComparator implements Comparator<OccupiedInterval> {
+
+        @Override
+        public int compare(OccupiedInterval o1, OccupiedInterval o2) {
+            // First make sure to always choose preferred interval.
+            int preferredComparison = Boolean.compare(o2.isPreferred(), o1.isPreferred());
+            if (preferredComparison != 0) {
+                return preferredComparison;
+            }
+
+            // If both have the same status then decide according to length (length over the max session time is irrelevant).
+            long comparison = length(o2) - length(o1);
+            if (comparison != 0) {
+                return Long.signum(comparison);
+            }
+            return Long.signum(o1.getId() - o2.getId()); // Tie-breaking by creation order.
+        }
+
+        private long length(OccupiedInterval o) {
+            long actualLength = o.getEnd() - o.getStart();
+            return Math.min(actualLength, OccupiedInterval.getMaxSessionTime());
+        }
+    }
 }
