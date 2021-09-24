@@ -12,4 +12,12 @@
     <string name="due_date">Due By: %s </string>
     <string name="hello_greeting">Hello %s! </string>
 
+    <!-- Day Fragment-->
+    <string name="alert_cannot_show_events">Cannot show events since Read Permission was not granted! </string>
+
+    <!-- Dialog Messages-->
+    <string name="request_read_permission">Requesting to read from your Calender </string>
+    <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.\n
+    If we do not have access, no events will be shown. Will you allow us to read your events?</string>
+
 </resources>

@@ -1,11 +1,11 @@
 package net.planner.planetapp.networking
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
@@ -22,7 +22,7 @@ import kotlin.collections.HashMap
 import net.planner.planetapp.planner.PlannerEvent
 import java.lang.Exception
 
-class GoogleCalenderCommunicator {
+object GoogleCalenderCommunicator {
 
     private val TAG = "GoogleCalenderCommunicator"
     private val ONE_MONTH_MILLIS = TimeUnit.DAYS.toMillis(30)
@@ -34,6 +34,17 @@ class GoogleCalenderCommunicator {
         1L // Calendar to insert new events into by default. Selected as a calendar with the ending gmail.com or  default 1
 
     private val accountToIdMap = HashMap<String, Long>()
+
+    fun initAccountsFromDb(caller: Context) {
+        // TODO add call to db to get accounts
+        if (!haveCalendarReadWritePermissions(caller)) {
+            Log.d(TAG, "Needed permissions - returning")
+            return
+        }
+
+        findAccountCalendars(caller)
+    }
+
 
 
     // Projection array. Creating indices for this array instead of doing
@@ -64,37 +75,34 @@ class GoogleCalenderCommunicator {
         CalendarContract.Events.CUSTOM_APP_URI // Saves the id of the Task relating to this event
     )
 
-    companion object {
+    const val PERMISSION_REQUEST_CODE = 99
 
-        const val PERMISSION_REQUEST_CODE = 99
+    // The indices for Calender projection array
+    private const val PROJECTION_ID_INDEX: Int = 0
+    private const val PROJECTION_DISPLAY_NAME_INDEX: Int = 1
+    private const val PROJECTION_OWNER_ACCOUNT_INDEX: Int = 2
+    private const val PROJECTION_IS_MAIN_ACCOUNT_INDEX: Int = 3
 
-        // The indices for Calender projection array
-        private const val PROJECTION_ID_INDEX: Int = 0
-        private const val PROJECTION_DISPLAY_NAME_INDEX: Int = 1
-        private const val PROJECTION_OWNER_ACCOUNT_INDEX: Int = 2
-        private const val PROJECTION_IS_MAIN_ACCOUNT_INDEX: Int = 3
+    // The indices for Event Instances projection array
+    private const val PROJECTION_EVENT_INSTANCE_ID_INDEX: Int = 0
+    private const val PROJECTION_EVENT_INSTANCE_BEGIN_INDEX: Int = 1
+    private const val PROJECTION_EVENT_INSTANCE_END_INDEX: Int = 2
 
-        // The indices for Event Instances projection array
-        const val PROJECTION_EVENT_INSTANCE_ID_INDEX: Int = 0
-        const val PROJECTION_EVENT_INSTANCE_BEGIN_INDEX: Int = 1
-        const val PROJECTION_EVENT_INSTANCE_END_INDEX: Int = 2
-
-        // The indices for Event projection array
-        const val PROJECTION_EVENT_ID_INDEX: Int = 0
-        const val PROJECTION_EVENT_TITLE_INDEX: Int = 1
-        const val PROJECTION_DESCRIPTION_INDEX: Int = 2
-        const val PROJECTION_ALL_DAY_INDEX: Int = 3
-        const val PROJECTION_AVAILABILITY_INDEX: Int = 4
-        const val PROJECTION_EVENT_LOCATION_INDEX: Int = 5
-        const val PROJECTION_DISPLAY_COLOR_INDEX: Int = 6
-        const val PROJECTION_APP_CREATED_NAME_INDEX: Int = 7
-        const val PROJECTION_TASK_INFORMATION_INDEX: Int = 8
-    }
+    // The indices for Event projection array
+    private const val PROJECTION_EVENT_ID_INDEX: Int = 0
+    private const val PROJECTION_EVENT_TITLE_INDEX: Int = 1
+    private const val PROJECTION_DESCRIPTION_INDEX: Int = 2
+    private const val PROJECTION_ALL_DAY_INDEX: Int = 3
+    private const val PROJECTION_AVAILABILITY_INDEX: Int = 4
+    private const val PROJECTION_EVENT_LOCATION_INDEX: Int = 5
+    private const val PROJECTION_DISPLAY_COLOR_INDEX: Int = 6
+    private const val PROJECTION_APP_CREATED_NAME_INDEX: Int = 7
+    private const val PROJECTION_TASK_INFORMATION_INDEX: Int = 8
 
     /**
      * Get all the ids and names of calendars associated with accounts logged in to the device
      */
-    fun findAccountCalendars(activity: Activity): Collection<String> {
+    fun findAccountCalendars(activity: Context): Collection<String> {
 
         val contentResolver = activity.contentResolver
         // Run query to get all calendars in device
@@ -315,14 +323,14 @@ class GoogleCalenderCommunicator {
      * If start and end times were not specified, current time and a month from now will b the start and end time.
      */
     fun getUserEvents(
-        caller: Activity,
+        caller: Context,
         startMillis: Long? = null,
         endMillis: Long? = null
     ): MutableCollection<PlannerEvent>? {
 
         if (!haveCalendarReadWritePermissions(caller)) {
-            requestCalendarReadWritePermission(caller)
-            Log.d(TAG, "Needed permissions to get Events - returning")
+//            requestCalendarReadWritePermission(caller)
+            Log.d(TAG, "getUserEvents: Needed permissions to get Events - returning")
             return null
         }
 
@@ -338,15 +346,14 @@ class GoogleCalenderCommunicator {
     /**
      * Get all events of the specified google calendar id's from google calendar.
      */
-    fun getEventsFromCalendars(caller: Activity,
+    fun getEventsFromCalendars(caller: Context,
                                chosenCalendarIds: MutableCollection<Long>,
                                startMillis: Long? = null,
                                endMillis: Long? = null
     ) : MutableCollection<PlannerEvent>? {
 
         if (!haveCalendarReadWritePermissions(caller)) {
-            requestCalendarReadWritePermission(caller)
-            Log.d(TAG, "Needed permissions - returning")
+            Log.d(TAG, "getEventsFromCalendars: Needed permissions - returning")
             return null
         }
 
@@ -405,7 +412,7 @@ class GoogleCalenderCommunicator {
     }
 
 
-    fun haveCalendarReadWritePermissions(caller: Activity): Boolean {
+    fun haveCalendarReadWritePermissions(caller: Context): Boolean {
 
         var permissionCheck = ContextCompat.checkSelfPermission(
             caller,

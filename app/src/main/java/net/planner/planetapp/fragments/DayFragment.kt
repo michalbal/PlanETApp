@@ -1,12 +1,20 @@
 package net.planner.planetapp.fragments
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import net.planner.planetapp.App
+import net.planner.planetapp.R
 import net.planner.planetapp.adapters.NextEventViewAdapter
 import net.planner.planetapp.databinding.DayFragmentBinding
 import net.planner.planetapp.getDayDate
@@ -47,12 +55,66 @@ class DayFragment : Fragment() {
         subTasksRecycler.layoutManager = LinearLayoutManager(context)
         subTasksRecycler.adapter = NextEventViewAdapter(todaysEvent)
 
+        viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
+            val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
+            adapter.updateEvents(it.toList())
+        } })
+
+
+
         return mBinding.root
     }
     
-    private fun updateDateShown(date: String) {
+    private fun updateDateShown(date: String) = when {
+        ContextCompat.checkSelfPermission(
+            App.context,
+            Manifest.permission.READ_CALENDAR
+        ) == PackageManager.PERMISSION_GRANTED -> {
+            updateDateWithPermission(date)
+        }
 
+        shouldShowRequestPermissionRationale(Manifest.permission.READ_CALENDAR) -> {
+            val message = App.context.getString(R.string.request_read_events_message)
+            val title = App.context.getString(R.string.request_read_permission)
+            AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(
+                    android.R.string.ok,
+                ) { dialog, _ ->
+                    dialog.cancel()
+                    updateDateWithPermission(date)
+                }
+                .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                    updateDateNoPermission(date)
+                }
+                .create()
+                .show()
+        }
 
+        else -> {
+            val requestPermissionLauncher = this.registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    updateDateWithPermission(date)
+                } else {
+                    updateDateNoPermission(date)
+                }
+            }.apply { launch(Manifest.permission.READ_CALENDAR) }
+        }
+    }
+
+    private fun updateDateWithPermission(date: String) {
+        mBinding.dateText.text = date
+        viewModel.updateEventsForDay(date)
+    }
+
+    private fun updateDateNoPermission(date: String) {
+        mBinding.dateText.text = date
+        val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
+        adapter.updateEvents(listOf())
     }
 
 }

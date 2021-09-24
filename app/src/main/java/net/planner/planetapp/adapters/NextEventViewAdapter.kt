@@ -11,7 +11,7 @@ import net.planner.planetapp.databinding.NextEventListItemBinding
 import net.planner.planetapp.getHour
 
 class NextEventViewAdapter(
-    private val values: List<PlannerEvent>
+    private var values: List<PlannerEvent>
 ) : RecyclerView.Adapter<NextEventViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,5 +44,9 @@ class NextEventViewAdapter(
         val eventEnd: TextView = binding.eventEnd
         // TODO: Add connection to related task and a way to click on the task and be routed to edit task/view task details page - If task exists
 
+    }
+
+    fun updateEvents(events: List<PlannerEvent>) {
+        values = events
     }
 }
