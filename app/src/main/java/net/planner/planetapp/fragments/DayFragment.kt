@@ -49,5 +49,10 @@ class DayFragment : Fragment() {
 
         return mBinding.root
     }
+    
+    private fun updateDateShown(date: String) {
+
+
+    }
 
 }

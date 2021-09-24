@@ -33,6 +33,18 @@ abstract class PlannerObject {
         this.exclusiveForItsTimeSlot = true;
     }
 
+    protected PlannerObject(String title, String description, boolean isExclusive, String tagName, String location ) {
+        this.title = title;
+        if (title == null || title.isEmpty()) {
+            this.title = NO_TITLE;
+        }
+        this.description = description;
+        this.location = location; // for now string
+        this.reminder = -1;
+        this.tag = tagName;
+        this.exclusiveForItsTimeSlot = isExclusive;
+    }
+
     // validity check
     /** Input parameters validity check **/
     public static boolean isValid(int reminder) {
