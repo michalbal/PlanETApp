@@ -9,15 +9,9 @@ class UserDB (
     @SerializedName("username")
     val username: String = "",
 
-    @SerializedName("token")
-    val token: String = "",
+    @SerializedName("unwantedTasks")
+    var unwantedTasks: ArrayList<String>? = ArrayList(),
 
-    @SerializedName("category")
-    var categoryDB: ArrayList<CategoryDB?>? = ArrayList(),
-
-    @SerializedName("unwanted_tasks")
-    var unwantedTasks: ArrayList<UnwantedTasksDB?>? = ArrayList(),
-
-    @SerializedName("unwanted_courses")
-    var unwantedCourses: ArrayList<UnwantedCoursesDB?>? = ArrayList(),
+    @SerializedName("unwantedCourses")
+    var unwantedCourses: ArrayList<String>? = ArrayList()
 )

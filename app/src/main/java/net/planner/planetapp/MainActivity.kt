@@ -2,7 +2,6 @@ package net.planner.planetapp
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -10,9 +9,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
+import net.planner.planetapp.database.DBmanager
 import net.planner.planetapp.databinding.ActivityMainBinding
 import net.planner.planetapp.planner.TasksManager
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,11 +41,24 @@ class MainActivity : AppCompatActivity() {
 
         val thread = Thread {
             try {
-                val manager = TasksManager() //TODO: add your credentials or token
+                val manager = TasksManager("", "") //TODO: add your credentials
 
                 manager.parseMoodleCourses()
 
-                manager.parseMoodleTasks()
+                val parseMoodleTasks = manager.parseMoodleTasks()
+                for ((key, value) in parseMoodleTasks.entries) {
+                    val dBmanager = DBmanager("") //TODO: add your username
+                    dBmanager.writeAcceptedTasks(value)
+                }
+                manager.addCourseToUnwanted("112233")
+                manager.addCourseToUnwanted("445566")
+                manager.addCourseToUnwanted("778899")
+
+
+                manager.addTaskToUnwanted("995511")
+                manager.addTaskToUnwanted("884433")
+                manager.addTaskToUnwanted("662277")
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }

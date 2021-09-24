@@ -4,16 +4,23 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 class TaskDB(
+
     @SerializedName("id")
     val taskId: String = "",
 
     @SerializedName("name")
     var name: String = "",
 
-    @SerializedName("description")  // TODO do we need it?
+    @SerializedName("course_id")
+    val courseID: String = "",
+
+    @SerializedName("course_name")
+    val courseName: String = "",
+
+    @SerializedName("description")
     val description: String = "",
 
-    @SerializedName("location")  // TODO do we need it?
+    @SerializedName("location")
     val location: String = "",
 
     @SerializedName("exclusiveForItsTimeSlot")
@@ -38,8 +45,6 @@ class TaskDB(
     val maxDivisionsNumber: Int = 10,
 
     @SerializedName("durationInMinutes")
-    val durationInMinutes: Int = 60,
+    val durationInMinutes: Long = 60,
 
-    @SerializedName("subtasks")
-    var subtasks: ArrayList<SubtaskDB?>? = ArrayList()
 )

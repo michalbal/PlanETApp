@@ -1,5 +1,6 @@
 package net.planner.planetapp.planner;
 
+import net.planner.planetapp.database.DBmanager;
 import net.planner.planetapp.networking.MoodleCommunicator;
 
 import java.util.ArrayList;
@@ -11,16 +12,33 @@ public class TasksManager {
     private final MoodleCommunicator connector;
     private ArrayList<String> unwantedCourseIds;
     private ArrayList<String> unwantedTaskIds;
+    private DBmanager dBmanager;
+
+    public void setUnwantedCourseIds(ArrayList<String> unwantedCourseIds) {
+        this.unwantedCourseIds = unwantedCourseIds;
+    }
+
+    public void setUnwantedTaskIds(ArrayList<String> unwantedTaskIds) {
+        this.unwantedTaskIds = unwantedTaskIds;
+    }
 
     public TasksManager(String username, String password) {
         connector = new MoodleCommunicator();
         token = connector.connectToCSEMoodle(username, password);
+        dBmanager = new DBmanager(username);
+        dBmanager.getUnwantedCourses(this);
+        dBmanager.getUnwantedTasks(this);
     }
 
-    public TasksManager(String userToken) {
-        connector = new MoodleCommunicator();
-        token = userToken;
-    }
+    // TODO need username for dbmanager, can't use token until it's figured out (shared
+    //  preferences?)
+//    public TasksManager(String userToken) {
+//        connector = new MoodleCommunicator();
+//        token = userToken;
+//
+//        unwantedTaskIds = new ArrayList<>();
+//        unwantedCourseIds = new ArrayList<>();
+//    }
 
     public HashMap<String, String> parseMoodleCourses() {
         if (token != null && !token.equals("")) {
@@ -58,32 +76,37 @@ public class TasksManager {
     }
 
     public LinkedList<PlannerEvent> planSchedule(LinkedList<PlannerTask> plannerTasks){
+        dBmanager.writeAcceptedTasks(plannerTasks);
+
         LinkedList<PlannerEvent> subtasks = null;
         //TODO run the algorithm
         return subtasks;
     }
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents){
-        //TODO write to GC and to the db
+        //TODO write to GC, get IDs and update them in the events (will be used in db)
+
+        // write to db
+        dBmanager.writeNewSubtasks(acceptedEvents);
     }
 
-    public void addTaskToUnwanted(PlannerTask task){
-        unwantedTaskIds.add(task.getMoodleId());
-        // TODO upd db
+    public void addTaskToUnwanted(String moodleTaskId){
+        unwantedTaskIds.add(moodleTaskId);
+        dBmanager.addUnwantedTask(moodleTaskId);
     }
 
-    public void removeTaskFromUnwanted(PlannerTask task){
-        unwantedTaskIds.remove(task.getMoodleId());
-        // TODO upd db
+    public void removeTaskFromUnwanted(String moodleTaskId){
+        unwantedTaskIds.remove(moodleTaskId);
+        dBmanager.removeUnwantedTask(moodleTaskId);
     }
 
     public void addCourseToUnwanted(String courseId){
         unwantedCourseIds.add(courseId);
-        // TODO upd db
+        dBmanager.addUnwantedCourse(courseId);
     }
 
     public void removeCourseFromUnwanted(String courseId){
         unwantedCourseIds.remove(courseId);
-        // TODO upd db
+        dBmanager.removeUnwantedCourse(courseId);
     }
 }

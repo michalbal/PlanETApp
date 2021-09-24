@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class SubtaskDB(
     @SerializedName("google_calendar_id")
-    val EventIdGC: String = "",
+    val eventIdGC: String = "",
 
     @SerializedName("startTime")
     var startTime: Long = 0,
