@@ -11,6 +11,7 @@ public class PlannerTask extends PlannerObject {
     private static final String TAG = "PlannerTask";
 
     private String moodleId;
+    private String courseId;
     private long deadline;
     protected int priority; //1-10
     private int maxSessionTimeInMinutes;
@@ -192,5 +193,13 @@ public class PlannerTask extends PlannerObject {
 
     public void setMoodleId(String moodleId) {
         this.moodleId = moodleId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
     }
 }

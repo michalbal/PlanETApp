@@ -55,7 +55,6 @@ public class MoodleCommunicator {
     public HashMap parseFromMoodle(String token, Boolean onlyCourseNames) {
         String serverurl = MOODLE_URL + "/webservice/rest/server.php" + "?wstoken=" + token +
                            "&wsfunction=mod_assign_get_assignments";
-        System.out.println(serverurl);
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(serverurl).openConnection();
             con.setConnectTimeout(30000);
@@ -122,7 +121,7 @@ public class MoodleCommunicator {
                 courseId = readText(parser);
             } else if (attrName != null && attrName.equals("fullname")) {
                 courseFullname = readText(parser);
-                courseNames.put(courseFullname, courseId);
+                courseNames.put(courseId, courseFullname);
             } else {
                 skip(parser);
             }
@@ -182,7 +181,7 @@ public class MoodleCommunicator {
                 }
             }
             PlannerTask task = new PlannerTask(name, duedate, 5 * 60);
-            task.setTagName(courseId);
+            task.setCourseId(courseId);
             task.setMoodleId(id);
             assignments.add(task);
         }

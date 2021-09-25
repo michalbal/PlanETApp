@@ -41,15 +41,17 @@ class MainActivity : AppCompatActivity() {
 
         val thread = Thread {
             try {
-                val manager = TasksManager("", "") //TODO: add your credentials
+                val manager = TasksManager.getInstance()
+                manager.initTasksManager() //TODO: add your credentials
+                manager.addPreference("67118", "SleepInstead", true)
+                manager.addPreference("67625", "get100", true)
+//                manager.addPreference("67420", "secondRun", true)
 
                 manager.parseMoodleCourses()
 
-                val parseMoodleTasks = manager.parseMoodleTasks()
-                for ((key, value) in parseMoodleTasks.entries) {
-                    val dBmanager = DBmanager("") //TODO: add your username
-                    dBmanager.writeAcceptedTasks(value)
-                }
+                val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+                manager.planSchedule(parsedMoodleTasks)
+
                 manager.addCourseToUnwanted("112233")
                 manager.addCourseToUnwanted("445566")
                 manager.addCourseToUnwanted("778899")

@@ -8,18 +8,36 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class TasksManager {
-    private final String token;
-    private final MoodleCommunicator connector;
-    private final DBmanager dBmanager;
+    private String token;
+    private MoodleCommunicator connector;
+    private DBmanager dBmanager;
     private ArrayList<String> unwantedCourseIds;
     private ArrayList<String> unwantedTaskIds;
+    private static TasksManager tasksManager;
+    private HashMap<String, String> courseNames;
+    private HashMap<String, String> preferences;
 
-    public TasksManager(String username, String password) {
+    private TasksManager(){
         connector = new MoodleCommunicator();
+        unwantedCourseIds = new ArrayList<>();
+        unwantedTaskIds = new ArrayList<>();
+        courseNames = new HashMap<>();
+        preferences = new HashMap<>();
+    }
+
+    public void initTasksManager(String username, String password) {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
-        dBmanager.getUnwantedCourses(this);
-        dBmanager.getUnwantedTasks(this);
+        dBmanager.readUnwantedCourses();
+        dBmanager.readUnwantedTasks();
+        dBmanager.readUserMoodleCourses();
+    }
+
+    public static TasksManager getInstance(){
+        if (tasksManager == null){
+            tasksManager = new TasksManager();
+        }
+        return tasksManager;
     }
 
     public void setUnwantedCourseIds(ArrayList<String> unwantedCourseIds) {
@@ -30,9 +48,32 @@ public class TasksManager {
         this.unwantedTaskIds = unwantedTaskIds;
     }
 
+    public HashMap<String, String> getCourseNames() {
+        return courseNames;
+    }
+
+    public void addMoodleCourse(String courseID, String courseName, Boolean writeToDb) {
+        courseNames.put(courseID, courseName);
+        if (writeToDb) {
+            dBmanager.addMoodleCourseName(courseID, courseName);
+        }
+    }
+
+    public HashMap<String, String> getPreferences() {
+        return preferences;
+    }
+
+    public void addPreference(String courseID, String preferenceId, Boolean writeToDb) {
+        preferences.put(courseID, preferenceId);
+        if (writeToDb) {
+            dBmanager.addMoodleCoursePreference(courseID, preferenceId);
+        }
+    }
+
     public HashMap<String, String> parseMoodleCourses() {
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
+            dBmanager.addUserMoodleCourses(parsedCourseNames);
             return parsedCourseNames;
         }
         return null;
@@ -54,6 +95,9 @@ public class TasksManager {
                 for (PlannerTask task : parsedAssignment.getValue()) {
                     if (!unwantedTaskIds.contains(task.getMoodleId()) &&
                         task.getDeadline() > currentTime) {
+                        if (preferences.containsKey(task.getCourseId())){
+                            task.setTagName(preferences.get(task.getCourseId()));
+                        }
                         filteredTasks.add(task);
                     }
                 }

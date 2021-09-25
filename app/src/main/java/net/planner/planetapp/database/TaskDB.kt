@@ -11,11 +11,8 @@ class TaskDB(
     @SerializedName("name")
     var name: String = "",
 
-    @SerializedName("course_id")
+    @SerializedName("courseID")
     val courseID: String = "",
-
-    @SerializedName("course_name")
-    val courseName: String = "",
 
     @SerializedName("description")
     val description: String = "",
