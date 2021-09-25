@@ -264,31 +264,28 @@ public class PlannerCalendar {
     }
 
     /**
-     * Inserts a list of tasks into the calendar at the best possible time. Returns events they were assigned to.
-     */
-    private LinkedList<List<PlannerEvent>> tryToInsertTasks(ArrayList<PlannerTask> sorted, int startIndex) {
-        LinkedList<List<PlannerEvent>> newEvents = new LinkedList<>();
-        int size = sorted.size();
-
-        for (int i = startIndex; i < size; ++i) {
-            PlannerTask current = sorted.get(i);
-            List<PlannerEvent> currentResult = insertTask(current);
-
-            if (currentResult.isEmpty()) {
-                return newEvents;
-            }
-            newEvents.add(currentResult);
-        }
-
-        return newEvents;
-    }
-
-    /**
      * Removes the given event from this calendar. Return true if found.
      */
     public boolean removeEvent(PlannerEvent event) {
         OccupiedInterval toRemove = new OccupiedInterval(event);
         return occupiedTree.remove(toRemove);
+    }
+
+    /**
+     * Removes the given task from this calendar. Return true if found.
+     */
+    public boolean removeTask(PlannerTask task) {
+        List<PlannerEvent> childEvents = task.getChildEvents();
+        if (childEvents == null) {
+            return false;
+        }
+
+        // Remove all child events even if not all found so we can "clean" the tree.
+        boolean success = true;
+        for (PlannerEvent child : childEvents) {
+            success &= removeEvent(child);
+        }
+        return success;
     }
 
     /**
@@ -352,6 +349,26 @@ public class PlannerCalendar {
     }
 
     // Helper functions
+
+    /**
+     * Inserts a list of tasks into the calendar at the best possible time. Returns events they were assigned to.
+     */
+    private LinkedList<List<PlannerEvent>> tryToInsertTasks(ArrayList<PlannerTask> sorted, int startIndex) {
+        LinkedList<List<PlannerEvent>> newEvents = new LinkedList<>();
+        int size = sorted.size();
+
+        for (int i = startIndex; i < size; ++i) {
+            PlannerTask current = sorted.get(i);
+            List<PlannerEvent> currentResult = insertTask(current);
+
+            if (currentResult.isEmpty()) {
+                return newEvents;
+            }
+            newEvents.add(currentResult);
+        }
+
+        return newEvents;
+    }
 
     /**
      * Returns best possible times for task insertion. On failure, returns empty list.
