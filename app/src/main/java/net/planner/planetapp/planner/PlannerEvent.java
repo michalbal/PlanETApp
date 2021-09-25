@@ -14,13 +14,13 @@ public class PlannerEvent extends PlannerObject {
     private long endTime;
     private long eventId;
     private boolean isAllDay;
-    private String parentTaskId;
+    private String parentTaskID;
 
     // constructors
     /** Create PlannerEvent object from its title and times **/
     public PlannerEvent(String title, long startTime, long endTime) {
         super(title);
-        this.parentTaskId = null;
+        this.parentTaskID = null;
         if (endTime < startTime) {
             Log.e(TAG,"Illegal time interval: Event cannot end before it starts");
             return;
@@ -40,7 +40,7 @@ public class PlannerEvent extends PlannerObject {
         this.endTime = endTime;
         this.eventId = -1L;
         this.isAllDay = false;
-        this.parentTaskId = task.title; // TODO change  to Task ID from DB or moodle
+        this.parentTaskID = task.getMoodleId();
     }
 
     public PlannerEvent(String taskID, String title, long startTime, long endTime, boolean isAllDay,
@@ -51,7 +51,7 @@ public class PlannerEvent extends PlannerObject {
         this.endTime = endTime;
         this.eventId = eventId;
         this.isAllDay = isAllDay;
-        this.parentTaskId = taskID;
+        this.parentTaskID = taskID;
     }
 
     // validity check
@@ -121,6 +121,8 @@ public class PlannerEvent extends PlannerObject {
         this.eventId = eventId;
     }
 
+    public long getEventId() { return eventId; }
+
     /** Gets time in milliseconds and returns time of + delta days at 00:00 AM **/
     private long moveDeltaDaysTime(long timeInMillis, int delta, boolean force){
         long newTimeInMillis = timeInMillis;
@@ -149,8 +151,13 @@ public class PlannerEvent extends PlannerObject {
 
     /** Return the ID of the PlannerTask object related to this event or null if there is none **/
     public final String getParentTaskId() {
-        return parentTaskId;
+        return parentTaskID;
     }
+
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
 
     @NotNull
     @Override
@@ -174,8 +181,7 @@ public class PlannerEvent extends PlannerObject {
         }
         PlannerEvent that = (PlannerEvent) o;
 
-        boolean doesParentTaskMatch = parentTaskId.equals(that.parentTaskId);
-        return doesParentTaskMatch && getStartTime() == that.getStartTime() && getEndTime() == that.getEndTime();
+        return parentTaskID.equals(that.parentTaskID) && getStartTime() == that.getStartTime() && getEndTime() == that.getEndTime();
     }
 
     @Override
