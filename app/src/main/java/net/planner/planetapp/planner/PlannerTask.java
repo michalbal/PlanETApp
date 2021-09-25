@@ -14,6 +14,8 @@ public class PlannerTask extends PlannerObject {
     private static final String TAG = "PlannerTask";
     private static final int DEFAULT_MIN_SESSION_IN_MINUTES = 30;
 
+    private String moodleId;
+    private String courseId;
     private long deadline;
     protected int priority; //1-10
     private int maxSessionTimeInMinutes;
@@ -313,5 +315,21 @@ public class PlannerTask extends PlannerObject {
     public int hashCode() {
         return Objects.hash(super.hashCode(), getDurationInMinutes(), getDeadline(),
                 getMaxSessionTimeInMinutes(), getMaxDivisionsNumber(), getPriority());
+    }
+
+    public String getMoodleId() {
+        return moodleId;
+    }
+
+    public void setMoodleId(String moodleId) {
+        this.moodleId = moodleId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
     }
 }

@@ -14,13 +14,13 @@ public class PlannerEvent extends PlannerObject {
     private long endTime;
     private long eventId;
     private boolean isAllDay;
-    private final PlannerTask parentTask;
+    private final String parentTaskID;
 
     // constructors
     /** Create PlannerEvent object from its title and times **/
     public PlannerEvent(String title, long startTime, long endTime) {
         super(title);
-        this.parentTask = null;
+        this.parentTaskID = null;
         if (endTime < startTime) {
             Log.e(TAG,"Illegal time interval: Event cannot end before it starts");
             return;
@@ -40,7 +40,7 @@ public class PlannerEvent extends PlannerObject {
         this.endTime = endTime;
         this.eventId = -1L;
         this.isAllDay = false;
-        this.parentTask = task;
+        this.parentTaskID = task.getMoodleId();
     }
 
     // validity check
@@ -110,6 +110,8 @@ public class PlannerEvent extends PlannerObject {
         this.eventId = eventId;
     }
 
+    public long getEventId() { return eventId; }
+
     /** Gets time in milliseconds and returns time of + delta days at 00:00 AM **/
     private long moveDeltaDaysTime(long timeInMillis, int delta, boolean force){
         long newTimeInMillis = timeInMillis;
@@ -136,9 +138,13 @@ public class PlannerEvent extends PlannerObject {
         }
     }
 
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
     /** Return PlannerTask object related to this event or null if there is none **/
-    public final PlannerTask getParentTask() {
-        return parentTask;
+    public final String getParentTaskID() {
+        return parentTaskID;
     }
 
     @NotNull
@@ -163,8 +169,7 @@ public class PlannerEvent extends PlannerObject {
         }
         PlannerEvent that = (PlannerEvent) o;
 
-        boolean doesParentTaskMatch = parentTask == that.parentTask || parentTask.equals(that.parentTask);
-        return doesParentTaskMatch && getStartTime() == that.getStartTime() && getEndTime() == that.getEndTime();
+        return parentTaskID.equals(that.parentTaskID) && getStartTime() == that.getStartTime() && getEndTime() == that.getEndTime();
     }
 
     @Override

@@ -2,7 +2,6 @@ package net.planner.planetapp
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -10,9 +9,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
+import net.planner.planetapp.database.DBmanager
 import net.planner.planetapp.databinding.ActivityMainBinding
 import net.planner.planetapp.planner.TasksManager
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -39,18 +39,33 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
-//        val thread = Thread {
-//            try {
-//                val manager = TasksManager() //TODO: add your credentials or token
-//
-//                manager.getMoodleCourses()
-//
-//                manager.getMoodleTasks()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//        thread.start()
+        val thread = Thread {
+            try {
+                val manager = TasksManager.getInstance()
+                manager.initTasksManager() //TODO: add your credentials
+                manager.addPreference("67118", "SleepInstead", true)
+                manager.addPreference("67625", "get100", true)
+//                manager.addPreference("67420", "secondRun", true)
+
+                manager.parseMoodleCourses()
+
+                val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+                manager.planSchedule(parsedMoodleTasks)
+
+                manager.addCourseToUnwanted("112233")
+                manager.addCourseToUnwanted("445566")
+                manager.addCourseToUnwanted("778899")
+
+
+                manager.addTaskToUnwanted("995511")
+                manager.addTaskToUnwanted("884433")
+                manager.addTaskToUnwanted("662277")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        thread.start()
     }
 
 //    private fun setupNavigationMenu(navController: NavController){
