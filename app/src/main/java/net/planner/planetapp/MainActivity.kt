@@ -93,4 +93,6 @@ class MainActivity : AppCompatActivity() {
             findNavController(R.id.nav_host_fragment)
         ) || super.onOptionsItemSelected(item)
     }
+
+    // TODO add onpermission if only one it's for getting account, if one, it's for getting events or saving events
 }

@@ -4,23 +4,20 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import net.planner.planetapp.databinding.FragmentPreferancesBinding
-
-import net.planner.planetapp.fragments.placeholder.PlaceholderContent.PlaceholderItem
+import net.planner.planetapp.databinding.PreferancesListItemBinding
+import net.planner.planetapp.planner.PlannerTag
 
 /**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
+ * [RecyclerView.Adapter] that can display Preferances.
  */
 class PreferancesViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<PlannerTag>
 ) : RecyclerView.Adapter<PreferancesViewAdapter.ViewHolder>() {
-    // TODO for now displays the placeholder example - change that to actual preferances view
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         return ViewHolder(
-            FragmentPreferancesBinding.inflate(
+            PreferancesListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -31,13 +28,13 @@ class PreferancesViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.idView.text = item.tagName
+        holder.contentView.text = item.toString()
     }
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(binding: FragmentPreferancesBinding) :
+    inner class ViewHolder(binding: PreferancesListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val idView: TextView = binding.itemNumber
         val contentView: TextView = binding.content

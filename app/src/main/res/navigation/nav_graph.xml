@@ -31,7 +31,7 @@
         android:id="@+id/PreferancesFragment"
         android:name="net.planner.planetapp.fragments.PreferancesFragment"
         android:label="@string/preferances_label"
-        tools:layout="@layout/fragment_preferances">
+        tools:layout="@layout/preferances_list_item">
     </fragment>
 
     <fragment

@@ -14,7 +14,7 @@ public class PlannerEvent extends PlannerObject {
     private long endTime;
     private long eventId;
     private boolean isAllDay;
-    private final String parentTaskID;
+    private String parentTaskID;
 
     // constructors
     /** Create PlannerEvent object from its title and times **/
@@ -41,6 +41,17 @@ public class PlannerEvent extends PlannerObject {
         this.eventId = -1L;
         this.isAllDay = false;
         this.parentTaskID = task.getMoodleId();
+    }
+
+    public PlannerEvent(String taskID, String title, long startTime, long endTime, boolean isAllDay,
+                        Long eventId, String description, boolean isExclusive, String tagName, String location) {
+        super(title, description, isExclusive, tagName, location);
+        this.title = title;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.eventId = eventId;
+        this.isAllDay = isAllDay;
+        this.parentTaskID = taskID;
     }
 
     // validity check
@@ -138,14 +149,15 @@ public class PlannerEvent extends PlannerObject {
         }
     }
 
+    /** Return the ID of the PlannerTask object related to this event or null if there is none **/
+    public final String getParentTaskId() {
+        return parentTaskID;
+    }
+
     public boolean isAllDay() {
         return isAllDay;
     }
 
-    /** Return PlannerTask object related to this event or null if there is none **/
-    public final String getParentTaskID() {
-        return parentTaskID;
-    }
 
     @NotNull
     @Override
