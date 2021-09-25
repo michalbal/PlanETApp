@@ -205,7 +205,7 @@ public class PlannerTask extends PlannerObject {
     /**
      * Get this task's duration in minutes
      **/
-    public long getDurationInMinutes() {
+    public int getDurationInMinutes() {
         return durationInMinutes;
     }
 

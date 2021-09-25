@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -209,45 +210,77 @@ public class PlannerCalendar {
     }
 
     /**
-     * Inserts a tagged task into the calendar at the first preferred free time. Returns events it was assigned to. On failure, returns empty list.
-     */
-    public List<PlannerEvent> preferredInsertTask(PlannerTask task) {
-        PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
-
-        PlannerTag tag = safeGetTag(task.getTagName());
-        if (tag == null) {
-            return new LinkedList<>();
-        }
-
-        insertTaskHelper(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
-        return task.splitIntoEvents(options, spaceBetweenEvents);
-    }
-
-    /**
      * Inserts a task into the calendar at best possible time. Returns events it was assigned to. On failure, returns empty list.
      */
     public List<PlannerEvent> insertTask(PlannerTask task) {
-        OccupiedInterval.setMaxSessionTime(task.getMaxSessionTimeInMillis());
-        PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
-        FreeTimeIterator freeTimeIt = new FreeTimeIterator();
+        List<PlannerEvent> events = splitTask(task);
+        for (PlannerEvent event : events) {
+            occupiedTree.add(new OccupiedInterval(event));
+        }
+        return events;
+    }
 
-        // If there is no tag then use specific function for tag-less tasks.
-        PlannerTag tag = safeGetTag(task.getTagName());
-        if (tag == null) {
-            insertUntaggedTaskHelper(task, freeTimeIt, options);
-            return task.splitIntoEvents(options, spaceBetweenEvents);
+    /**
+     * Inserts a list of tasks into the calendar at the best possible time. Returns events they were assigned to.
+     */
+    public List<PlannerEvent> insertTasks(List<PlannerTask> tasks) {
+        ArrayList<PlannerTask> sorted = new ArrayList<>(tasks);
+        Collections.sort(sorted, new TaskByDeadlineComparator());
+
+        LinkedList<List<PlannerEvent>> firstTry = tryToInsertTasks(sorted, 0);
+        LinkedList<List<PlannerEvent>> attempt = firstTry;
+        int full_size = tasks.size();
+        int size = attempt.size();
+        int fail_count = 0;
+
+        while (size != full_size) {
+            ++fail_count;
+            int shift = full_size - fail_count - 1;
+            if (shift < 0) {
+                attempt = firstTry;
+                break;
+            }
+
+            // Backtrack one step with the problematic task.
+            Collections.swap(sorted, shift + 1, shift);
+            ListIterator<List<PlannerEvent>> removalIt = attempt.listIterator(size);
+            for (int i = 0; i < fail_count; ++i) {
+                List<PlannerEvent> eventsToRemove = removalIt.previous();
+                for (PlannerEvent toRemove : eventsToRemove) {
+                    removeEvent(toRemove);
+                }
+            }
+
+            attempt = tryToInsertTasks(sorted, shift);
+            size = attempt.size();
         }
 
-        // Attempt to insert only in preferred time.
-        insertTaskHelper(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
-        List<PlannerEvent> events = task.splitIntoEvents(options, spaceBetweenEvents);
-        if (!events.isEmpty()) {
-            return events;
+        // Flatten list of lists.
+        LinkedList<PlannerEvent> result = new LinkedList<>();
+        for (List<PlannerEvent> events : attempt) {
+            result.addAll(events);
+        }
+        return result;
+    }
+
+    /**
+     * Inserts a list of tasks into the calendar at the best possible time. Returns events they were assigned to.
+     */
+    private LinkedList<List<PlannerEvent>> tryToInsertTasks(ArrayList<PlannerTask> sorted, int startIndex) {
+        LinkedList<List<PlannerEvent>> newEvents = new LinkedList<>();
+        int size = sorted.size();
+
+        for (int i = startIndex; i < size; ++i) {
+            PlannerTask current = sorted.get(i);
+            List<PlannerEvent> currentResult = insertTask(current);
+
+            if (currentResult.isEmpty()) {
+                return newEvents;
+            }
+            newEvents.add(currentResult);
         }
 
-        // Attempt to insert only in non-forbidden free time.
-        insertTaskHelper(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(), options);
-        return task.splitIntoEvents(options, spaceBetweenEvents);
+        return newEvents;
     }
 
     /**
@@ -321,6 +354,33 @@ public class PlannerCalendar {
     // Helper functions
 
     /**
+     * Returns best possible times for task insertion. On failure, returns empty list.
+     */
+    private List<PlannerEvent> splitTask(PlannerTask task) {
+        OccupiedInterval.setMaxSessionTime(task.getMaxSessionTimeInMillis());
+        PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
+        FreeTimeIterator freeTimeIt = new FreeTimeIterator();
+
+        // If there is no tag then use specific function for tag-less tasks.
+        PlannerTag tag = safeGetTag(task.getTagName());
+        if (tag == null) {
+            findIntervalForUntaggedTask(task, freeTimeIt, options);
+            return task.splitIntoEvents(options, spaceBetweenEvents);
+        }
+
+        // Attempt to insert only in preferred time.
+        findIntervalForTask(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
+        List<PlannerEvent> events = task.splitIntoEvents(options, spaceBetweenEvents);
+        if (!events.isEmpty()) {
+            return events;
+        }
+
+        // Attempt to insert only in non-forbidden free time.
+        findIntervalForTask(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(), options);
+        return task.splitIntoEvents(options, spaceBetweenEvents);
+    }
+
+    /**
      * Helper function: Returns the first time in the calendar where the start doesn't overlap with others.
      */
     private long getSpacedStartTime(LongInterval interval) {
@@ -367,8 +427,8 @@ public class PlannerCalendar {
     /**
      * Helper function: Inserts an untagged task into the calendar at the first free time. Returns events it was assigned to.
      */
-    private void insertUntaggedTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator,
-                                          PriorityQueue<OccupiedInterval> options) {
+    private void findIntervalForUntaggedTask(PlannerTask task, Iterator<IInterval> possibleIterator,
+                                             PriorityQueue<OccupiedInterval> options) {
         long minimalDuration = task.getMinSessionTimeInMillis();
         long minimalSlot = minimalDuration + spaceBetweenEvents;
 
@@ -390,8 +450,8 @@ public class PlannerCalendar {
     /**
      * Helper function: Inserts a task into the calendar at the first possible time that doesn't collide. Returns events it was assigned to.
      */
-    private void insertTaskHelper(PlannerTask task, Iterator<IInterval> possibleIterator,
-                                  IntervalTree collisionTree, PriorityQueue<OccupiedInterval> options) {
+    private void findIntervalForTask(PlannerTask task, Iterator<IInterval> possibleIterator,
+                                     IntervalTree collisionTree, PriorityQueue<OccupiedInterval> options) {
         long minimalDuration = task.getMinSessionTimeInMillis();
         long minimalSlot = minimalDuration + spaceBetweenEvents;
 
@@ -639,6 +699,30 @@ public class PlannerCalendar {
         private long length(OccupiedInterval o) {
             long actualLength = o.getEnd() - o.getStart();
             return Math.min(actualLength, OccupiedInterval.getMaxSessionTime());
+        }
+    }
+
+    /**
+     * Comparator that is used to sort tasks for insertion (done according to deadline, priority and duration).
+     */
+    static class TaskByDeadlineComparator implements Comparator<PlannerTask> {
+
+        @Override
+        public int compare(PlannerTask task1, PlannerTask task2) {
+            // First try to order by deadline. (earliest first)
+            int comparison = Long.compare(task1.getDeadline(), task2.getDeadline());
+            if (comparison != 0) {
+                return comparison;
+            }
+
+            // If they share the same deadline then order by priority. (biggest first)
+            comparison = Integer.compare(task2.getPriority(), task1.getPriority());
+            if (comparison != 0) {
+                return comparison;
+            }
+
+            // If they share the same priority then order by duration length. (biggest first)
+            return Integer.compare(task2.getDurationInMinutes(), task1.getDurationInMinutes());
         }
     }
 }
