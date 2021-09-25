@@ -41,5 +41,9 @@ class DayFragmentViewModel : ViewModel() {
         }
         }
 
+    fun onResume() {
+        updateEventsForDay(dayShown)
+    }
+
 
 }

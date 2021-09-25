@@ -25,11 +25,16 @@ import java.util.concurrent.TimeUnit
 class DayFragment : Fragment() {
 
     companion object {
-        fun newInstance() = DayFragment()
+
+        private const val TAG = "DayFragment"
+
+        private val ONE_DAY_MOVE = TimeUnit.DAYS.toMillis(1)
     }
+
 
     private lateinit var viewModel: DayFragmentViewModel
     private lateinit var mBinding: DayFragmentBinding
+    // TODO keep the adapter also
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,10 +60,22 @@ class DayFragment : Fragment() {
         subTasksRecycler.layoutManager = LinearLayoutManager(context)
         subTasksRecycler.adapter = NextEventViewAdapter(todaysEvent)
 
+        // Subscribe to updates to event list
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
             val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
             adapter.updateEvents(it.toList())
         } })
+
+        // Setting button reactions
+        mBinding.rightImage.setOnClickListener { button ->
+            val nextDayDate = getDayDate(System.currentTimeMillis() + ONE_DAY_MOVE)
+            updateDateShown(nextDayDate)
+        }
+
+        mBinding.leftImage.setOnClickListener { button ->
+            val lastDayDate = getDayDate(System.currentTimeMillis() - ONE_DAY_MOVE)
+            updateDateShown(lastDayDate)
+        }
 
 
 
@@ -115,6 +132,11 @@ class DayFragment : Fragment() {
         mBinding.dateText.text = date
         val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
         adapter.updateEvents(listOf())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
 }
