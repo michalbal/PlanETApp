@@ -14,11 +14,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.planner.planetapp.database.DBmanager
 import net.planner.planetapp.databinding.ActivityMainBinding
-import net.planner.planetapp.networking.GoogleCalenderCommunicator
+import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.TasksManager
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,40 +42,54 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val manager = TasksManager.getInstance()
+                    manager.initTasksManager() //TODO: add your credentials
+                    var plannerTag = PlannerTag("tag1")
+                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "18:30", "19:00")
+                    plannerTag.addNewPreferredTIsetting(MONDAY, "18:30", "23:00")
+                    plannerTag.addNewPreferredTIsetting(FRIDAY, "08:30", "09:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+                    plannerTag = PlannerTag("tag2")
+                    plannerTag.addNewForbiddenTIsetting(WEDNESDAY, "18:30", "23:00")
+                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "08:30", "09:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+                    plannerTag.addNewPreferredTIsetting(SATURDAY, "18:30", "19:00")
+                    plannerTag.addNewPreferredTIsetting(FRIDAY, "18:30", "19:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+//                    var plannerTag = PlannerTag("tag1")
+//                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+//                    manager.addPreferenceTag(plannerTag, true)
+
+
+                    manager.addCoursePreference("67118", "SleepInstead", true)
+                    manager.addCoursePreference("67625", "get100", true)
+//                manager.addPreference("67420", "secondRun", true)
+
+                    manager.parseMoodleCourses()
+
+                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+                    manager.planSchedule(parsedMoodleTasks)
+
+                    manager.addCourseToUnwanted("112233")
+                    manager.addCourseToUnwanted("445566")
+                    manager.addCourseToUnwanted("778899")
+
+
+                    manager.addTaskToUnwanted("995511")
+                    manager.addTaskToUnwanted("884433")
+                    manager.addTaskToUnwanted("662277")
 
         if (UserPreferencesManager.mainCalendarAccount == null) {
             navController.navigate(R.id.welcomeFragment)
             // TODO remove bottom navigation when here
         }
-
-//        lifecycleScope.launch {
-//            withContext(Dispatchers.IO) {
-//                try {
-//                    val manager = TasksManager.getInstance()
-//                    manager.initTasksManager("michalbal", "M!chal4123675") //TODO: add your credentials
-//                    manager.addPreference("67118", "SleepInstead", true)
-//                    manager.addPreference("67625", "get100", true)
-////                manager.addPreference("67420", "secondRun", true)
-//
-//                    manager.parseMoodleCourses()
-//
-//                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
-//                    manager.planSchedule(parsedMoodleTasks)
-//
-//                    manager.addCourseToUnwanted("112233")
-//                    manager.addCourseToUnwanted("445566")
-//                    manager.addCourseToUnwanted("778899")
-//
-//
-//                    manager.addTaskToUnwanted("995511")
-//                    manager.addTaskToUnwanted("884433")
-//                    manager.addTaskToUnwanted("662277")
-//
-//                } catch (e: Exception) {
-//                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
-//                }
-//            }
-//        }
 
     }
 
