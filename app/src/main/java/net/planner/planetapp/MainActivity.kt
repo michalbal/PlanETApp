@@ -44,6 +44,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
+
+        if (UserPreferencesManager.mainCalendarAccount == null) {
+            navController.navigate(R.id.welcomeFragment)
+            // TODO remove bottom navigation when here
+        }
+
 //        lifecycleScope.launch {
 //            withContext(Dispatchers.IO) {
 //                try {

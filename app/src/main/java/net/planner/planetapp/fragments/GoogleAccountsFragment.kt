@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.planner.planetapp.adapters.CalendarAccountAdapter
 import net.planner.planetapp.databinding.GoogleAccountsFragmentBinding
@@ -47,7 +48,13 @@ class GoogleAccountsFragment : Fragment() {
 
         mBinding.continueToMoodleButton.setOnClickListener { clicked->
             val adapter = mBinding.accountsList.adapter as CalendarAccountAdapter
-
+            val accounts = adapter.googleAccounts
+            GoogleCalenderCommunicator.setCalendarAccounts(accounts)
+            if (adapter.mainCalendarName != "") {
+                GoogleCalenderCommunicator.setMainCalendar(adapter.mainCalendarName)
+            }
+            val navController = findNavController()
+            navController.navigate(GoogleAccountsFragmentDirections.actionGoogleAccountsFragmentToMoodleSignInFragment())
         }
 
         viewModel.updateAccounts()

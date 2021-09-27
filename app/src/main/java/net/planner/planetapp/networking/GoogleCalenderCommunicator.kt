@@ -155,6 +155,14 @@ object GoogleCalenderCommunicator {
         Log.d(TAG, "setMainCalendar: Could not find the id for account name $accountName")
     }
 
+    fun setCalendarAccounts(accounts: Collection<String>) {
+        var accountIds = mutableSetOf<Long>()
+        for (account in accounts) {
+            accountIds.add(accountToIdMap[account] ?: 1L)
+        }
+        calenderIds = accountIds
+    }
+
 
     /**
      * Add event to the google calendar sent.
@@ -345,11 +353,6 @@ object GoogleCalenderCommunicator {
                                startMillis: Long? = null,
                                endMillis: Long? = null
     ) : MutableCollection<PlannerEvent>? {
-
-        if (!haveCalendarReadWritePermissions(caller)) {
-            Log.d(TAG, "getEventsFromCalendars: Needed permissions - returning")
-            return null
-        }
 
         val contentResolver = caller.contentResolver
         val allEvents = mutableListOf<PlannerEvent>()

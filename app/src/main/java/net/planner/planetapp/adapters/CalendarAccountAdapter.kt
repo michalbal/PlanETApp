@@ -11,7 +11,7 @@ class CalendarAccountAdapter(
     private var values: List<String>
     ) : RecyclerView.Adapter<CalendarAccountAdapter.ViewHolder>()  {
 
-    private var mainCalendarName = ""
+    var mainCalendarName = ""
     var googleAccounts: MutableSet<String> = mutableSetOf()
 
 
