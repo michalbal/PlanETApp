@@ -48,5 +48,6 @@ class NextEventViewAdapter(
 
     fun updateEvents(events: List<PlannerEvent>) {
         values = events
+        notifyDataSetChanged()
     }
 }

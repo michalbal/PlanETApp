@@ -328,12 +328,6 @@ object GoogleCalenderCommunicator {
         endMillis: Long? = null
     ): MutableCollection<PlannerEvent>? {
 
-        if (!haveCalendarReadWritePermissions(caller)) {
-//            requestCalendarReadWritePermission(caller)
-            Log.d(TAG, "getUserEvents: Needed permissions to get Events - returning")
-            return null
-        }
-
         if (calenderIds.isNotEmpty()) {
             return getEventsFromCalendars(caller, this.calenderIds, startMillis, endMillis)
         } else {
