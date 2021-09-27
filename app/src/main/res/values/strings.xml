@@ -3,7 +3,7 @@
     <string name="home_label">Home</string>
     <string name="day_label">Day View</string>
     <string name="accounts_label">Accounts</string>
-    <string name="preferances_label">Preferances</string>
+    <string name="preferances_label">Preferences</string>
     <string name="settings_label">Settings</string>
 
     <!-- Home Fragment-->
@@ -17,7 +17,17 @@
 
     <!-- Dialog Messages-->
     <string name="request_read_permission">Requesting to read from your Calender </string>
-    <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.\n
-    If we do not have access, no events will be shown. Will you allow us to read your events?</string>
+    <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.<br/>
+        If we do not have access, no events will be shown. Will you allow us to read your events?</string>
+
+
+    <!-- Welcome Fragment-->
+    <string name="welcome_title">Welcome to PlanEt!</string>
+    <string name="planet_introduction">Your helper for getting the most out of your time!<br/><br/>
+        We draw your upcoming tasks from Moodle, and combined with events from your Google Calender,
+    and Preferences you set, we create the right schedule for you!
+    </string>
+    <string name="name_title">What shall we call you?</string>
+
 
 </resources>

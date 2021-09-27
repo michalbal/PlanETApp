@@ -40,4 +40,30 @@
         android:label="@string/settings_label"
         tools:layout="@layout/settings_fragment">
     </fragment>
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="net.planner.planetapp.fragments.WelcomeFragment"
+        android:label="welcome_fragment"
+        tools:layout="@layout/welcome_fragment" >
+        <action
+            android:id="@+id/action_welcomeFragment_to_googleAccountsFragment"
+            app:destination="@id/googleAccountsFragment" />
+        <action
+            android:id="@+id/action_welcomeFragment_to_moodleSignInFragment"
+            app:destination="@id/moodleSignInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/googleAccountsFragment"
+        android:name="net.planner.planetapp.fragments.GoogleAccountsFragment"
+        android:label="google_accounts_fragment"
+        tools:layout="@layout/google_accounts_fragment" >
+        <action
+            android:id="@+id/action_googleAccountsFragment_to_moodleSignInFragment"
+            app:destination="@id/moodleSignInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/moodleSignInFragment"
+        android:name="net.planner.planetapp.fragments.MoodleSignInFragment"
+        android:label="moodle_sign_in_fragment"
+        tools:layout="@layout/moodle_sign_in_fragment" />
 </navigation>

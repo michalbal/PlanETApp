@@ -39,39 +39,39 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         // Setting App bar
-        appBarConfiguration= AppBarConfiguration(navController.graph)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    val manager = TasksManager.getInstance()
-                    manager.initTasksManager() //TODO: add your credentials
-                    manager.addPreference("67118", "SleepInstead", true)
-                    manager.addPreference("67625", "get100", true)
-//                manager.addPreference("67420", "secondRun", true)
-
-                    manager.parseMoodleCourses()
-
-                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
-                    manager.planSchedule(parsedMoodleTasks)
-
-                    manager.addCourseToUnwanted("112233")
-                    manager.addCourseToUnwanted("445566")
-                    manager.addCourseToUnwanted("778899")
-
-
-                    manager.addTaskToUnwanted("995511")
-                    manager.addTaskToUnwanted("884433")
-                    manager.addTaskToUnwanted("662277")
-
-                } catch (e: Exception) {
-                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            withContext(Dispatchers.IO) {
+//                try {
+//                    val manager = TasksManager.getInstance()
+//                    manager.initTasksManager("michalbal", "M!chal4123675") //TODO: add your credentials
+//                    manager.addPreference("67118", "SleepInstead", true)
+//                    manager.addPreference("67625", "get100", true)
+////                manager.addPreference("67420", "secondRun", true)
+//
+//                    manager.parseMoodleCourses()
+//
+//                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+//                    manager.planSchedule(parsedMoodleTasks)
+//
+//                    manager.addCourseToUnwanted("112233")
+//                    manager.addCourseToUnwanted("445566")
+//                    manager.addCourseToUnwanted("778899")
+//
+//
+//                    manager.addTaskToUnwanted("995511")
+//                    manager.addTaskToUnwanted("884433")
+//                    manager.addTaskToUnwanted("662277")
+//
+//                } catch (e: Exception) {
+//                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
+//                }
+//            }
+//        }
 
     }
 
