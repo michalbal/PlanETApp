@@ -30,23 +30,28 @@ public class TasksManager {
         unwantedCourseIds = new ArrayList<>();
         unwantedTaskIds = new ArrayList<>();
         courseNames = new HashMap<>();
-        preferences = new HashMap<>();
-        token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
         coursePreferences = new HashMap<>();
         preferences = new ArrayList<>();
         tasks = new ArrayList<>();
         taskInDBids = new ArrayList<>();
+        token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
+        if (token != null) {
+            String userName = UserPreferencesManager.INSTANCE.getMoodleUserName();
+            dBmanager = new DBmanager(userName);
+            dBmanager.readTasks();
+            dBmanager.readPreferences();
+        }
     }
 
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
-        dBmanager.readTasks();
-        dBmanager.readPreferences();
-        dBmanager.readUnwantedCourses();
-        dBmanager.readUnwantedTasks();
-        //@TODO finish all of the previous before running this one
-        dBmanager.readUserMoodleCourses();
+//        dBmanager.readTasks();
+//        dBmanager.readPreferences();
+//        dBmanager.readUnwantedCourses();
+//        dBmanager.readUnwantedTasks();
+//        //@TODO finish all of the previous before running this one
+//        dBmanager.readUserMoodleCourses();
     }
 
     public static TasksManager getInstance(){
@@ -94,6 +99,7 @@ public class TasksManager {
     }
 
     public HashMap<String, String> parseMoodleCourses() {
+        // TODO: need to change here to not update the DB and instead update the db after the user chooses the courses
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
             dBmanager.addUserMoodleCourses(parsedCourseNames);
@@ -144,7 +150,7 @@ public class TasksManager {
     }
 
     public void removeTask(PlannerTask task) {
-        // TODO remove from GC if needed?
+        // TODO remove from GC if needed? Michal - No need
         tasks.remove(task);
         dBmanager.deleteTask(task);
     }

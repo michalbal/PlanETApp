@@ -8,10 +8,17 @@ object UserPreferencesManager {
 
     // Keys
     private const val USER_NAME = "user_name"
+    private const val MOODLE_USER_NAME = "moodle_user_name"
     private const val TOKEN_KEY = "token"
     private const val CALENDAR_ACCOUNTS_KEY = "calendar_accounts"
     private const val MAIN_CALENDAR = "main_calendar_account"
     private const val COURSES_TO_TAGS_KEY = "tag_courses"
+
+    var moodleUserName: String? = null
+        set(name) {
+            field = name
+            preferences.edit().putString(MOODLE_USER_NAME, name).apply()
+        }
 
     var userName: String? = null
         set(name) {

@@ -11,6 +11,7 @@ class MoodleCoursesViewAdapter(
 ) : RecyclerView.Adapter<MoodleCoursesViewAdapter.ViewHolder>()  {
 
     var courseIds: MutableSet<String> = mutableSetOf()
+    //TODO change to HashMap<String, String> to work with TasksManager
     var unwantedCourseIds: MutableSet<String> = mutableSetOf()
 
 

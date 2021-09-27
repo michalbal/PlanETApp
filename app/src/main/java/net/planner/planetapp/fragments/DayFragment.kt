@@ -109,6 +109,7 @@ class DayFragment : Fragment() {
         shouldShowRequestPermissionRationale(Manifest.permission.READ_CALENDAR) -> {
             val message = App.context.getString(R.string.request_read_events_message)
             val title = App.context.getString(R.string.request_read_permission)
+            // TODO add runOnUIThread?
             AlertDialog.Builder(activity)
                 .setTitle(title)
                 .setMessage(message)

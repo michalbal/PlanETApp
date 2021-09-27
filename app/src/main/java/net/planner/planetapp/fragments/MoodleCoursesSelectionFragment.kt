@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import net.planner.planetapp.adapters.CalendarAccountAdapter
 import net.planner.planetapp.adapters.MoodleCoursesViewAdapter
 import net.planner.planetapp.databinding.FragmentMoodleCoursesSelectionBinding
 import net.planner.planetapp.viewmodels.MoodleCoursesSelectionFragmentViewModel
@@ -39,7 +38,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
         // Init Courses Recycler View
         val coursesRecycler = mBinding.coursesList
         coursesRecycler.layoutManager = LinearLayoutManager(context)
-        coursesRecycler.adapter = CalendarAccountAdapter(listOf())
+        coursesRecycler.adapter = MoodleCoursesViewAdapter(listOf())
 
         viewModel.courses.observe(viewLifecycleOwner, Observer { it?.let {
             val adapter = mBinding.coursesList.adapter as MoodleCoursesViewAdapter

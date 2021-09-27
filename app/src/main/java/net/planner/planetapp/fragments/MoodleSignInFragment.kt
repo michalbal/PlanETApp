@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +46,9 @@ class MoodleSignInFragment : Fragment() {
                         val navController = findNavController()
                         navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())
                     } catch (e: Exception) {
-                        Toast.makeText(App.context, App.context.getText(R.string.login_error), Toast.LENGTH_LONG)
+                        activity?.runOnUiThread {
+                            Toast.makeText(App.context, App.context.getText(R.string.login_error), Toast.LENGTH_LONG).show()
+                        }
                         Log.e(TAG, "Retrieving from Moodle failed, received error ${e.message}")
                     }
                 }
