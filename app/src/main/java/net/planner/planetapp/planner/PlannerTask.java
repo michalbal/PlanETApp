@@ -2,6 +2,8 @@ package net.planner.planetapp.planner;
 
 import android.util.Log;
 
+import net.planner.planetapp.database.TaskDB;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
@@ -49,6 +51,19 @@ public class PlannerTask extends PlannerObject {
         } else {
             this.durationInMinutes = durationInMinutes;
         }
+    }
+
+    public PlannerTask(TaskDB taskDB) {
+        super(taskDB.getName(), taskDB.getDescription(), taskDB.getExclusiveForItsTimeSlot(),
+              taskDB.getTag(), taskDB.getLocation());
+        this.moodleId = taskDB.getTaskId();
+        this.courseId = taskDB.getCourseID();
+        this.reminder = taskDB.getReminder();
+        this.deadline = taskDB.getDeadline();
+        this.priority = taskDB.getPriority();
+        this.maxSessionTimeInMinutes = taskDB.getMaxSessionTimeInMinutes();
+        this.maxDivisionsNumber = taskDB.getMaxDivisionsNumber();
+        this.durationInMinutes = taskDB.getDurationInMinutes();
     }
 
     // validity check

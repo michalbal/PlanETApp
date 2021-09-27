@@ -14,11 +14,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.planner.planetapp.database.DBmanager
 import net.planner.planetapp.databinding.ActivityMainBinding
-import net.planner.planetapp.networking.GoogleCalenderCommunicator
+import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.TasksManager
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,8 +47,29 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val manager = TasksManager.getInstance()
                     manager.initTasksManager() //TODO: add your credentials
-                    manager.addPreference("67118", "SleepInstead", true)
-                    manager.addPreference("67625", "get100", true)
+                    var plannerTag = PlannerTag("tag1")
+                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "18:30", "19:00")
+                    plannerTag.addNewPreferredTIsetting(MONDAY, "18:30", "23:00")
+                    plannerTag.addNewPreferredTIsetting(FRIDAY, "08:30", "09:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+                    plannerTag = PlannerTag("tag2")
+                    plannerTag.addNewForbiddenTIsetting(WEDNESDAY, "18:30", "23:00")
+                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "08:30", "09:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+                    plannerTag.addNewPreferredTIsetting(SATURDAY, "18:30", "19:00")
+                    plannerTag.addNewPreferredTIsetting(FRIDAY, "18:30", "19:00")
+                    manager.addPreferenceTag(plannerTag, true)
+
+//                    var plannerTag = PlannerTag("tag1")
+//                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+//                    manager.addPreferenceTag(plannerTag, true)
+
+
+                    manager.addCoursePreference("67118", "SleepInstead", true)
+                    manager.addCoursePreference("67625", "get100", true)
 //                manager.addPreference("67420", "secondRun", true)
 
                     manager.parseMoodleCourses()

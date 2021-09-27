@@ -17,6 +17,8 @@ public class TasksManager {
     private HashMap<String, String> courseNames;
     private HashMap<String, String> coursePreferences;
     private ArrayList<PlannerTag> preferences;
+    private ArrayList<PlannerTask> tasks;
+    private ArrayList<String> taskInDBids;
 
     private TasksManager(){
         connector = new MoodleCommunicator();
@@ -25,14 +27,18 @@ public class TasksManager {
         courseNames = new HashMap<>();
         coursePreferences = new HashMap<>();
         preferences = new ArrayList<>();
+        tasks = new ArrayList<>();
+        taskInDBids = new ArrayList<>();
     }
 
     public void initTasksManager(String username, String password) {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
+        dBmanager.readTasks();
         dBmanager.readPreferences();
         dBmanager.readUnwantedCourses();
         dBmanager.readUnwantedTasks();
+        //@TODO finish all of the previous before running this one
         dBmanager.readUserMoodleCourses();
     }
 
@@ -62,15 +68,15 @@ public class TasksManager {
         }
     }
 
-    public HashMap<String, String> getCoursePreferences() {
-        return coursePreferences;
-    }
-
     public void addCoursePreference(String courseID, String preferenceId, Boolean writeToDb) {
         coursePreferences.put(courseID, preferenceId);
         if (writeToDb) {
             dBmanager.addMoodleCoursePreference(courseID, preferenceId);
         }
+    }
+
+    public HashMap<String, String> getCoursePreferences() {
+        return coursePreferences;
     }
 
     public void addPreferenceTag(PlannerTag plannerTag, Boolean  writeToDb){
@@ -90,7 +96,6 @@ public class TasksManager {
     }
 
     public LinkedList<PlannerTask> parseMoodleTasks(long currentTime) {
-        // TODO normal moodle as an option as well
         LinkedList<PlannerTask> filteredTasks = new LinkedList<>();
         if (token != null && !token.equals("")) {
             HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseFromMoodle(
@@ -98,7 +103,8 @@ public class TasksManager {
 
             for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
                     .entrySet()) {
-                if (unwantedCourseIds.contains(parsedAssignment.getKey())) {
+                if (unwantedCourseIds.contains(parsedAssignment.getKey()) ||
+                    taskInDBids.contains(parsedAssignment.getKey())) {
                     continue;
                 }
 
@@ -118,10 +124,22 @@ public class TasksManager {
 
     public LinkedList<PlannerEvent> planSchedule(LinkedList<PlannerTask> plannerTasks) {
         dBmanager.writeAcceptedTasks(plannerTasks);
+        tasks.addAll(plannerTasks);
 
         LinkedList<PlannerEvent> subtasks = null;
         //TODO run the algorithm
         return subtasks;
+    }
+
+    public void addTaskFromDB(PlannerTask task) {
+        tasks.add(task);
+        taskInDBids.add(task.getMoodleId());
+    }
+
+    public void removeTask(PlannerTask task) {
+        // TODO remove from GC if needed?
+        tasks.remove(task);
+        dBmanager.deleteTask(task);
     }
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {

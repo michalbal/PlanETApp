@@ -53,6 +53,15 @@ public class DBmanager {
         }
     }
 
+    public void deleteTask(PlannerTask plannerTask) {
+        this.deleteAllSubtasks(plannerTask.getMoodleId());
+
+        // todo only after that's over - if we event want to delete from GC - run this:
+
+        db.collection("users").document(username).collection("tasks").document(
+                plannerTask.getMoodleId()).delete();
+    }
+
     public void writeNewSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
         for (PlannerEvent subtask : acceptedEvents) {
             SubtaskDB subtaskDB = new SubtaskDB(Long.toString(subtask.getEventId()),
@@ -68,13 +77,60 @@ public class DBmanager {
         }
     }
 
+    public void readTasks() {
+        db.collection("users").document(username).collection("tasks").get().addOnCompleteListener(
+                new OnCompleteListener<QuerySnapshot>() {
+                    @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                TaskDB taskDB = document.toObject(TaskDB.class);
+                                PlannerTask plannerTask = new PlannerTask(taskDB);
+                                TasksManager.getInstance().addTaskFromDB(plannerTask);
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void deleteAllSubtasks(String courseId) {
+        db.collection("users").document(username).collection("tasks").document(courseId).collection(
+                "subtasks").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        SubtaskDB subtask = document.toObject(SubtaskDB.class);
+                        String googleCalendarId = subtask.getEventIdGC();
+                        deleteSubtask(courseId, googleCalendarId);
+
+                    }
+                }
+            }
+        });
+    }
+
+    public void deleteSubtask(String courseId, String subtaskId) {
+        DocumentReference docRef = db.collection("users").document(username).collection("tasks")
+                .document(courseId).collection("subtasks").document(subtaskId);
+
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override public void onSuccess(DocumentSnapshot documentSnapshot) {
+                SubtaskDB subtaskDB = documentSnapshot.toObject(SubtaskDB.class);
+                if (subtaskDB != null) {
+                    // todo delete from GC?
+                }
+            }
+        });
+
+        docRef.delete();
+    }
+
     public void addMoodleCourseName(String courseId, String courseName) {
         HashMap<String, String> course = new HashMap<>();
         course.put("courseId", courseId);
         course.put("courseName", courseName);
 
-        db.collection("users").document(username).collection("courses").document(courseId).set(
-                course, SetOptions.merge());
+        db.collection("users").document(username).collection("courses")
+                .document(courseId).set(course, SetOptions.merge());
     }
 
     public void addMoodleCoursePreference(String courseId, String preferenceTagId) {
@@ -82,8 +138,8 @@ public class DBmanager {
         course.put("courseId", courseId);
         course.put("preferenceTagId", preferenceTagId);
 
-        db.collection("users").document(username).collection("courses").document(courseId).set(
-                course, SetOptions.merge());
+        db.collection("users").document(username).collection("courses")
+                .document(courseId).set(course, SetOptions.merge());
     }
 
     public void addUserMoodleCourses(HashMap<String, String> moodleCourses) {
@@ -107,12 +163,13 @@ public class DBmanager {
                                                    flattenKey(tag.getPreferredTIsettings()),
                                                    flattenKey(tag.getForbiddenTIsettings()));
 
-        db.collection("users").document(username).collection("preferences").document(
-                preference.getTagName()).set(preference, SetOptions.merge());
+        db.collection("users").document(username).collection("preferences")
+                .document(preference.getTagName()).set(preference, SetOptions.merge());
     }
 
     public void readPreferences() {
-        db.collection("users").document(username).collection("preferences").get()
+        db.collection("users").document(username).collection("preferences")
+                .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
@@ -133,8 +190,8 @@ public class DBmanager {
     }
 
     public void readUserMoodleCourses() {
-        db.collection("users").document(username).collection("courses").get().addOnCompleteListener(
-                new OnCompleteListener<QuerySnapshot>() {
+        db.collection("users").document(username).collection("courses")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {

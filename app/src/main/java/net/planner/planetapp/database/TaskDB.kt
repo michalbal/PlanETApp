@@ -42,6 +42,6 @@ class TaskDB(
     val maxDivisionsNumber: Int = 10,
 
     @SerializedName("durationInMinutes")
-    val durationInMinutes: Long = 60,
+    val durationInMinutes: Int = 60
 
 )
