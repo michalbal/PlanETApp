@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +34,7 @@ class MoodleSignInFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         mBinding.loginButton.setOnClickListener { view ->
             val userName = mBinding.editMoodleUserName.text.toString()
             val password = mBinding.editPassword.text.toString()
@@ -40,13 +42,19 @@ class MoodleSignInFragment : Fragment() {
                 withContext(Dispatchers.IO) {
                     try {
                         TasksManager.getInstance().initTasksManager(userName, password)
-
+                        val navController = findNavController()
+                        navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())
                     } catch (e: Exception) {
                         Toast.makeText(App.context, App.context.getText(R.string.login_error), Toast.LENGTH_LONG)
                         Log.e(TAG, "Retrieving from Moodle failed, received error ${e.message}")
                     }
                 }
             }
+        }
+
+        mBinding.skipButton.setOnClickListener { view ->
+            val navController = findNavController()
+            navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToInitialSettingsFragment())
         }
     }
 

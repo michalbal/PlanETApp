@@ -2,7 +2,6 @@ package net.planner.planetapp.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import net.planner.planetapp.R
 import net.planner.planetapp.adapters.CalendarAccountAdapter
 import net.planner.planetapp.adapters.MoodleCoursesViewAdapter
 import net.planner.planetapp.databinding.FragmentMoodleCoursesSelectionBinding
-import net.planner.planetapp.networking.GoogleCalenderCommunicator
-import net.planner.planetapp.viewmodels.GoogleAccountsFragmentViewModel
+import net.planner.planetapp.viewmodels.MoodleCoursesSelectionFragmentViewModel
 
 
 class MoodleCoursesSelectionFragment : Fragment() {
@@ -25,7 +22,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
 
     }
     private lateinit var mBinding: FragmentMoodleCoursesSelectionBinding
-    private lateinit var viewModel: GoogleAccountsFragmentViewModel
+    private lateinit var viewModel: MoodleCoursesSelectionFragmentViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,14 +34,14 @@ class MoodleCoursesSelectionFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(this).get(GoogleAccountsFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MoodleCoursesSelectionFragmentViewModel::class.java)
 
         // Init Courses Recycler View
         val coursesRecycler = mBinding.coursesList
         coursesRecycler.layoutManager = LinearLayoutManager(context)
         coursesRecycler.adapter = CalendarAccountAdapter(listOf())
 
-        viewModel.accounts.observe(viewLifecycleOwner, Observer { it?.let {
+        viewModel.courses.observe(viewLifecycleOwner, Observer { it?.let {
             val adapter = mBinding.coursesList.adapter as MoodleCoursesViewAdapter
             adapter.updateCourses(it.toList())
         } })
@@ -55,12 +52,11 @@ class MoodleCoursesSelectionFragment : Fragment() {
 
 
             val navController = findNavController()
-            navController.navigate(GoogleAccountsFragmentDirections.actionGoogleAccountsFragmentToMoodleSignInFragment())
+            navController.navigate(MoodleCoursesSelectionFragmentDirections.actionMoodleCoursesSelectionFragmentToInitialSettingsFragment())
         }
 
-        viewModel.updateAccounts()
+        viewModel.updateCourses()
 
     }
 
-}
 }

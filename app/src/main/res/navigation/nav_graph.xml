@@ -69,10 +69,26 @@
         <action
             android:id="@+id/action_moodleSignInFragment_to_moodleCoursesSelectionFragment"
             app:destination="@id/moodleCoursesSelectionFragment" />
+        <action
+            android:id="@+id/action_moodleSignInFragment_to_initialSettingsFragment"
+            app:destination="@id/initialSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/moodleCoursesSelectionFragment"
         android:name="net.planner.planetapp.fragments.MoodleCoursesSelectionFragment"
         android:label="fragment_moodle_courses_selection"
-        tools:layout="@layout/fragment_moodle_courses_selection" />
+        tools:layout="@layout/fragment_moodle_courses_selection" >
+        <action
+            android:id="@+id/action_moodleCoursesSelectionFragment_to_initialSettingsFragment"
+            app:destination="@id/initialSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/initialSettingsFragment"
+        android:name="net.planner.planetapp.fragments.InitialSettingsFragment"
+        android:label="initial_settings_fragment"
+        tools:layout="@layout/initial_settings_fragment" >
+        <action
+            android:id="@+id/action_initialSettingsFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
 </navigation>
