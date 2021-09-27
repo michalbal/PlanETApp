@@ -1,8 +1,13 @@
 package net.planner.planetapp.planner;
 
+import net.planner.planetapp.UserPreferencesManager;
 import net.planner.planetapp.database.DBmanager;
 import net.planner.planetapp.networking.MoodleCommunicator;
 
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,9 +28,10 @@ public class TasksManager {
         unwantedTaskIds = new ArrayList<>();
         courseNames = new HashMap<>();
         preferences = new HashMap<>();
+        token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
     }
 
-    public void initTasksManager(String username, String password) {
+    public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
         dBmanager.readUnwantedCourses();
@@ -129,7 +135,7 @@ public class TasksManager {
 
     public void addCoursesToUnwanted(LinkedList<String> courseIds){
         for (String course : courseIds){
-            addTaskToUnwanted(course);
+            addCourseToUnwanted(course);
         }
     }
 

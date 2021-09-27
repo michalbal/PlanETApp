@@ -65,5 +65,14 @@
         android:id="@+id/moodleSignInFragment"
         android:name="net.planner.planetapp.fragments.MoodleSignInFragment"
         android:label="moodle_sign_in_fragment"
-        tools:layout="@layout/moodle_sign_in_fragment" />
+        tools:layout="@layout/moodle_sign_in_fragment" >
+        <action
+            android:id="@+id/action_moodleSignInFragment_to_moodleCoursesSelectionFragment"
+            app:destination="@id/moodleCoursesSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/moodleCoursesSelectionFragment"
+        android:name="net.planner.planetapp.fragments.MoodleCoursesSelectionFragment"
+        android:label="fragment_moodle_courses_selection"
+        tools:layout="@layout/fragment_moodle_courses_selection" />
 </navigation>

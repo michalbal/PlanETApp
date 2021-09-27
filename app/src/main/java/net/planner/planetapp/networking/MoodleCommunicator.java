@@ -4,6 +4,7 @@ import android.util.Xml;
 
 import net.planner.planetapp.planner.PlannerTask;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -25,27 +26,23 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 public class MoodleCommunicator {
     public static final String MOODLE_URL = "https://moodle2.cs.huji.ac.il/nu20";
 
-    private static String doHTTPRequest(String url) {
+    private static String doHTTPRequest(String url) throws ClientProtocolException, IOException, JSONException {
         String responseBody;
         String token = "";
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet httpPost = new HttpGet(url);
 
-        try {
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            responseBody = httpClient.execute(httpPost, responseHandler);
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        responseBody = httpClient.execute(httpPost, responseHandler);
 
-            JSONObject jObject = new JSONObject(responseBody);
-            token = jObject.getString("token");
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
+        JSONObject jObject = new JSONObject(responseBody);
+        token = jObject.getString("token");
 
         return token;
     }
 
-    public String connectToCSEMoodle(String username, String password) {
+    public String connectToCSEMoodle(String username, String password) throws ClientProtocolException, IOException, JSONException {
         String url =
                 MOODLE_URL + "/login/token.php?username=" + username + "&password=" + password +
                 "&service=moodle_mobile_app";

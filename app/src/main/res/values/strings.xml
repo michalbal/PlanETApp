@@ -29,5 +29,9 @@
     </string>
     <string name="name_title">What shall we call you?</string>
 
+    <!-- Moodle Init-->
+    <string name="login_error">Something went wrong during login,<br/>
+        make sure your credentials are correct</string>
+
 
 </resources>
