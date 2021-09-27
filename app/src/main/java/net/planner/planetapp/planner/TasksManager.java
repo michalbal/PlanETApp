@@ -15,19 +15,22 @@ public class TasksManager {
     private ArrayList<String> unwantedTaskIds;
     private static TasksManager tasksManager;
     private HashMap<String, String> courseNames;
-    private HashMap<String, String> preferences;
+    private HashMap<String, String> coursePreferences;
+    private ArrayList<PlannerTag> preferences;
 
     private TasksManager(){
         connector = new MoodleCommunicator();
         unwantedCourseIds = new ArrayList<>();
         unwantedTaskIds = new ArrayList<>();
         courseNames = new HashMap<>();
-        preferences = new HashMap<>();
+        coursePreferences = new HashMap<>();
+        preferences = new ArrayList<>();
     }
 
     public void initTasksManager(String username, String password) {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
+        dBmanager.readPreferences();
         dBmanager.readUnwantedCourses();
         dBmanager.readUnwantedTasks();
         dBmanager.readUserMoodleCourses();
@@ -59,14 +62,21 @@ public class TasksManager {
         }
     }
 
-    public HashMap<String, String> getPreferences() {
-        return preferences;
+    public HashMap<String, String> getCoursePreferences() {
+        return coursePreferences;
     }
 
-    public void addPreference(String courseID, String preferenceId, Boolean writeToDb) {
-        preferences.put(courseID, preferenceId);
+    public void addCoursePreference(String courseID, String preferenceId, Boolean writeToDb) {
+        coursePreferences.put(courseID, preferenceId);
         if (writeToDb) {
             dBmanager.addMoodleCoursePreference(courseID, preferenceId);
+        }
+    }
+
+    public void addPreferenceTag(PlannerTag plannerTag, Boolean  writeToDb){
+        preferences.add(plannerTag);
+        if (writeToDb) {
+            dBmanager.addPreference(plannerTag);
         }
     }
 
@@ -95,8 +105,8 @@ public class TasksManager {
                 for (PlannerTask task : parsedAssignment.getValue()) {
                     if (!unwantedTaskIds.contains(task.getMoodleId()) &&
                         task.getDeadline() > currentTime) {
-                        if (preferences.containsKey(task.getCourseId())){
-                            task.setTagName(preferences.get(task.getCourseId()));
+                        if (coursePreferences.containsKey(task.getCourseId())){
+                            task.setTagName(coursePreferences.get(task.getCourseId()));
                         }
                         filteredTasks.add(task);
                     }

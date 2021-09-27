@@ -1,5 +1,7 @@
 package net.planner.planetapp.database;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -14,14 +16,17 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import net.planner.planetapp.planner.PlannerEvent;
+import net.planner.planetapp.planner.PlannerTag;
 import net.planner.planetapp.planner.PlannerTask;
 import net.planner.planetapp.planner.TasksManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class DBmanager {
+    private static final String TAG = "DBmanager";
     FirebaseFirestore db;
     String username;
 
@@ -87,6 +92,46 @@ public class DBmanager {
         }
     }
 
+    private HashMap<String, ArrayList<String>> flattenKey(
+            HashMap<Pair<String, String>, ArrayList<String>> pairKeyMap) {
+        HashMap<String, ArrayList<String>> stringKeyMap = new HashMap<>();
+        for (HashMap.Entry<Pair<String, String>, ArrayList<String>> entry : pairKeyMap.entrySet()) {
+            String timeInterval = entry.getKey().first + "-" + entry.getKey().second;
+            stringKeyMap.put(timeInterval, entry.getValue());
+        }
+        return stringKeyMap;
+    }
+
+    public void addPreference(PlannerTag tag) {
+        PreferenceDB preference = new PreferenceDB(tag.getTagName(), tag.getPriority(),
+                                                   flattenKey(tag.getPreferredTIsettings()),
+                                                   flattenKey(tag.getForbiddenTIsettings()));
+
+        db.collection("users").document(username).collection("preferences").document(
+                preference.getTagName()).set(preference, SetOptions.merge());
+    }
+
+    public void readPreferences() {
+        db.collection("users").document(username).collection("preferences").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                PreferenceDB preference = document.toObject(PreferenceDB.class);
+                                PlannerTag tag = new PlannerTag(preference.getTagName(),
+                                                                preference.getPriority(),
+                                                                preference.getForbiddenTIsettings(),
+                                                                preference
+                                                                        .getPreferredTIsettings());
+
+                                TasksManager.getInstance().addPreferenceTag(tag, false);
+                            }
+                        }
+                    }
+                });
+
+    }
+
     public void readUserMoodleCourses() {
         db.collection("users").document(username).collection("courses").get().addOnCompleteListener(
                 new OnCompleteListener<QuerySnapshot>() {
@@ -98,9 +143,9 @@ public class DBmanager {
                                 TasksManager.getInstance().addMoodleCourse(courseDB.getCourseId(),
                                                                            courseDB.getCourseName(),
                                                                            false);
-                                TasksManager.getInstance().addPreference(courseDB.getCourseId(),
-                                                                         courseDB.getPreferenceTagId(),
-                                                                         false);
+                                TasksManager.getInstance().addCoursePreference(
+                                        courseDB.getCourseId(), courseDB.getPreferenceTagId(),
+                                        false);
                             }
                         }
 

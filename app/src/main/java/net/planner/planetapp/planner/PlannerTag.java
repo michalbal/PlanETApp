@@ -1,6 +1,7 @@
 package net.planner.planetapp.planner;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.brein.time.timeintervals.collections.ListIntervalCollection;
 import com.brein.time.timeintervals.indexes.IntervalTree;
@@ -11,8 +12,10 @@ import com.brein.time.timeintervals.intervals.LongInterval;
 import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class PlannerTag {
@@ -21,6 +24,8 @@ public class PlannerTag {
     private IntervalTree forbiddenTimeIntervals;
     private IntervalTree preferredTimeIntervals;
     private int priority;
+    private HashMap<Pair<String, String>, ArrayList<String>> forbiddenTIsettings;
+    private HashMap<Pair<String, String>, ArrayList<String>> preferredTIsettings;
 
     // constructor
     /** Create PlannerTag from its title **/
@@ -32,6 +37,61 @@ public class PlannerTag {
         this.preferredTimeIntervals = IntervalTreeBuilder.newBuilder()
                 .usePredefinedType(IntervalTreeBuilder.IntervalType.LONG)
                 .collectIntervals(interval -> new ListIntervalCollection()).build();
+        this.forbiddenTIsettings = new HashMap<>();
+        this.preferredTIsettings = new HashMap<>();
+    }
+
+    public PlannerTag(String tagName,int priority,
+                      HashMap<String, ArrayList<String>> forbiddenSettings,
+                      HashMap<String, ArrayList<String>> preferredSettings){
+        this(tagName);
+        this.priority = priority;
+        unflattenPair(forbiddenSettings, this.forbiddenTIsettings);
+        unflattenPair(preferredSettings, this.preferredTIsettings);
+    }
+
+    private void unflattenPair(HashMap<String, ArrayList<String>> stringKeyMap, HashMap<Pair<String,
+            String>, ArrayList<String>> pairKeyMap){
+        for (HashMap.Entry<String, ArrayList<String>> entry : stringKeyMap.entrySet()){
+            //            String first, second = entry.getKey().split("-", 2);
+            Pair<String, String> pair = new Pair<>(entry.getKey().substring(0,5),
+                                                   entry.getKey().substring(6));
+            pairKeyMap.put(pair, entry.getValue());
+        }
+    }
+
+    public void addNewForbiddenTIsetting(String day, String startTime, String endTime){
+        Pair pair = new Pair<>(startTime, endTime);
+        if (forbiddenTIsettings.containsKey(pair)){
+            if (!forbiddenTIsettings.get(pair).contains(day)) {
+                forbiddenTIsettings.get(pair).add(day);
+            }
+        } else {
+            ArrayList<String> days = new ArrayList<>();
+            days.add(day);
+            forbiddenTIsettings.put(pair, days);
+        }
+    }
+
+    public HashMap<Pair<String, String>, ArrayList<String>> getForbiddenTIsettings() {
+        return forbiddenTIsettings;
+    }
+
+    public void addNewPreferredTIsetting(String day, String startTime, String endTime){
+        Pair pair = new Pair<>(startTime, endTime);
+        if (preferredTIsettings.containsKey(pair)){
+            if (!preferredTIsettings.get(pair).contains(day)) {
+                preferredTIsettings.get(pair).add(day);
+            }
+        } else {
+            ArrayList<String> days = new ArrayList<>();
+            days.add(day);
+            preferredTIsettings.put(pair, days);
+        }
+    }
+
+    public HashMap<Pair<String, String>, ArrayList<String>> getPreferredTIsettings() {
+        return preferredTIsettings;
     }
 
     //methods

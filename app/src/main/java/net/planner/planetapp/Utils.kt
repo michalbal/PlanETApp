@@ -9,6 +9,14 @@ private const val MONTH_DATA_FORMAT = "MMM dd,yyyy H:mm:ss"
 private const val DAY_DATA_FORMAT = "dd/MM/yyyy"
 private const val HOUR_DATA_FORMAT = "HH:mm" // T0 display as hour:minute AM/PM: hh.mm aa
 
+const val SUNDAY = "Sun"
+const val MONDAY = "Mon"
+const val TUESDAY = "Tue"
+const val WEDNESDAY = "Wed"
+const val THURSDAY = "Thu"
+const val FRIDAY = "Fri"
+const val SATURDAY = "Sat"
+
 
 fun getDate(timeMillis: Long): String {
     return getDateImpl(timeMillis, DATE_DATA_FORMAT)
