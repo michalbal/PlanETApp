@@ -1,16 +1,22 @@
 package net.planner.planetapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.planner.planetapp.database.DBmanager
 import net.planner.planetapp.databinding.ActivityMainBinding
+import net.planner.planetapp.networking.GoogleCalenderCommunicator
 import net.planner.planetapp.planner.TasksManager
 import java.util.*
 
@@ -38,34 +44,35 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
-
-        val thread = Thread {
-            try {
-                val manager = TasksManager.getInstance()
-                manager.initTasksManager() //TODO: add your credentials
-                manager.addPreference("67118", "SleepInstead", true)
-                manager.addPreference("67625", "get100", true)
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val manager = TasksManager.getInstance()
+                    manager.initTasksManager() //TODO: add your credentials
+                    manager.addPreference("67118", "SleepInstead", true)
+                    manager.addPreference("67625", "get100", true)
 //                manager.addPreference("67420", "secondRun", true)
 
-                manager.parseMoodleCourses()
+                    manager.parseMoodleCourses()
 
-                val parsedMoodleTasks = manager.parseMoodleTasks(0L)
-                manager.planSchedule(parsedMoodleTasks)
+                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+                    manager.planSchedule(parsedMoodleTasks)
 
-                manager.addCourseToUnwanted("112233")
-                manager.addCourseToUnwanted("445566")
-                manager.addCourseToUnwanted("778899")
+                    manager.addCourseToUnwanted("112233")
+                    manager.addCourseToUnwanted("445566")
+                    manager.addCourseToUnwanted("778899")
 
 
-                manager.addTaskToUnwanted("995511")
-                manager.addTaskToUnwanted("884433")
-                manager.addTaskToUnwanted("662277")
+                    manager.addTaskToUnwanted("995511")
+                    manager.addTaskToUnwanted("884433")
+                    manager.addTaskToUnwanted("662277")
 
-            } catch (e: Exception) {
-                e.printStackTrace()
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
+                }
             }
         }
-        thread.start()
+
     }
 
 //    private fun setupNavigationMenu(navController: NavController){

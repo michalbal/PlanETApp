@@ -53,7 +53,7 @@ public class DBmanager {
             SubtaskDB subtaskDB = new SubtaskDB(Long.toString(subtask.getEventId()),
                                                 subtask.getStartTime(), subtask.getEndTime(),
                                                 subtask.isAllDay());
-            String moodleId = subtask.getParentTaskID();
+            String moodleId = subtask.getParentTaskId();
 
             db.collection("users").document(username).collection("tasks").document(moodleId)
                     .collection("subtasks").document(subtaskDB.getEventIdGC()).set(subtaskDB,
