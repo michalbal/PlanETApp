@@ -1,6 +1,5 @@
 package net.planner.planetapp.planner;
 
-import net.planner.planetapp.UserPreferencesManager;
 import net.planner.planetapp.database.DBmanager;
 import net.planner.planetapp.networking.MoodleCommunicator;
 
@@ -11,9 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 public class TasksManager {
     private String token;
+    private long furthestDeadline;
     private MoodleCommunicator connector;
     private DBmanager dBmanager;
     private ArrayList<String> unwantedCourseIds;
@@ -34,13 +35,7 @@ public class TasksManager {
         preferences = new ArrayList<>();
         tasks = new ArrayList<>();
         taskInDBids = new ArrayList<>();
-        token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
-        if (token != null) {
-            String userName = UserPreferencesManager.INSTANCE.getMoodleUserName();
-            dBmanager = new DBmanager(userName);
-            dBmanager.readTasks();
-            dBmanager.readPreferences();
-        }
+        furthestDeadline = 0L;
     }
 
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
@@ -50,7 +45,6 @@ public class TasksManager {
 //        dBmanager.readPreferences();
 //        dBmanager.readUnwantedCourses();
 //        dBmanager.readUnwantedTasks();
-//        //@TODO finish all of the previous before running this one
 //        dBmanager.readUserMoodleCourses();
     }
 
@@ -99,7 +93,6 @@ public class TasksManager {
     }
 
     public HashMap<String, String> parseMoodleCourses() {
-        // TODO: need to change here to not update the DB and instead update the db after the user chooses the courses
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
             dBmanager.addUserMoodleCourses(parsedCourseNames);
@@ -117,17 +110,21 @@ public class TasksManager {
             for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
                     .entrySet()) {
                 if (unwantedCourseIds.contains(parsedAssignment.getKey()) ||
-                    taskInDBids.contains(parsedAssignment.getKey())) {
+                        taskInDBids.contains(parsedAssignment.getKey())) {
                     continue;
                 }
 
                 for (PlannerTask task : parsedAssignment.getValue()) {
                     if (!unwantedTaskIds.contains(task.getMoodleId()) &&
-                        task.getDeadline() > currentTime) {
+                            task.getDeadline() > currentTime  &&
+                            task.getDeadline() < 1605650400000L){
                         if (coursePreferences.containsKey(task.getCourseId())){
                             task.setTagName(coursePreferences.get(task.getCourseId()));
                         }
                         filteredTasks.add(task);
+                        if (task.getDeadline() > furthestDeadline){
+                            furthestDeadline = task.getDeadline();
+                        }
                     }
                 }
             }
@@ -139,8 +136,16 @@ public class TasksManager {
         dBmanager.writeAcceptedTasks(plannerTasks);
         tasks.addAll(plannerTasks);
 
-        LinkedList<PlannerEvent> subtasks = null;
-        //TODO run the algorithm
+        //TODO add events from GC and subtasks here
+        ArrayList<PlannerEvent> events = new ArrayList<>();
+
+        // TODO startTime is specific to demo
+        PlannerCalendar calendar = new PlannerCalendar(1602968400000L, furthestDeadline,
+                PlannerCalendar.RECOMMENDED_SPACE_IN_MILLIS, events, preferences);
+
+        LinkedList<PlannerEvent> subtasks = new LinkedList<>();
+
+        subtasks = calendar.insertTasks(plannerTasks);
         return subtasks;
     }
 
@@ -150,14 +155,16 @@ public class TasksManager {
     }
 
     public void removeTask(PlannerTask task) {
-        // TODO remove from GC if needed? Michal - No need
         tasks.remove(task);
         dBmanager.deleteTask(task);
     }
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
         //TODO write to GC, get IDs and update them in the events (will be used in db)
-
+        long l = 0L;
+        for(PlannerEvent subtask : acceptedEvents){
+            subtask.setEventId(l++);
+        }
         // write to db
         dBmanager.writeNewSubtasks(acceptedEvents);
     }
@@ -170,7 +177,7 @@ public class TasksManager {
 
     public void addCoursesToUnwanted(LinkedList<String> courseIds){
         for (String course : courseIds){
-            addCourseToUnwanted(course);
+            addTaskToUnwanted(course);
         }
     }
 
