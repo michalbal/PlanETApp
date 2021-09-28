@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.UiThread
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
@@ -37,14 +36,18 @@ class MoodleSignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         mBinding.loginButton.setOnClickListener { view ->
+            Log.d(TAG, "Login was clicked! Getting token from Moodle")
             val userName = mBinding.editMoodleUserName.text.toString()
             val password = mBinding.editPassword.text.toString()
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     try {
                         TasksManager.getInstance().initTasksManager(userName, password)
-                        val navController = findNavController()
-                        navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())
+                        Log.d(TAG, "Found token successfully! Moving to selection screen")
+                        activity?.runOnUiThread {
+                            val navController = findNavController()
+                            navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())
+                        }
                     } catch (e: Exception) {
                         activity?.runOnUiThread {
                             Toast.makeText(App.context, App.context.getText(R.string.login_error), Toast.LENGTH_LONG).show()
@@ -56,8 +59,11 @@ class MoodleSignInFragment : Fragment() {
         }
 
         mBinding.skipButton.setOnClickListener { view ->
-            val navController = findNavController()
-            navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToInitialSettingsFragment())
+            Log.d(TAG, "Skip was clicked! Moving to Initial Settings screen")
+            activity?.runOnUiThread {
+                val navController = findNavController()
+                navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToInitialSettingsFragment())
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -45,63 +46,64 @@ class MainActivity : AppCompatActivity() {
 
         if (UserPreferencesManager.mainCalendarAccount == null) {
             navController.navigate(R.id.welcomeFragment)
-            // TODO remove bottom navigation when here
+            val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+            bottomNav.isVisible = false
         }
 
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    // TODO no need to do this here since initTasksManager will be called after moodlelogin.
-                   //  TODO If you do not want that, after google login just press on one of the lower tabs.
-                   //   And move this test code to after google calendar init if you want to use googlecalendar.
-                   // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
-                   // TODO right before findNavController()
-                    val manager = TasksManager.getInstance()
-                    manager.initTasksManager() //TODO: add your credentials
-                    var plannerTag = PlannerTag("tag1")
-                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
-                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "18:30", "19:00")
-                    plannerTag.addNewPreferredTIsetting(MONDAY, "18:30", "23:00")
-                    plannerTag.addNewPreferredTIsetting(FRIDAY, "08:30", "09:00")
-                    manager.addPreferenceTag(plannerTag, true)
-
-                    plannerTag = PlannerTag("tag2")
-                    plannerTag.addNewForbiddenTIsetting(WEDNESDAY, "18:30", "23:00")
-                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "08:30", "09:00")
-                    manager.addPreferenceTag(plannerTag, true)
-
-                    plannerTag.addNewPreferredTIsetting(SATURDAY, "18:30", "19:00")
-                    plannerTag.addNewPreferredTIsetting(FRIDAY, "18:30", "19:00")
-                    manager.addPreferenceTag(plannerTag, true)
-
+//        lifecycleScope.launch {
+//            withContext(Dispatchers.IO) {
+//                try {
+//                    // TODO no need to do this here since initTasksManager will be called after moodlelogin.
+//                   //  TODO If you do not want that, after google login just press on one of the lower tabs.
+//                   //   And move this test code to after google calendar init if you want to use googlecalendar.
+//                   // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
+//                   // TODO right before findNavController()
+//                    val manager = TasksManager.getInstance()
+//                    manager.initTasksManager() //TODO: add your credentials
 //                    var plannerTag = PlannerTag("tag1")
 //                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+//                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "18:30", "19:00")
+//                    plannerTag.addNewPreferredTIsetting(MONDAY, "18:30", "23:00")
+//                    plannerTag.addNewPreferredTIsetting(FRIDAY, "08:30", "09:00")
 //                    manager.addPreferenceTag(plannerTag, true)
-
-
-                    manager.addCoursePreference("67118", "SleepInstead", true)
-                    manager.addCoursePreference("67625", "get100", true)
-//                manager.addPreference("67420", "secondRun", true)
-
-                    manager.parseMoodleCourses()
-
-                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
-                    manager.planSchedule(parsedMoodleTasks)
-
-                    manager.addCourseToUnwanted("112233")
-                    manager.addCourseToUnwanted("445566")
-                    manager.addCourseToUnwanted("778899")
-
-
-                    manager.addTaskToUnwanted("995511")
-                    manager.addTaskToUnwanted("884433")
-                    manager.addTaskToUnwanted("662277")
-
-                }  catch (e: Exception) {
-                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
-                }
-            }
-        }
+//
+//                    plannerTag = PlannerTag("tag2")
+//                    plannerTag.addNewForbiddenTIsetting(WEDNESDAY, "18:30", "23:00")
+//                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "08:30", "09:00")
+//                    manager.addPreferenceTag(plannerTag, true)
+//
+//                    plannerTag.addNewPreferredTIsetting(SATURDAY, "18:30", "19:00")
+//                    plannerTag.addNewPreferredTIsetting(FRIDAY, "18:30", "19:00")
+//                    manager.addPreferenceTag(plannerTag, true)
+//
+////                    var plannerTag = PlannerTag("tag1")
+////                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
+////                    manager.addPreferenceTag(plannerTag, true)
+//
+//
+//                    manager.addCoursePreference("67118", "SleepInstead", true)
+//                    manager.addCoursePreference("67625", "get100", true)
+////                manager.addPreference("67420", "secondRun", true)
+//
+//                    manager.parseMoodleCourses()
+//
+//                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
+//                    manager.planSchedule(parsedMoodleTasks)
+//
+//                    manager.addCourseToUnwanted("112233")
+//                    manager.addCourseToUnwanted("445566")
+//                    manager.addCourseToUnwanted("778899")
+//
+//
+//                    manager.addTaskToUnwanted("995511")
+//                    manager.addTaskToUnwanted("884433")
+//                    manager.addTaskToUnwanted("662277")
+//
+//                }  catch (e: Exception) {
+//                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
+//                }
+//            }
+//        }
 
     }
 
@@ -129,6 +131,11 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(
             findNavController(R.id.nav_host_fragment)
         ) || super.onOptionsItemSelected(item)
+    }
+
+    fun returnBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNav.isVisible = true
     }
 
 }

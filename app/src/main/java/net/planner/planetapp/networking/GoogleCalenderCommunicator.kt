@@ -13,7 +13,11 @@ import android.provider.CalendarContract
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.firestore.auth.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
+import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.getDayDate
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -35,14 +39,31 @@ object GoogleCalenderCommunicator {
 
     private val accountToIdMap = HashMap<String, Long>()
 
-    fun initAccountsFromDb(caller: Context) {
-        // TODO add call to db to get accounts
-        if (!haveCalendarReadWritePermissions(caller)) {
-            Log.d(TAG, "Needed permissions - returning")
-            return
+    suspend fun initAccountsFromDb(caller: Context) {
+        withContext(Dispatchers.IO) {
+            if (!haveCalendarReadPermissions(caller)) {
+                Log.d(TAG, "Needed permissions - returning")
+                return@withContext
+            }
+
+            val accountsSaved = UserPreferencesManager.calendarAccounts
+
+            Log.d(TAG, "initAccountsFromDb: Retrieveing accounts")
+            findAccountCalendars(caller)
+
+            accountsSaved?.let {
+                Log.d(TAG, "initAccountsFromDb: Found accounts saved in preferences!")
+                setCalendarAccounts(it)
+            }
+
+            val mainAccount = UserPreferencesManager.mainCalendarAccount
+            mainAccount?.let {
+                Log.d(TAG, "initAccountsFromDb: Found main account saved in preferences!")
+                setMainCalendar(it)
+            }
+
         }
 
-        findAccountCalendars(caller)
     }
 
 
@@ -115,7 +136,7 @@ object GoogleCalenderCommunicator {
             val displayName: String = cur.getString(PROJECTION_DISPLAY_NAME_INDEX)
             val ownerName: String = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX)
             val primary: Int = cur.getInt(PROJECTION_IS_MAIN_ACCOUNT_INDEX)
-            // TODO filter to only accounts the user wants retrieved from DB
+
             accountToIdMap[displayName] = calenderID
 
             if (displayName.contains("gmail") && primary == 1) {
@@ -147,15 +168,16 @@ object GoogleCalenderCommunicator {
     fun setMainCalendar(accountName: String) {
         if(accountToIdMap.containsKey(accountName)) {
             Log.d(TAG, "setMainCalendar: Found the id for account name $accountName!")
+            UserPreferencesManager.mainCalendarAccount = accountName
             mainCalendarID = accountToIdMap[accountName] ?: mainCalendarID
             return
         }
-        // TODO update in DB
 
         Log.d(TAG, "setMainCalendar: Could not find the id for account name $accountName")
     }
 
     fun setCalendarAccounts(accounts: Collection<String>) {
+        UserPreferencesManager.calendarAccounts = accounts.toSet()
         var accountIds = mutableSetOf<Long>()
         for (account in accounts) {
             accountIds.add(accountToIdMap[account] ?: 1L)
@@ -406,6 +428,17 @@ object GoogleCalenderCommunicator {
             )
 
         }
+    }
+
+    fun haveCalendarReadPermissions(caller: Context): Boolean {
+        var permissionCheck = ContextCompat.checkSelfPermission(
+            caller,
+            Manifest.permission.READ_CALENDAR
+        )
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+        return false
     }
 
 
