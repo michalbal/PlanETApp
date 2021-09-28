@@ -46,12 +46,11 @@ public class TasksManager {
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
-//        dBmanager.readTasks();
-//        dBmanager.readPreferences();
-//        dBmanager.readUnwantedCourses();
-//        dBmanager.readUnwantedTasks();
-//        //@TODO finish all of the previous before running this one
-//        dBmanager.readUserMoodleCourses();
+    }
+
+    public void pullDataFromDB(){
+        // chain of listeners triggers reading of the blacklists and tasks from Moodle
+        dBmanager.readUserMoodleCourses();
     }
 
     public static TasksManager getInstance(){
