@@ -33,5 +33,11 @@
     <string name="login_error">Something went wrong during login,<br/>
         make sure your credentials are correct</string>
 
+    <!-- Initial Settings-->
+    <string name="settings_instructions">One of the values was filled incorrectly.<br/>
+    Please note, Average time a task takes must be a number, in hours, between 0.5 and 100.<br/>
+    Preferred study session duration must be a number, in hours, between 0.5 and Average task time.<br/>
+    Min time between sessions must be a number, in minutes, lower then 1440 </string>
+
 
 </resources>

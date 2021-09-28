@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class PlannerCalendar {
 
     // Constants
-    private static final int SPACE_IN_MINUTES = 15;
+    public static final int SPACE_IN_MINUTES = 15;
     private static final int MIN_SPACE_IN_SECONDS = 1;
     private static final long DEFAULT_LENGTH = TimeUnit.DAYS.toMillis(30);
     private static final long MIN_SPACE_IN_MILLIS = MIN_SPACE_IN_SECONDS * 1000L;

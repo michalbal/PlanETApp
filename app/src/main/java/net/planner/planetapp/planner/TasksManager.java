@@ -101,7 +101,6 @@ public class TasksManager {
     }
 
     public HashMap<String, String> parseMoodleCourses() {
-        // TODO: need to change here to not update the DB and instead update the db after the user chooses the courses
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
             return parsedCourseNames;
