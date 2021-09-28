@@ -177,7 +177,8 @@ public class MoodleCommunicator {
                     skip(parser);
                 }
             }
-            PlannerTask task = new PlannerTask(name, duedate, 5 * 60);
+            // We convert from seconds to milliseconds before creating the task.
+            PlannerTask task = new PlannerTask(name, duedate * 1000L, 5 * 60);
             task.setCourseId(courseId);
             task.setMoodleId(id);
             assignments.add(task);

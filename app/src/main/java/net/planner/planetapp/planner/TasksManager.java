@@ -14,6 +14,7 @@ import java.util.LinkedList;
 
 public class TasksManager {
     private String token;
+    private long furthestDeadline;
     private MoodleCommunicator connector;
     private DBmanager dBmanager;
     private ArrayList<String> unwantedCourseIds;
@@ -41,6 +42,7 @@ public class TasksManager {
             dBmanager.readTasks();
             dBmanager.readPreferences();
         }
+        furthestDeadline = 0L;
     }
 
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
@@ -98,6 +100,7 @@ public class TasksManager {
     }
 
     public HashMap<String, String> parseMoodleCourses() {
+        // TODO: need to change here to not update the DB and instead update the db after the user chooses the courses
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
             return parsedCourseNames;
@@ -123,12 +126,18 @@ public class TasksManager {
                 }
 
                 for (PlannerTask task : parsedAssignment.getValue()) {
+                    //if (!unwantedTaskIds.contains(task.getMoodleId()) &&
+                    //        task.getDeadline() > currentTime  &&
+                    //        task.getDeadline() < 1605650400000L){
                     if (!unwantedTaskIds.contains(task.getMoodleId()) &&
                         task.getDeadline() > currentTime) {
                         if (coursePreferences.containsKey(task.getCourseId())){
                             task.setTagName(coursePreferences.get(task.getCourseId()));
                         }
                         filteredTasks.add(task);
+                        if (task.getDeadline() > furthestDeadline){
+                            furthestDeadline = task.getDeadline();
+                        }
                     }
                 }
             }
@@ -140,8 +149,16 @@ public class TasksManager {
         dBmanager.writeAcceptedTasks(plannerTasks);
         tasks.addAll(plannerTasks);
 
-        LinkedList<PlannerEvent> subtasks = null;
-        //TODO run the algorithm
+        //TODO add events from GC and subtasks here
+        ArrayList<PlannerEvent> events = new ArrayList<>();
+
+        // TODO startTime is specific to demo
+        PlannerCalendar calendar = new PlannerCalendar(1602968400000L, furthestDeadline,
+                PlannerCalendar.RECOMMENDED_SPACE_IN_MILLIS, events, preferences);
+
+        LinkedList<PlannerEvent> subtasks = new LinkedList<>();
+
+        subtasks = calendar.insertTasks(plannerTasks);
         return subtasks;
     }
 
@@ -158,7 +175,10 @@ public class TasksManager {
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
         //TODO write to GC, get IDs and update them in the events (will be used in db)
-
+        long l = 0L;
+        for(PlannerEvent subtask : acceptedEvents){
+            subtask.setEventId(l++);
+        }
         // write to db
         dBmanager.writeNewSubtasks(acceptedEvents);
     }

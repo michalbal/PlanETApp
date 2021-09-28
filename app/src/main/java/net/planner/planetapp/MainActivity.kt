@@ -54,10 +54,17 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.IO) {
                 try {
                     // TODO no need to do this here since initTasksManager will be called after moodlelogin.
-                   //  TODO If you do not want that, after google login just press skip in moodle login the save
-                   // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
-                   // TODO right before findNavController()
-                }  catch (e: Exception) {
+                    //  TODO If you do not want that, after google login just press skip in moodle login the save
+                    // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
+                    // TODO right before findNavController()
+
+                    // val manager = TasksManager.getInstance()
+                    // manager.initTasksManager("", "") // add your credentials
+
+                    // var planSchedule =
+                    //     manager.planSchedule(manager.parseMoodleTasks(1602968400000L))
+                    // manager.processUserAcceptedSubtasks(planSchedule)
+                } catch (e: Exception) {
                     Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
                 }
             }
