@@ -1,5 +1,6 @@
 package net.planner.planetapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,11 @@ import net.planner.planetapp.planner.PlannerEvent
 
 class DayFragmentViewModel : ViewModel() {
 
+    companion object {
+
+        private const val TAG = "DayFragmentModel"
+
+    }
 
     var eventsToDisplay = MutableLiveData<MutableCollection<PlannerEvent>>()
 
@@ -31,13 +37,19 @@ class DayFragmentViewModel : ViewModel() {
     private suspend fun getEventsForDay() {
         val events = withContext(Dispatchers.IO) {
             async {
+                Log.d(TAG, "getEventsForDay: Getting events from Google Calendar")
                 val startDayTime = getMillisFromDateAndTime(dayShown + " 00:00")
                 val endDayTime = getMillisFromDateAndTime(dayShown + " 23:59")
                 GoogleCalenderCommunicator.getUserEvents(App.context, startDayTime, endDayTime)
             }.await()
         }
+        Log.d(TAG, "getEventsForDay: Finished waiting")
+        // TODO maybe put this inside the get events
         events.let {
-            eventsToDisplay.postValue(it)
+            withContext(Dispatchers.Main) {
+                Log.d(TAG, "Updating Day fragment with the events")
+                eventsToDisplay.postValue(it)
+            }
         }
         }
 

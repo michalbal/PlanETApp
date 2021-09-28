@@ -1,5 +1,6 @@
 package net.planner.planetapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,12 @@ class GoogleAccountsFragmentViewModel : ViewModel() {
             val googleAccounts = async {
                 GoogleCalenderCommunicator.findAccountCalendars(App.context)
             }.await()
-            accounts.postValue(googleAccounts)
+
+            withContext(Dispatchers.Main) {
+                Log.d("GoogleAccountsModel", "getCalendarAccounts: Finished waiting, updating fragment ")
+                accounts.postValue(googleAccounts)
+            }
+
         }
     }
 }

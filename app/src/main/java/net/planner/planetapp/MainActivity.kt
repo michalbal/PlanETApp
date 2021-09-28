@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -45,15 +46,15 @@ class MainActivity : AppCompatActivity() {
 
         if (UserPreferencesManager.mainCalendarAccount == null) {
             navController.navigate(R.id.welcomeFragment)
-            // TODO remove bottom navigation when here
+            val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+            bottomNav.isVisible = false
         }
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
                     // TODO no need to do this here since initTasksManager will be called after moodlelogin.
-                   //  TODO If you do not want that, after google login just press on one of the lower tabs.
-                   //   And move this test code to after google calendar init if you want to use googlecalendar.
+                   //  TODO If you do not want that, after google login just press skip in moodle login the save
                    // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
                    // TODO right before findNavController()
                     val manager = TasksManager.getInstance()
@@ -129,6 +130,11 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(
             findNavController(R.id.nav_host_fragment)
         ) || super.onOptionsItemSelected(item)
+    }
+
+    fun returnBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNav.isVisible = true
     }
 
 }
