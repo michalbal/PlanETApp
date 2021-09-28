@@ -63,20 +63,12 @@ class DayFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this).get(DayFragmentViewModel::class.java)
 
-        // @TODO these are for test purposes, to be erased once we have values
-        val startTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2)
-        val endTime = startTime +  TimeUnit.MINUTES.toMillis(10)
-        val todaysEvent = listOf(PlannerEvent("Test Event 1", startTime, endTime),
-            PlannerEvent("Test Event 2", startTime, endTime),
-            PlannerEvent("Test Event 3", startTime, endTime),
-            PlannerEvent("Test Event 4", startTime, endTime))
-
         mBinding.dateText.text = getDayDate(System.currentTimeMillis())
 
         // Init sub tasks Recycler View
         val subTasksRecycler = mBinding.subTasksList
         subTasksRecycler.layoutManager = LinearLayoutManager(context)
-        subTasksRecycler.adapter = NextEventViewAdapter(todaysEvent)
+        subTasksRecycler.adapter = NextEventViewAdapter(listOf())
 
         // Subscribe to updates to event list
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
@@ -96,6 +88,9 @@ class DayFragment : Fragment() {
             val lastDayDate = getDayDate(currentDateMillis- ONE_DAY_MOVE)
             updateDateShown(lastDayDate)
         }
+
+        updateDateShown(getDayDate(System.currentTimeMillis()))
+        // TODO show spinning wheel
     }
 
     private fun updateDateShown(date: String) = when {

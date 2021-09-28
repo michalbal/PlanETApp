@@ -1,5 +1,6 @@
 package net.planner.planetapp.planner;
 
+import net.planner.planetapp.UserPreferencesManager;
 import net.planner.planetapp.database.DBmanager;
 import net.planner.planetapp.networking.MoodleCommunicator;
 
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 public class TasksManager {
     private String token;
@@ -35,17 +35,24 @@ public class TasksManager {
         preferences = new ArrayList<>();
         tasks = new ArrayList<>();
         taskInDBids = new ArrayList<>();
+        token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
+        if (token != null) {
+            String userName = UserPreferencesManager.INSTANCE.getMoodleUserName();
+            dBmanager = new DBmanager(userName);
+            dBmanager.readTasks();
+            dBmanager.readPreferences();
+        }
         furthestDeadline = 0L;
     }
 
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
-//        dBmanager.readTasks();
-//        dBmanager.readPreferences();
-//        dBmanager.readUnwantedCourses();
-//        dBmanager.readUnwantedTasks();
-//        dBmanager.readUserMoodleCourses();
+    }
+
+    public void pullDataFromDB(){
+        // chain of listeners triggers reading of the blacklists and tasks from Moodle
+        dBmanager.readUserMoodleCourses();
     }
 
     public static TasksManager getInstance(){
@@ -93,12 +100,16 @@ public class TasksManager {
     }
 
     public HashMap<String, String> parseMoodleCourses() {
+        // TODO: need to change here to not update the DB and instead update the db after the user chooses the courses
         if (token != null && !token.equals("")) {
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
-            dBmanager.addUserMoodleCourses(parsedCourseNames);
             return parsedCourseNames;
         }
         return null;
+    }
+
+    public void saveChosenMoodleCourses(HashMap<String, String> courses) {
+        dBmanager.addUserMoodleCourses(courses);
     }
 
     public LinkedList<PlannerTask> parseMoodleTasks(long currentTime) {
@@ -110,14 +121,16 @@ public class TasksManager {
             for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
                     .entrySet()) {
                 if (unwantedCourseIds.contains(parsedAssignment.getKey()) ||
-                        taskInDBids.contains(parsedAssignment.getKey())) {
+                    taskInDBids.contains(parsedAssignment.getKey())) {
                     continue;
                 }
 
                 for (PlannerTask task : parsedAssignment.getValue()) {
+                    //if (!unwantedTaskIds.contains(task.getMoodleId()) &&
+                    //        task.getDeadline() > currentTime  &&
+                    //        task.getDeadline() < 1605650400000L){
                     if (!unwantedTaskIds.contains(task.getMoodleId()) &&
-                            task.getDeadline() > currentTime  &&
-                            task.getDeadline() < 1605650400000L){
+                        task.getDeadline() > currentTime) {
                         if (coursePreferences.containsKey(task.getCourseId())){
                             task.setTagName(coursePreferences.get(task.getCourseId()));
                         }
@@ -155,6 +168,7 @@ public class TasksManager {
     }
 
     public void removeTask(PlannerTask task) {
+        // TODO remove from GC if needed? Michal - No need
         tasks.remove(task);
         dBmanager.deleteTask(task);
     }
@@ -177,7 +191,7 @@ public class TasksManager {
 
     public void addCoursesToUnwanted(LinkedList<String> courseIds){
         for (String course : courseIds){
-            addTaskToUnwanted(course);
+            addCourseToUnwanted(course);
         }
     }
 
