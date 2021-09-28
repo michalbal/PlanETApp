@@ -1,7 +1,13 @@
 package net.planner.planetapp.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class AccountsFragmentViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+
+    var googleAccounts = MutableLiveData<MutableCollection<String>>()
+
+    fun updateAccounts() {
+
+    }
 }

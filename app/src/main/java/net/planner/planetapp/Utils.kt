@@ -49,3 +49,7 @@ fun getHour(timeMillis: Long): String {
 fun getMillisFromDateAndTime(date: String): Long? {
     return SimpleDateFormat(DATE_DATA_FORMAT, Locale.getDefault()).parse(date)?.time
 }
+
+fun getMillisFromDate(date: String): Long? {
+    return SimpleDateFormat(DAY_DATA_FORMAT, Locale.getDefault()).parse(date)?.time
+}

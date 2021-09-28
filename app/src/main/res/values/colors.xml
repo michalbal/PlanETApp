@@ -12,4 +12,6 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="background_primary">#FBFBFB</color>
     <color name="background_color">#CCDBEE</color>
+    <color name="moodle_orange">#F98012</color>
+
 </resources>

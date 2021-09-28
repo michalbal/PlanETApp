@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AccountsFragment">
+    tools:context=".fragments.MoodleCoursesSelectionFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/googleAccountsList"
+        android:id="@+id/coursesList"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="30dp"
@@ -15,35 +15,35 @@
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accounts_title"
-        tools:listitem="@layout/google_account_list_item" />
+        app:layout_constraintTop_toBottomOf="@+id/courses_title"
+        tools:listitem="@layout/fragment_moodle_courses_item" />
 
     <TextView
-        android:id="@+id/accounts_title"
+        android:id="@+id/courses_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        android:text="Choose accounts to get events from:"
+        android:text="Choose courses to get tasks from:"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:layout_constraintBottom_toTopOf="@+id/googleAccountsList"
+        app:layout_constraintBottom_toTopOf="@+id/coursesList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/continue_to_moodle_button"
+        android:id="@+id/continue_to_settings_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="Continue"
-        android:background="@color/colorPrimary"
+        android:background="@color/moodle_orange"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/googleAccountsList" />
+        app:layout_constraintTop_toBottomOf="@+id/coursesList" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

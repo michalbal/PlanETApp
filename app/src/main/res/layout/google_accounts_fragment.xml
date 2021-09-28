@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AccountsFragment">
+    tools:context=".fragments.GoogleAccountsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/googleAccountsList"
+        android:id="@+id/accountsList"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="30dp"
@@ -29,7 +29,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:layout_constraintBottom_toTopOf="@+id/googleAccountsList"
+        app:layout_constraintBottom_toTopOf="@+id/accountsList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +43,7 @@
         android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/googleAccountsList" />
+        app:layout_constraintTop_toBottomOf="@+id/accountsList" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

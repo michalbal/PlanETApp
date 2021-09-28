@@ -37,14 +37,25 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         // Setting App bar
-        appBarConfiguration= AppBarConfiguration(navController.graph)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
+
+        if (UserPreferencesManager.mainCalendarAccount == null) {
+            navController.navigate(R.id.welcomeFragment)
+            // TODO remove bottom navigation when here
+        }
+
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
+                    // TODO no need to do this here since initTasksManager will be called after moodlelogin.
+                   //  TODO If you do not want that, after google login just press on one of the lower tabs.
+                   //   And move this test code to after google calendar init if you want to use googlecalendar.
+                   // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
+                   // TODO right before findNavController()
                     val manager = TasksManager.getInstance()
                     manager.initTasksManager() //TODO: add your credentials
                     var plannerTag = PlannerTag("tag1")
@@ -86,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     manager.addTaskToUnwanted("884433")
                     manager.addTaskToUnwanted("662277")
 
-                } catch (e: Exception) {
+                }  catch (e: Exception) {
                     Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
                 }
             }
@@ -99,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 //        sideNavView?.setupWithNavController(navController)
 //    }
 
-    private fun setupBottomNavMenu(navController: NavController){
+    private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav?.setupWithNavController(navController)
     }
@@ -120,5 +131,4 @@ class MainActivity : AppCompatActivity() {
         ) || super.onOptionsItemSelected(item)
     }
 
-    // TODO add onpermission if only one it's for getting account, if one, it's for getting events or saving events
 }
