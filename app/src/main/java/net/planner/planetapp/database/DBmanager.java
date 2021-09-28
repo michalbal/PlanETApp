@@ -20,10 +20,13 @@ import net.planner.planetapp.planner.PlannerTag;
 import net.planner.planetapp.planner.PlannerTask;
 import net.planner.planetapp.planner.TasksManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class DBmanager {
     private static final String TAG = "DBmanager";
@@ -78,7 +81,6 @@ public class DBmanager {
     }
 
     public void readTasks() {
-        // TODO send outside listener here
         db.collection("users").document(username).collection("tasks").get().addOnCompleteListener(
                 new OnCompleteListener<QuerySnapshot>() {
                     @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -94,7 +96,6 @@ public class DBmanager {
     }
 
     public void deleteAllSubtasks(String courseId) {
-        // TODO send outside listener here
         db.collection("users").document(username).collection("tasks").document(courseId).collection(
                 "subtasks").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -111,7 +112,6 @@ public class DBmanager {
     }
 
     public void deleteSubtask(String courseId, String subtaskId) {
-        // TODO send outside listener here
         DocumentReference docRef = db.collection("users").document(username).collection("tasks")
                 .document(courseId).collection("subtasks").document(subtaskId);
 
@@ -195,7 +195,6 @@ public class DBmanager {
     }
 
     public void readUserMoodleCourses() {
-        // TODO send outside listener here
         db.collection("users").document(username).collection("courses")
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -212,19 +211,7 @@ public class DBmanager {
                             }
                         }
 
-                        // TODO remove this, we init from the app
-                        if (TasksManager.getInstance().getCourseNames().size() == 0) {
-                            Thread thread = new Thread(new Runnable() {
-                                @Override public void run() {
-                                    try {
-                                        TasksManager.getInstance().parseMoodleCourses();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            thread.start();
-                        }
+                        readUnwantedCourses();
                     }
                 });
 
@@ -252,24 +239,33 @@ public class DBmanager {
 
     public void readUnwantedCourses() {
         DocumentReference docRef = db.collection("users").document(username);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override public void onSuccess(DocumentSnapshot documentSnapshot) {
-                UserDB userDB = documentSnapshot.toObject(UserDB.class);
-                if (userDB != null) {
-                    TasksManager.getInstance().setUnwantedCourseIds(userDB.getUnwantedCourses());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    UserDB userDB = Objects.requireNonNull(task.getResult()).toObject(UserDB.class);
+                    if (userDB != null) {
+                        TasksManager.getInstance().setUnwantedCourseIds(userDB.getUnwantedCourses());
+                    }
                 }
+                readUnwantedTasks();
             }
         });
     }
 
     public void readUnwantedTasks() {
         DocumentReference docRef = db.collection("users").document(username);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override public void onSuccess(DocumentSnapshot documentSnapshot) {
-                UserDB userDB = documentSnapshot.toObject(UserDB.class);
-                if (userDB != null) {
-                    TasksManager.getInstance().setUnwantedTaskIds(userDB.getUnwantedTasks());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    UserDB userDB = Objects.requireNonNull(task.getResult()).toObject(UserDB.class);
+                    if (userDB != null) {
+                        TasksManager.getInstance().setUnwantedTaskIds(userDB.getUnwantedTasks());
+                    }
                 }
+                // TODO listen to the list
+                long currentTime = System.currentTimeMillis();
+                LinkedList<PlannerTask> plannerTasks = TasksManager.getInstance().parseMoodleTasks(
+                        currentTime);
             }
         });
     }

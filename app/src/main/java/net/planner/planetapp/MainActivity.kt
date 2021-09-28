@@ -50,59 +50,25 @@ class MainActivity : AppCompatActivity() {
             bottomNav.isVisible = false
         }
 
-//        lifecycleScope.launch {
-//            withContext(Dispatchers.IO) {
-//                try {
-//                    // TODO no need to do this here since initTasksManager will be called after moodlelogin.
-//                   //  TODO If you do not want that, after google login just press skip in moodle login the save
-//                   // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
-//                   // TODO right before findNavController()
-//                    val manager = TasksManager.getInstance()
-//                    manager.initTasksManager() //TODO: add your credentials
-//                    var plannerTag = PlannerTag("tag1")
-//                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
-//                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "18:30", "19:00")
-//                    plannerTag.addNewPreferredTIsetting(MONDAY, "18:30", "23:00")
-//                    plannerTag.addNewPreferredTIsetting(FRIDAY, "08:30", "09:00")
-//                    manager.addPreferenceTag(plannerTag, true)
-//
-//                    plannerTag = PlannerTag("tag2")
-//                    plannerTag.addNewForbiddenTIsetting(WEDNESDAY, "18:30", "23:00")
-//                    plannerTag.addNewForbiddenTIsetting(TUESDAY, "08:30", "09:00")
-//                    manager.addPreferenceTag(plannerTag, true)
-//
-//                    plannerTag.addNewPreferredTIsetting(SATURDAY, "18:30", "19:00")
-//                    plannerTag.addNewPreferredTIsetting(FRIDAY, "18:30", "19:00")
-//                    manager.addPreferenceTag(plannerTag, true)
-//
-////                    var plannerTag = PlannerTag("tag1")
-////                    plannerTag.addNewForbiddenTIsetting(SUNDAY, "18:30", "19:00")
-////                    manager.addPreferenceTag(plannerTag, true)
-//
-//
-//                    manager.addCoursePreference("67118", "SleepInstead", true)
-//                    manager.addCoursePreference("67625", "get100", true)
-////                manager.addPreference("67420", "secondRun", true)
-//
-//                    manager.parseMoodleCourses()
-//
-//                    val parsedMoodleTasks = manager.parseMoodleTasks(0L)
-//                    manager.planSchedule(parsedMoodleTasks)
-//
-//                    manager.addCourseToUnwanted("112233")
-//                    manager.addCourseToUnwanted("445566")
-//                    manager.addCourseToUnwanted("778899")
-//
-//
-//                    manager.addTaskToUnwanted("995511")
-//                    manager.addTaskToUnwanted("884433")
-//                    manager.addTaskToUnwanted("662277")
-//
-//                }  catch (e: Exception) {
-//                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
-//                }
-//            }
-//        }
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    // TODO no need to do this here since initTasksManager will be called after moodlelogin.
+                    //  TODO If you do not want that, after google login just press skip in moodle login the save
+                    // TODO Best place to move it to is GoogleAccountsFragment inside mBinding.continueToMoodleButton.setOnClickListener {
+                    // TODO right before findNavController()
+
+                    // val manager = TasksManager.getInstance()
+                    // manager.initTasksManager("", "") // add your credentials
+
+                    // var planSchedule =
+                    //     manager.planSchedule(manager.parseMoodleTasks(1602968400000L))
+                    // manager.processUserAcceptedSubtasks(planSchedule)
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Retrieving from Moodle failed, received error ${e.message}")
+                }
+            }
+        }
 
     }
 

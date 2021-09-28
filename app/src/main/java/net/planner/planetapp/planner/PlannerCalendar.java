@@ -223,7 +223,7 @@ public class PlannerCalendar {
     /**
      * Inserts a list of tasks into the calendar at the best possible time. Returns events they were assigned to.
      */
-    public List<PlannerEvent> insertTasks(List<PlannerTask> tasks) {
+    public LinkedList<PlannerEvent> insertTasks(List<PlannerTask> tasks) {
         ArrayList<PlannerTask> sorted = new ArrayList<>(tasks);
         Collections.sort(sorted, new TaskByDeadlineComparator());
 
@@ -235,6 +235,8 @@ public class PlannerCalendar {
 
         while (size != full_size) {
             ++fail_count;
+            // System.out.println("FAILED " + fail_count + " TIMES WITH (SIZE, FULL_SIZE) = (" + size + ", " + full_size + ")");
+
             int shift = full_size - fail_count - 1;
             if (shift < 0) {
                 attempt = firstTry;
@@ -382,6 +384,7 @@ public class PlannerCalendar {
         PlannerTag tag = safeGetTag(task.getTagName());
         if (tag == null) {
             findIntervalForUntaggedTask(task, freeTimeIt, options);
+
             return task.splitIntoEvents(options, spaceBetweenEvents);
         }
 
@@ -455,11 +458,12 @@ public class PlannerCalendar {
 
             // Find first possible starting time in possible interval
             long startTime = getSpacedStartTime(possibleInterval);
+            long endTime = possibleInterval.getEnd();
 
             // Check if tagged interval is long enough.
-            long possibleDuration = possibleInterval.getEnd() - startTime;
+            long possibleDuration = endTime - startTime;
             if (possibleDuration >= minimalSlot) {
-                options.add(new OccupiedInterval(startTime, startTime + minimalDuration));
+                options.add(new OccupiedInterval(startTime, endTime - spaceBetweenEvents));
             }
         }
     }
@@ -478,9 +482,10 @@ public class PlannerCalendar {
 
             // Find first possible starting time in possible interval
             long startTime = getSpacedStartTime(possibleInterval);
+            long endTime = possibleInterval.getEnd();
 
             // Check if tagged interval is long enough.
-            long possibleDuration = possibleInterval.getEnd() - startTime;
+            long possibleDuration = endTime - startTime;
             if (possibleDuration < minimalSlot) {
                 continue;
             }
@@ -489,16 +494,18 @@ public class PlannerCalendar {
             Collection<IInterval> collisions = mergeOverlapping(collisionTree.overlap(possibleInterval));
             if (collisions.isEmpty()) {
                 // The tagged interval is free and its long enough so we can push here.
-                options.add(new OccupiedInterval(startTime, startTime + minimalDuration));
+                options.add(new OccupiedInterval(startTime, endTime - spaceBetweenEvents));
             }
 
             //  Check if we can push task in between a pair of collision intervals.
-            for (IInterval collision : collisions) {
-                OccupiedInterval toCheck = new OccupiedInterval(startTime, startTime + minimalDuration);
-                if (toCheck.irBefore(collision)) {
+            for (IInterval generic_collision : collisions) {
+                LongInterval collision = (LongInterval) generic_collision;
+                endTime = collision.getStart();
+                if (endTime - startTime >= minimalSlot) {
                     // Found free interval before some event/task so we can push here.
-                    options.add(toCheck);
+                    options.add(new OccupiedInterval(startTime, endTime - spaceBetweenEvents));
                 }
+                startTime = collision.getEnd() + spaceBetweenEvents;
             }
         }
     }
