@@ -21,6 +21,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
         private const val TAG = "MoodleSelectionFragment"
 
     }
+
     private lateinit var mBinding: FragmentMoodleCoursesSelectionBinding
     private lateinit var viewModel: MoodleCoursesSelectionFragmentViewModel
 
@@ -39,7 +40,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
         // Init Courses Recycler View
         val coursesRecycler = mBinding.coursesList
         coursesRecycler.layoutManager = LinearLayoutManager(context)
-        coursesRecycler.adapter = MoodleCoursesViewAdapter(listOf())
+        coursesRecycler.adapter = MoodleCoursesViewAdapter(listOf(), true)
 
         viewModel.courses.observe(viewLifecycleOwner, Observer { it?.let {
             Log.d(TAG, "Received courses from ViewModel. Courses are $it")

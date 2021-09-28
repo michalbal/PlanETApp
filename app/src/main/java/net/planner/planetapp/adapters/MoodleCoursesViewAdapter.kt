@@ -7,11 +7,11 @@ import android.widget.CheckBox
 import net.planner.planetapp.databinding.FragmentMoodleCoursesItemBinding
 
 class MoodleCoursesViewAdapter(
-    private var values: List<String>
+    private var values: List<String>,
+    private val isClickable: Boolean
 ) : RecyclerView.Adapter<MoodleCoursesViewAdapter.ViewHolder>()  {
 
     var courseIds: MutableSet<String> = mutableSetOf()
-    //TODO change to HashMap<String, String> to work with TasksManager
     var unwantedCourseIds: MutableSet<String> = mutableSetOf()
 
 
@@ -29,6 +29,8 @@ class MoodleCoursesViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.courseIdCheckbox.text = item
+
+        holder.courseIdCheckbox.isClickable = isClickable
 
         holder.courseIdCheckbox.setOnClickListener { view ->
             if (holder.courseIdCheckbox.isChecked) {

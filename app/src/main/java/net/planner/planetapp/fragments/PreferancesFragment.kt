@@ -2,62 +2,59 @@ package net.planner.planetapp.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import net.planner.planetapp.R
+import androidx.lifecycle.Observer
 import net.planner.planetapp.adapters.PreferancesViewAdapter
-import net.planner.planetapp.fragments.placeholder.PlaceholderContent
+import net.planner.planetapp.database.local_database.LocalDBManager
+import net.planner.planetapp.databinding.FragmentPreferancesListBinding
 
-/**
- * A fragment representing a list of Items.
- */
+
 class PreferancesFragment : Fragment() {
 
-    private var columnCount = 1
+    companion object {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        private const val TAG = "PreferancesFragment"
 
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
     }
+
+    private lateinit var mBinding: FragmentPreferancesListBinding
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_preferances_list, container, false)
+        mBinding = FragmentPreferancesListBinding.inflate(inflater, container, false)
+        return mBinding.root
+    }
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = PreferancesViewAdapter(listOf())
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val preferences = LocalDBManager.dbLocalPreferencesData.value ?: listOf()
+
+        // Init Preferences Recycler View
+        val preferencesRecycler = mBinding.preferancesList
+        preferencesRecycler.layoutManager = LinearLayoutManager(context)
+        preferencesRecycler.adapter = PreferancesViewAdapter(preferences)
+
+        LocalDBManager.dbLocalPreferencesData.observe(viewLifecycleOwner, Observer { it?.let {
+            activity?.runOnUiThread {
+                val adapter = mBinding.preferancesList.adapter as PreferancesViewAdapter
+                adapter.updatePreferences(it.toList())
+            }
+        } })
+
+        mBinding.addPreferenceButton.setOnClickListener { view ->
+            //tODO open create preference screen
+            activity?.runOnUiThread {
+
             }
         }
-        return view
+
+
     }
 
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            PreferancesFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
-    }
 }

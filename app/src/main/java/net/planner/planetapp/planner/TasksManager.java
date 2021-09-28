@@ -81,6 +81,7 @@ public class TasksManager {
     }
 
     public void addCoursePreference(String courseID, String preferenceId, Boolean writeToDb) {
+        // Currently used when retrieving from DB
         coursePreferences.put(courseID, preferenceId);
         if (writeToDb) {
             dBmanager.addMoodleCoursePreference(courseID, preferenceId);
@@ -91,7 +92,7 @@ public class TasksManager {
         return coursePreferences;
     }
 
-    public void addPreferenceTag(PlannerTag plannerTag, Boolean  writeToDb){
+    public void addPreferenceTag(PlannerTag plannerTag, Boolean  writeToDb) {
         preferences.add(plannerTag);
         if (writeToDb) {
             dBmanager.addPreference(plannerTag);
@@ -115,6 +116,7 @@ public class TasksManager {
         if (token != null && !token.equals("")) {
             HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseFromMoodle(
                     token, false);
+            // TODO add tasks to local db
 
             for (HashMap.Entry<String, LinkedList<PlannerTask>> parsedAssignment : parsedAssignments
                     .entrySet()) {
@@ -140,6 +142,7 @@ public class TasksManager {
     public LinkedList<PlannerEvent> planSchedule(LinkedList<PlannerTask> plannerTasks) {
         dBmanager.writeAcceptedTasks(plannerTasks);
         tasks.addAll(plannerTasks);
+        // TODO add all subtasks to the task in local db
 
         LinkedList<PlannerEvent> subtasks = null;
         //TODO run the algorithm
@@ -147,18 +150,21 @@ public class TasksManager {
     }
 
     public void addTaskFromDB(PlannerTask task) {
+        // TODO update task in local db
         tasks.add(task);
         taskInDBids.add(task.getMoodleId());
     }
 
     public void removeTask(PlannerTask task) {
         // TODO remove from GC if needed? Michal - No need
+        // TODO remove task from local db
         tasks.remove(task);
         dBmanager.deleteTask(task);
     }
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
         //TODO write to GC, get IDs and update them in the events (will be used in db)
+        // Update subtasks in local db
 
         // write to db
         dBmanager.writeNewSubtasks(acceptedEvents);
