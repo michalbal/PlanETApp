@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import net.planner.planetapp.App
 import net.planner.planetapp.database.PreferenceDB
 import net.planner.planetapp.database.TaskDB
@@ -118,6 +119,7 @@ object LocalDBManager {
 
 
     @Database(entities = [(TaskLocalDB::class), PreferencesLocalDB::class, CourseLocalDB::class], version = DATABASE_VERSION, exportSchema = true)
+    @TypeConverters(Converters::class)
     abstract class AppRoomDatabase : RoomDatabase() {
         abstract fun tasksDao(): TasksDao
 

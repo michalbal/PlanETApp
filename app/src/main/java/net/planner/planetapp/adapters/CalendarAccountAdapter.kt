@@ -30,11 +30,11 @@ class CalendarAccountAdapter(
         val item = values[position]
         holder.account.text = item
 
-        holder.account.setOnClickListener { view ->
-            if (holder.account.isChecked) {
-                googleAccounts.remove(item)
-            } else {
+        holder.account.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 googleAccounts.add(item)
+            } else {
+                googleAccounts.remove(item)
             }
         }
 

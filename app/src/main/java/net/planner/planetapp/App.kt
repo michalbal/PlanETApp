@@ -38,9 +38,9 @@ class App: Application()  {
             .enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.KEEP, periodicWorkReq)
 
         UserPreferencesManager.toString()
+        LocalDBManager.toString()
         // TODO add wait here before continuing to the others?
         GlobalScope.launch {
-            LocalDBManager.toString()
             GoogleCalenderCommunicator.initAccountsFromDb(context)
             TasksManager.getInstance()
         }

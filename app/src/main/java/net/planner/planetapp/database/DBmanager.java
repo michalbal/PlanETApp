@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class DBmanager {
@@ -44,7 +45,7 @@ public class DBmanager {
         // tODO if possible, check if the user's document already exists and if it does update the local db
     }
 
-    public void writeAcceptedTasks(LinkedList<PlannerTask> acceptedTasks) {
+    public void writeAcceptedTasks(List<PlannerTask> acceptedTasks) {
         for (PlannerTask task : acceptedTasks) {
             TaskDB taskDB = new TaskDB(task.getMoodleId(), task.getTitle(), task.getCourseId(),
                                        task.getDescription(), task.getLocation(),

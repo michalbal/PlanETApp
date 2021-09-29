@@ -57,6 +57,7 @@
         android:inputType="textPersonName"
         android:text="Friend"
         android:autofillHints="Name"
+        android:backgroundTint="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/planet_introduction_text" />

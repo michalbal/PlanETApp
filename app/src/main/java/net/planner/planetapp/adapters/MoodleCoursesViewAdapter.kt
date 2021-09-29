@@ -32,18 +32,18 @@ class MoodleCoursesViewAdapter(
 
         holder.courseIdCheckbox.isClickable = isClickable
 
-        holder.courseIdCheckbox.setOnClickListener { view ->
-            if (holder.courseIdCheckbox.isChecked) {
-                courseIds.remove(item)
-                unwantedCourseIds.add(item)
-            } else {
+        holder.courseIdCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 courseIds.add(item)
                 if (unwantedCourseIds.contains(item)) {
                     unwantedCourseIds.remove(item)
                 }
+            } else {
+                courseIds.remove(item)
+                unwantedCourseIds.add(item)
             }
         }
-        }
+    }
 
 
     fun updateCourses(courses: List<String>) {

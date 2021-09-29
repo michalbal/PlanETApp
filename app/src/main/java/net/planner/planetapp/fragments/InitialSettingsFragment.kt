@@ -58,32 +58,39 @@ class InitialSettingsFragment : Fragment() {
 
     private fun testInputIntegrity(): Boolean {
         try {
-
-            val avgTaskHours = mBinding.editAverageTaskDuration.text.toString().toLong()
+            Log.d(TAG, "testInputIntegrity")
+            val avgTaskHours = mBinding.editAverageTaskDuration.text.toString().toDouble().toLong()
             val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
             if (avgTaskMinutes < 30 || avgTaskMinutes > 6000) {
+                Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $avgTaskHours")
                 return false
             }
 
+            Log.d(TAG, "testInputIntegrity: Avg Hours OK value is $avgTaskHours")
             // Can save avgTask
             UserPreferencesManager.avgTaskDurationMinutes = avgTaskMinutes
 
-            val preferredSessionTimeHours = mBinding.editMinSession.text.toString().toLong()
+            val preferredSessionTimeHours = mBinding.editPreferredSession.text.toString().toDouble().toLong()
             val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
             if (preferredSessionTimeMinutes < 30 || preferredSessionTimeMinutes >= avgTaskMinutes) {
+                Log.d(TAG, "testInputIntegrity: preferredSessionTimeHours with wrong value! value is $preferredSessionTimeHours")
                 return false
             }
+
+            Log.d(TAG, "testInputIntegrity: preferredSessionTimeHours OK value is $preferredSessionTimeHours")
 
             // Can save min session
             UserPreferencesManager.preferredSessionTime = preferredSessionTimeMinutes
 
-            val spaceBetweenSessions = mBinding.editMinSession.text.toString().toLong()
+            val spaceBetweenSessions = mBinding.editMinSession.text.toString().toDouble().toLong()
+            Log.d(TAG, "testInputIntegrity: spaceBetweenSessions OK value is $spaceBetweenSessions")
 
             // Can save preferred session
             UserPreferencesManager.spaceBetweenEventsMinutes = spaceBetweenSessions
 
 
         } catch (e: Exception) {
+            Log.e(TAG, "Received exception ${e.message}")
             return false
         }
         return true

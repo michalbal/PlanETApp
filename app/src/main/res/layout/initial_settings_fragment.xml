@@ -15,6 +15,7 @@
         android:layout_marginTop="20dp"
         android:ems="10"
         android:text="15"
+        android:backgroundTint="@color/colorPrimary"
         android:inputType="number"
         app:layout_constraintStart_toEndOf="@+id/min_time_title"
         app:layout_constraintTop_toBottomOf="@+id/study_session_title" />
@@ -71,6 +72,7 @@
         android:layout_marginEnd="15dp"
         android:ems="10"
         android:text="5"
+        android:backgroundTint="@color/colorPrimary"
         android:inputType="number"
         app:layout_constraintEnd_toStartOf="@+id/hours_title"
         app:layout_constraintHorizontal_bias="0.0"
@@ -106,6 +108,7 @@
         android:layout_marginTop="10dp"
         android:ems="10"
         android:text="0.5"
+        android:backgroundTint="@color/colorPrimary"
         android:inputType="number"
         app:layout_constraintStart_toEndOf="@+id/study_session_title"
         app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration" />

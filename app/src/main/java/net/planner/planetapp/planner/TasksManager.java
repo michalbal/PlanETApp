@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static net.planner.planetapp.UtilsKt.FRIDAY;
@@ -166,7 +167,7 @@ public class TasksManager {
     public void saveChosenMoodleCourses(HashMap<String, String> courses) {
         // Create general preference with all course names
         HashMap<String, ArrayList<String>> forbiddenSettings = new HashMap();
-        ArrayList allDays = (ArrayList) Arrays.asList(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY);
+        ArrayList allDays = new ArrayList(Arrays.asList(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY));
         forbiddenSettings.put("00:00-08:30", allDays);
         forbiddenSettings.put("23:00-23:59", allDays);
         HashMap<String, ArrayList<String>> preferredSettings = new HashMap();
@@ -233,10 +234,9 @@ public class TasksManager {
     }
 
 
-    public LinkedList<PlannerEvent> planSchedule(LinkedList<PlannerTask> plannerTasks) {
+    public LinkedList<PlannerEvent> planSchedule(List<PlannerTask> plannerTasks) {
         dBmanager.writeAcceptedTasks(plannerTasks);
         tasks.addAll(plannerTasks);
-        // TODO add all subtasks to the task in local db
 
         ArrayList<PlannerEvent> events = new ArrayList<>();
 
@@ -257,6 +257,13 @@ public class TasksManager {
         LinkedList<PlannerEvent> subtasks = new LinkedList<>();
 
         subtasks = calendar.insertTasks(plannerTasks);
+
+        // Notify listeners that planing the schedule finished
+        // TODO maybe even notifications manager
+        for(IOnPlanCalculatedListener listener: planCalculatedListeners) {
+            listener.onPlanCalculated(subtasks);
+        }
+
         return subtasks;
     }
 
