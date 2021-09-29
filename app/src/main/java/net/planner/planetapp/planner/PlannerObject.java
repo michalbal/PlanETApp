@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-abstract class PlannerObject {
+public abstract class PlannerObject {
     private static final String TAG = "PlannerObject";
-    public static final String NO_TAG = "NoTag";
+    public static final String GENERAL_TAG = "General Preference";
 
     protected static final String NO_TITLE = "(No title)";
     protected String title;
@@ -29,7 +29,7 @@ abstract class PlannerObject {
         this.description = "";
         this.location = ""; // for now string
         this.reminder = -1;
-        this.tag = NO_TAG;
+        this.tag = GENERAL_TAG;
         this.exclusiveForItsTimeSlot = true;
     }
 

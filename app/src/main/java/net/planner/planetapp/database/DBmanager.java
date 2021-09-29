@@ -15,7 +15,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import net.planner.planetapp.database.local_database.LocalDBManager;
 import net.planner.planetapp.planner.PlannerEvent;
+import net.planner.planetapp.planner.PlannerObject;
 import net.planner.planetapp.planner.PlannerTag;
 import net.planner.planetapp.planner.PlannerTask;
 import net.planner.planetapp.planner.TasksManager;
@@ -39,6 +41,7 @@ public class DBmanager {
 
         db.collection("users").document(username).set(
                 Collections.singletonMap("username", username), SetOptions.merge());
+        // tODO if possible, check if the user's document already exists and if it does update the local db
     }
 
     public void writeAcceptedTasks(LinkedList<PlannerTask> acceptedTasks) {
@@ -147,6 +150,7 @@ public class DBmanager {
 
     public void addUserMoodleCourses(HashMap<String, String> moodleCourses) {
         for (HashMap.Entry<String, String> parsedCourseName : moodleCourses.entrySet()) {
+            LocalDBManager.INSTANCE.insertOrUpdateCourse(parsedCourseName.getKey(), parsedCourseName.getKey(), PlannerObject.GENERAL_TAG);
             addMoodleCourseName(parsedCourseName.getKey(), parsedCourseName.getValue());
         }
     }

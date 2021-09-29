@@ -53,6 +53,28 @@ object LocalDBManager {
         }
     }
 
+    fun isTaskInDbAndUnchanged(taskId: String, deadline: Long): Boolean {
+        val task: TaskLocalDB?
+        mLock.withLock {
+            task = mDb.tasksDao().getTask(taskId)
+        }
+        if (task != null) {
+            if (task.deadline == deadline) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    fun getTask(taskId: String): TaskLocalDB? {
+        val task: TaskLocalDB?
+        mLock.withLock {
+            task = mDb.tasksDao().getTask(taskId)
+        }
+        return task
+    }
+
     fun insertOrUpdatePreference(preference: PreferenceDB) {
         var courseNames = setOf<String>()
         mDb.preferencesDao().getPreference(preference.tagName)?.let {
@@ -60,6 +82,12 @@ object LocalDBManager {
         }
 
         insertOrUpdatePreference(preference, courseNames)
+    }
+
+    fun insertOrUpdatePreference(preference: PreferencesLocalDB) {
+        mLock.withLock {
+            mDb.preferencesDao().insertOrUpdatePreference(preference)
+        }
     }
 
 
