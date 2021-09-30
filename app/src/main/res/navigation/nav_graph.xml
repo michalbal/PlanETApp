@@ -32,6 +32,9 @@
         android:name="net.planner.planetapp.fragments.PreferancesFragment"
         android:label="@string/preferances_label"
         tools:layout="@layout/preferances_list_item">
+        <action
+            android:id="@+id/action_PreferancesFragment_to_createPreferenceFragment"
+            app:destination="@id/createPreferenceFragment" />
     </fragment>
 
     <fragment
@@ -91,4 +94,9 @@
             android:id="@+id/action_initialSettingsFragment_to_HomeFragment"
             app:destination="@id/HomeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/createPreferenceFragment"
+        android:name="net.planner.planetapp.fragments.CreatePreferenceFragment"
+        android:label="fragment_create_preference"
+        tools:layout="@layout/fragment_create_preference" />
 </navigation>

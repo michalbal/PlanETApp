@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".fragments.CreatePreferenceFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/create_preference_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Create a new Preference"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/preference_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:text="Name:"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/create_preference_title" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_preference_name"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            app:endIconMode="clear_text"
+            app:helperTextEnabled="true"
+            app:helperText="required"
+            app:layout_constraintStart_toEndOf="@+id/preference_name_title"
+            app:layout_constraintTop_toBottomOf="@+id/create_preference_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:text=""
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/preference_priority_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="50dp"
+            android:text="Priority:"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/preference_name_title" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_preference_priority"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toEndOf="@+id/preference_priority_title"
+            app:layout_constraintTop_toBottomOf="@+id/edit_preference_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/forbidden_times_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:text="Don't schedule on:"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_preference_priority" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forbidden_times_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="10dp"
+            android:clipToPadding="false"
+            app:layoutManager="LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/forbidden_times_title"
+            tools:listitem="@layout/google_account_list_item" />
+
+        <ImageButton
+            android:id="@+id/add_forbidden_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="25dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/add_icon"
+            app:layout_constraintStart_toEndOf="@+id/forbidden_times_title"
+            app:layout_constraintTop_toTopOf="@+id/forbidden_times_title" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

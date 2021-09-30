@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import static net.planner.planetapp.UtilsKt.FRIDAY;
@@ -190,7 +192,7 @@ public class TasksManager {
         PlannerTag generalTag = new PlannerTag(PlannerObject.GENERAL_TAG, 9 ,forbiddenSettings, preferredSettings);
 
         // Save tag in local DB
-        PreferencesLocalDB preference = new PreferencesLocalDB(PlannerObject.GENERAL_TAG, 9, forbiddenSettings, preferredSettings, courses.keySet());
+        PreferencesLocalDB preference = new PreferencesLocalDB(PlannerObject.GENERAL_TAG, 9, forbiddenSettings, preferredSettings, new TreeSet<String>(courses.values()));
         LocalDBManager.INSTANCE.insertOrUpdatePreference(preference);
 
         // Save courses in both firebase db and local db
