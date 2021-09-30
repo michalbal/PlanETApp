@@ -47,11 +47,17 @@ class InitialSettingsFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            Log.d(TAG, "Moving on to Home Screen")
+            Log.d(TAG, "Moving on to Home Screen start retrieving tasks from moodle")
+            viewModel.startGettingTasksFromMoodle()
+
             val mainActivity = activity as MainActivity
-            mainActivity?.returnBottomNavigation()
-            val navController = findNavController()
-            navController.navigate(InitialSettingsFragmentDirections.actionInitialSettingsFragmentToHomeFragment())
+            mainActivity?.let {
+                it.runOnUiThread {
+                    it.returnBottomNavigation()
+                    val navController = findNavController()
+                    navController.navigate(InitialSettingsFragmentDirections.actionInitialSettingsFragmentToHomeFragment())
+                }
+            }
         }
 
     }

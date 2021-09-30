@@ -1,5 +1,7 @@
 package net.planner.planetapp.planner;
 
+import android.util.Log;
+
 import com.google.android.gms.common.api.internal.ListenerHolder;
 
 import net.planner.planetapp.App;
@@ -51,7 +53,10 @@ public class TasksManager {
     private ArrayList<IOnTasksReceivedListener> tasksReceivedListeners = new ArrayList<>();
     private ArrayList<IOnPlanCalculatedListener> planCalculatedListeners = new ArrayList<>();
 
+    private final String TAG = "TasksManager";
+
     private TasksManager(){
+        Log.d(TAG, "Initiating TasksManager");
         connector = new MoodleCommunicator();
         unwantedCourseIds = new ArrayList<>();
         unwantedTaskIds = new ArrayList<>();
@@ -60,22 +65,25 @@ public class TasksManager {
         preferences = new ArrayList<>();
         tasks = new ArrayList<>();
         taskInDBids = new ArrayList<>();
+        furthestDeadline = 0L;
         token = UserPreferencesManager.INSTANCE.getUserMoodleToken();
         if (token != null) {
+            Log.d(TAG, "We found a saved token, can retrieve data from firebase DB");
             String userName = UserPreferencesManager.INSTANCE.getMoodleUserName();
             dBmanager = new DBmanager(userName);
             dBmanager.readTasks();
             dBmanager.readPreferences();
         }
-        furthestDeadline = 0L;
     }
 
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
+        Log.d(TAG, "initTasksManager called");
         token = connector.connectToCSEMoodle(username, password);
         dBmanager = new DBmanager(username);
     }
 
     public Boolean addTasksReceivedListener(IOnTasksReceivedListener listener) {
+        Log.d(TAG, "addTasksReceivedListener called");
         if (!tasksReceivedListeners.contains(listener)) {
             tasksReceivedListeners.add(listener);
             return true;
@@ -84,6 +92,7 @@ public class TasksManager {
     }
 
     public Boolean removeTasksReceivedListener(IOnTasksReceivedListener listener) {
+        Log.d(TAG, "removeTasksReceivedListener called");
         if (!tasksReceivedListeners.contains(listener)) {
             tasksReceivedListeners.remove(listener);
             return true;
@@ -92,6 +101,7 @@ public class TasksManager {
     }
 
     public Boolean addPlanCalculatedListener(IOnPlanCalculatedListener listener) {
+        Log.d(TAG, "addPlanCalculatedListener called");
         if (!planCalculatedListeners.contains(listener)) {
             planCalculatedListeners.add(listener);
             return true;
@@ -100,6 +110,7 @@ public class TasksManager {
     }
 
     public Boolean removePlanCalculatedListener(IOnPlanCalculatedListener listener) {
+        Log.d(TAG, "removePlanCalculatedListener called");
         if (!planCalculatedListeners.contains(listener)) {
             planCalculatedListeners.remove(listener);
             return true;
@@ -108,6 +119,7 @@ public class TasksManager {
     }
 
     public void pullDataFromDB(){
+        Log.d(TAG, "pullDataFromDB called");
         // chain of listeners triggers reading of the blacklists and tasks from Moodle
         dBmanager.readUserMoodleCourses();
     }
@@ -132,6 +144,7 @@ public class TasksManager {
     }
 
     public void addMoodleCourse(String courseID, String courseName, Boolean writeToDb) {
+        Log.d(TAG, "addMoodleCourse called");
         courseNames.put(courseID, courseName);
         if (writeToDb) {
             dBmanager.addMoodleCourseName(courseID, courseName);
@@ -159,6 +172,7 @@ public class TasksManager {
 
     public HashMap<String, String> parseMoodleCourses() {
         if (token != null && !token.equals("")) {
+            Log.d(TAG, "parseMoodleCourses called");
             HashMap<String, String> parsedCourseNames = connector.parseFromMoodle(token, true);
             return parsedCourseNames;
         }
@@ -166,6 +180,7 @@ public class TasksManager {
     }
 
     public void saveChosenMoodleCourses(HashMap<String, String> courses) {
+        Log.d(TAG, "saveChosenMoodleCourses called");
         // Create general preference with all course names
         HashMap<String, ArrayList<String>> forbiddenSettings = new HashMap();
         ArrayList allDays = new ArrayList(Arrays.asList(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY));
@@ -186,6 +201,7 @@ public class TasksManager {
     }
 
     public LinkedList<PlannerTask> parseMoodleTasks(long currentTime) {
+        Log.d(TAG, "parseMoodleTasks called");
         LinkedList<PlannerTask> filteredTasks = new LinkedList<>();
         if (token != null && !token.equals("")) {
             HashMap<String, LinkedList<PlannerTask>> parsedAssignments = connector.parseFromMoodle(
@@ -203,6 +219,8 @@ public class TasksManager {
                     if (!unwantedTaskIds.contains(task.getMoodleId())
                             && task.getDeadline() > currentTime
                             && !isTaskInDb) {
+
+                        Log.d(TAG, "parseMoodleTasks: Found task not already saved, updating it and saving");
 
                         String tagName = findTagOfCourse(task.getCourseId());
                         task.setTagName(tagName);
@@ -222,6 +240,7 @@ public class TasksManager {
             }
         }
 
+        Log.d(TAG, "parseMoodleTasks: Informing task listeners of tasks parsed");
         // Inform task listeners that new tasks arrived
         for(IOnTasksReceivedListener listener : tasksReceivedListeners) {
             listener.onTasksReceivedFromMoodle(filteredTasks);
@@ -241,6 +260,7 @@ public class TasksManager {
 
 
     public LinkedList<PlannerEvent> planSchedule(List<PlannerTask> plannerTasks) {
+        Log.d(TAG, "planSchedule called");
         dBmanager.writeAcceptedTasks(plannerTasks);
         tasks.addAll(plannerTasks);
 
@@ -280,6 +300,7 @@ public class TasksManager {
     }
 
     public void removeTask(PlannerTask task) {
+        Log.d(TAG, "removeTask called");
         LocalDBManager.INSTANCE.deleteTask(task.getMoodleId());
         tasks.remove(task);
         dBmanager.deleteTask(task);
@@ -287,6 +308,7 @@ public class TasksManager {
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
 
+        Log.d(TAG, "processUserAcceptedSubtasks called");
         for(PlannerEvent subtask : acceptedEvents){
             // Write to selected Google Calendar and get Id
             Long eventId = GoogleCalenderCommunicator.INSTANCE.insertEvent(App.context, subtask);

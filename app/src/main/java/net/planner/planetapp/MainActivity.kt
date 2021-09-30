@@ -26,13 +26,18 @@ import net.planner.planetapp.viewmodels.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+
+        private const val TAG = "MainActivity"
+    }
+
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mViewModel: MainActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d(TAG, "onCreate called")
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
@@ -58,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         mViewModel.showTasksDialog.observe(this, Observer {
+            Log.d(TAG, "showTasksDialog - Received new tasks $it")
             it?.let {
                 runOnUiThread {
                     createTaskSelectionDialog(it)
@@ -69,11 +75,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        Log.d(TAG, "onStart called")
         mViewModel.onStart()
     }
 
     override fun onStop() {
         super.onStop()
+        Log.d(TAG, "onStop called")
         mViewModel.onStop()
     }
 
@@ -99,6 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createTaskSelectionDialog(tasks: Collection<PlannerTask>) {
+        Log.d(TAG, "createTaskSelectionDialog called")
 
         val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_tasks_to_plan_selection, null)
@@ -107,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager  = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        Log.d(TAG, "createTaskSelectionDialog: Creating and showing the dialog")
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setTitle(R.string.select_tasks_dialog_title)
