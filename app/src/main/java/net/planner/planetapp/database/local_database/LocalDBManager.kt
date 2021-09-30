@@ -54,6 +54,25 @@ object LocalDBManager {
         }
     }
 
+    fun updateTaskSubtasks(taskId: String, subTaskDate: String) {
+        val task = getTask(taskId)
+
+        task?.let {
+            val dates = task.subtaskDates.toMutableList()
+            dates.add(subTaskDate)
+            val taskToInsert = TaskLocalDB(task.taskId, task.name, task.courseID, task.description,
+                task.location, task.exclusiveForItsTimeSlot, task.reminder, task.tag, task.deadline,
+                task.priority, task.maxSessionTimeInMinutes, task.maxDivisionsNumber, task.durationInMinutes,
+                dates)
+
+            mLock.withLock {
+                mDb.tasksDao().insertOrUpdateTask(taskToInsert)
+            }
+
+        }
+    }
+
+
     fun isTaskInDbAndUnchanged(taskId: String, deadline: Long): Boolean {
         val task: TaskLocalDB?
         mLock.withLock {
@@ -74,6 +93,12 @@ object LocalDBManager {
             task = mDb.tasksDao().getTask(taskId)
         }
         return task
+    }
+
+    fun deleteTask(taskId: String) {
+        mLock.withLock {
+            mDb.tasksDao().deleteTask(taskId)
+        }
     }
 
     fun insertOrUpdatePreference(preference: PreferenceDB) {

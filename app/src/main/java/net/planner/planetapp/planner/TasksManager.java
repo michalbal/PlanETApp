@@ -6,6 +6,7 @@ import net.planner.planetapp.App;
 import net.planner.planetapp.IOnPlanCalculatedListener;
 import net.planner.planetapp.IOnTasksReceivedListener;
 import net.planner.planetapp.UserPreferencesManager;
+import net.planner.planetapp.UtilsKt;
 import net.planner.planetapp.database.DBmanager;
 import net.planner.planetapp.database.local_database.LocalDBManager;
 import net.planner.planetapp.database.local_database.PreferencesLocalDB;
@@ -205,6 +206,11 @@ public class TasksManager {
 
                         String tagName = findTagOfCourse(task.getCourseId());
                         task.setTagName(tagName);
+
+                        // Set expected duration and max session time from settings
+                        task.setDurationInMinutes((int) UserPreferencesManager.INSTANCE.getAvgTaskDurationMinutes());
+                        task.setMaxSessionTimeInMinutes((int) UserPreferencesManager.INSTANCE.getPreferredSessionTime());
+
                         filteredTasks.add(task);
                         if (task.getDeadline() > furthestDeadline){
                             furthestDeadline = task.getDeadline();
@@ -274,18 +280,20 @@ public class TasksManager {
     }
 
     public void removeTask(PlannerTask task) {
-        // TODO remove task from local db
+        LocalDBManager.INSTANCE.deleteTask(task.getMoodleId());
         tasks.remove(task);
         dBmanager.deleteTask(task);
     }
 
     public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
-        //TODO write to GC, get IDs and update them in the events (will be used in db)
-        // Update subtasks in local db
 
-        long l = 0L;
         for(PlannerEvent subtask : acceptedEvents){
-            subtask.setEventId(l++);
+            // Write to selected Google Calendar and get Id
+            Long eventId = GoogleCalenderCommunicator.INSTANCE.insertEvent(App.context, subtask);
+            subtask.setEventId(eventId);
+
+            // Add event to Task subtask dates in Local DB
+            LocalDBManager.INSTANCE.updateTaskSubtasks(subtask.getParentTaskId(), UtilsKt.getDate(subtask.getStartTime()));
         }
         // write to db
         dBmanager.writeNewSubtasks(acceptedEvents);
