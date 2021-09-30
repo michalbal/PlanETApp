@@ -250,12 +250,16 @@ public class TasksManager {
     }
 
     private String findTagOfCourse(String courseName) {
-        for(PreferencesLocalDB preference : LocalDBManager.INSTANCE.getDbLocalPreferencesData().getValue()) {
-            if (preference.getCourses().contains(courseName)) {
-                return preference.getTagName();
+        try {
+            for(PreferencesLocalDB preference : LocalDBManager.INSTANCE.getDbLocalPreferencesData().getValue()) {
+                if (preference.getCourses().contains(courseName)) {
+                    return preference.getTagName();
+                }
             }
+            return PlannerObject.GENERAL_TAG;
+        } catch(Exception e) {
+            return PlannerObject.GENERAL_TAG;
         }
-        return PlannerObject.GENERAL_TAG;
     }
 
 

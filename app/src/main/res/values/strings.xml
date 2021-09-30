@@ -20,7 +20,7 @@
     <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.<br/>
         If we do not have access, no events will be shown. Will you allow us to read your events?</string>
 
-    <string name="select_tasks_dialog_title">Tasks to Plan</string>
+    <string name="select_tasks_dialog_title">Found new tasks from Moodle </string>
     <string name="select_tasks_positive_button">Start Planning</string>
     <string name="starting_to_plan_message">Planning your schedule</string>
 
@@ -39,8 +39,8 @@
 
     <!-- Initial Settings-->
     <string name="settings_instructions">One of the values was filled incorrectly.<br/>
-    Please note, Average time a task takes must be a number, in hours, between 0.5 and 100.<br/>
-    Preferred study session duration must be a number, in hours, between 0.5 and Average task time.<br/>
+    Please note, Average time a task takes must be a number, in hours, between 1 and 100.<br/>
+    Preferred study session duration must be a number, in hours, between 1 and Average task time.<br/>
     Min time between sessions must be a number, in minutes, lower then 1440 </string>
 
 

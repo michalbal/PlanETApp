@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.planner.planetapp.getMillisFromDate
 import net.planner.planetapp.planner.TasksManager
 
 class InitialSettingsFragmentViewModel : ViewModel() {
@@ -19,7 +20,9 @@ class InitialSettingsFragmentViewModel : ViewModel() {
         Log.d(TAG, "startGettingTasksFromMoodle called")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                TasksManager.getInstance().parseMoodleTasks(System.currentTimeMillis())
+//                val millisToPlanFrom = System.currentTimeMillis()
+                val millisToPlanFrom = getMillisFromDate("20/05/2021") ?: System.currentTimeMillis()
+                TasksManager.getInstance().parseMoodleTasks(millisToPlanFrom)
             }
         }
     }

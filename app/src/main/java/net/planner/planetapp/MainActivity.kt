@@ -52,7 +52,9 @@ class MainActivity : AppCompatActivity() {
         // Setting App bar
         appBarConfiguration = AppBarConfiguration(navController.graph)
         val toolbar = binding.toolbar
+        toolbar.title = ""
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
