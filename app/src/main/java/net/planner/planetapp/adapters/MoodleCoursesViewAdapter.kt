@@ -8,10 +8,10 @@ import net.planner.planetapp.databinding.FragmentMoodleCoursesItemBinding
 
 class MoodleCoursesViewAdapter(
     private var values: List<String>,
-    private val isClickable: Boolean
+    private val isClickable:  Boolean,
+    var courseIds: MutableSet<String> = mutableSetOf()
 ) : RecyclerView.Adapter<MoodleCoursesViewAdapter.ViewHolder>()  {
 
-    var courseIds: MutableSet<String> = mutableSetOf()
     var unwantedCourseIds: MutableSet<String> = mutableSetOf()
 
 
@@ -31,6 +31,8 @@ class MoodleCoursesViewAdapter(
         holder.courseIdCheckbox.text = item
 
         holder.courseIdCheckbox.isClickable = isClickable
+
+        holder.courseIdCheckbox.isChecked = courseIds.contains(item)
 
         holder.courseIdCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

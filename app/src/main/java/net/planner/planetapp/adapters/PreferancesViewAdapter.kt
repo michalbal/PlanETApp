@@ -32,7 +32,7 @@ class PreferancesViewAdapter(
 
         val coursesRecycler = holder.coursesRecycler
         coursesRecycler.layoutManager = LinearLayoutManager(coursesRecycler.context)
-        coursesRecycler.adapter = MoodleCoursesViewAdapter(item.courses.toList(), false)
+        coursesRecycler.adapter = MoodleCoursesViewAdapter(item.courses.toList(), false, item.courses.toMutableSet())
         holder.name.text = item.tagName
     }
 

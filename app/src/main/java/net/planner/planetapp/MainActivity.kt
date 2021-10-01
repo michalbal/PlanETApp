@@ -60,8 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         if (UserPreferencesManager.mainCalendarAccount == null) {
             navController.navigate(R.id.welcomeFragment)
-            val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-            bottomNav.isVisible = false
+            hideBottomNavigation()
         }
 
         mViewModel.showTasksDialog.observe(this, Observer {
@@ -101,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(
             findNavController(R.id.nav_host_fragment)
         ) || super.onOptionsItemSelected(item)
+    }
+
+    fun hideBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNav.isVisible = false
     }
 
     fun returnBottomNavigation() {

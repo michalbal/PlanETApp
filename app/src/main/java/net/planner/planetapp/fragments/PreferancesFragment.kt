@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import net.planner.planetapp.adapters.PreferancesViewAdapter
 import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.databinding.FragmentPreferancesListBinding
@@ -48,9 +49,9 @@ class PreferancesFragment : Fragment() {
         } })
 
         mBinding.addPreferenceButton.setOnClickListener { view ->
-            //tODO open create preference screen
             activity?.runOnUiThread {
-
+                val navController = findNavController()
+                navController.navigate(PreferancesFragmentDirections.actionPreferancesFragmentToCreatePreferenceFragment())
             }
         }
 
