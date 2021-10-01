@@ -1,11 +1,15 @@
 package net.planner.planetapp.adapters
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MotionEventCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import net.planner.planetapp.database.local_database.PreferencesLocalDB
 import net.planner.planetapp.databinding.PreferancesListItemBinding
+
 
 /**
  * [RecyclerView.Adapter] that can display Preferances.
@@ -33,6 +37,7 @@ class PreferancesViewAdapter(
         val coursesRecycler = holder.coursesRecycler
         coursesRecycler.layoutManager = LinearLayoutManager(coursesRecycler.context)
         coursesRecycler.adapter = MoodleCoursesViewAdapter(item.courses.toList(), false, item.courses.toMutableSet())
+        coursesRecycler.isNestedScrollingEnabled = true
         holder.name.text = item.tagName
     }
 

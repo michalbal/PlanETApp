@@ -15,7 +15,7 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:id="@+id/create_preference_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="10dp"
             android:text="Create a new Preference"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
@@ -36,15 +36,17 @@ tools:context=".fragments.CreatePreferenceFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edit_preference_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint=""
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
             app:boxBackgroundColor="@color/white"
             app:endIconMode="clear_text"
             app:helperTextEnabled="true"
             app:helperText="required"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/preference_name_title"
             app:layout_constraintTop_toBottomOf="@+id/create_preference_title">
 
@@ -174,8 +176,8 @@ tools:context=".fragments.CreatePreferenceFragment">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/courses_applies_list"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
             android:clipToPadding="false"
             app:layoutManager="LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"

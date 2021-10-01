@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.planner.planetapp.MainActivity
 import net.planner.planetapp.R
@@ -15,7 +16,11 @@ import net.planner.planetapp.adapters.MoodleCoursesViewAdapter
 import net.planner.planetapp.adapters.PreferenceTimeRep
 import net.planner.planetapp.adapters.PreferenceTimeViewAdapter
 import net.planner.planetapp.database.local_database.LocalDBManager
+import net.planner.planetapp.database.local_database.PreferencesLocalDB
 import net.planner.planetapp.databinding.FragmentCreatePreferenceBinding
+import net.planner.planetapp.planner.PlannerTag
+import net.planner.planetapp.planner.TasksManager
+import androidx.lifecycle.Observer
 
 
 class CreatePreferenceFragment : Fragment() {
@@ -62,14 +67,20 @@ class CreatePreferenceFragment : Fragment() {
         // Init courses applies to Recycler View
         val coursesRecycler = mBinding.coursesAppliesList
         coursesRecycler.layoutManager = LinearLayoutManager(coursesRecycler.context)
-        val courseNames = mutableListOf<String>()
-        LocalDBManager.dbLocalCoursesData.value?.let {
-            for(value in it) {
-                courseNames.add(value.courseName)
-            }
-        }
+        coursesRecycler.adapter = MoodleCoursesViewAdapter(listOf(), true)
 
-        coursesRecycler.adapter = MoodleCoursesViewAdapter(courseNames, true)
+        LocalDBManager.dbLocalCoursesData.observe(viewLifecycleOwner, Observer { it?.let {
+            activity?.runOnUiThread {
+                val adapter = mBinding.coursesAppliesList.adapter as MoodleCoursesViewAdapter
+                val courseNames = mutableListOf<String>()
+
+                for(value in it) {
+                    Log.d(TAG, "Found course $value")
+                    courseNames.add(value.courseName)
+                }
+                adapter.updateCourses(courseNames, false)
+            }
+        } })
 
         mBinding.addForbiddenButton.setOnClickListener { view->
             forbiddenTimesAdapter.addTime(PreferenceTimeRep())
@@ -86,6 +97,35 @@ class CreatePreferenceFragment : Fragment() {
 
     fun createNewPreferenceAndReturn() {
         Log.d(TAG, "createNewPreferenceAndReturn")
+
+        // Create and insert new Preference
+        val priority = mBinding.editPreferencePriority.editText?.text.toString().toInt() ?: 5
+        val name = mBinding.editPreferenceName.editText?.text.toString() ?: return // TODO should show message here
+        val forbiddenTimesAdapter = mBinding.forbiddenTimesList.adapter as PreferenceTimeViewAdapter
+        val forbiddenTimes = forbiddenTimesAdapter.getTimesPreferenceFormat()
+        val preferredTimesAdapter = mBinding.preferredTimesList.adapter as PreferenceTimeViewAdapter
+        val preferredTimes = preferredTimesAdapter.getTimesPreferenceFormat()
+        val preference = PlannerTag(name, priority, forbiddenTimes, preferredTimes)
+
+        // Save preference in local db
+        val coursesAdapter = mBinding.coursesAppliesList.adapter as MoodleCoursesViewAdapter
+        val courses = coursesAdapter.courseIds
+        val preferenceLocal = PreferencesLocalDB(name, priority, preferredTimes, forbiddenTimes, courses)
+        LocalDBManager.insertOrUpdatePreference(preferenceLocal)
+
+        //Save preference to firebase db
+        TasksManager.getInstance().addPreferenceTag(preference, true)
+        // TODO update the necessary tasks from the courses?
+
+        val mainActivity = activity as? MainActivity
+        mainActivity?.returnBottomNavigation()
+
+        activity?.runOnUiThread {
+            val navController = findNavController()
+            navController.navigate(CreatePreferenceFragmentDirections.actionCreatePreferenceFragmentToPreferancesFragment())
+        }
+
+
     }
 
 

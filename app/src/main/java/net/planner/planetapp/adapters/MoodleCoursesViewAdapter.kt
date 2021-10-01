@@ -48,9 +48,11 @@ class MoodleCoursesViewAdapter(
     }
 
 
-    fun updateCourses(courses: List<String>) {
+    fun updateCourses(courses: List<String>, areChecked: Boolean) {
         values = courses
-        courseIds.addAll(courses)
+        if(areChecked) {
+            courseIds.addAll(courses)
+        }
         notifyDataSetChanged()
     }
 

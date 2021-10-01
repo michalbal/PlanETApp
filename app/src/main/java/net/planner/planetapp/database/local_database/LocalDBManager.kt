@@ -1,5 +1,6 @@
 package net.planner.planetapp.database.local_database
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Database
 import androidx.room.Room
@@ -7,8 +8,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import net.planner.planetapp.App
 import net.planner.planetapp.database.PreferenceDB
-import net.planner.planetapp.database.TaskDB
-import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.PlannerTask
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -26,8 +25,12 @@ object LocalDBManager {
     val dbLocalTasksData: LiveData<List<TaskLocalDB>>
         get() = mDb.tasksDao().tasks
 
+
     val dbLocalPreferencesData: LiveData<List<PreferencesLocalDB>>
         get() = mDb.preferencesDao().preferences
+
+    val dbLocalPreferences: List<PreferencesLocalDB>
+        get() = mDb.preferencesDao().preferencesSlow
 
     val dbLocalCoursesData: LiveData<List<CourseLocalDB>>
         get() = mDb.coursesDao().courses
@@ -135,6 +138,7 @@ object LocalDBManager {
 
     fun insertOrUpdateCourse(courseId: String, courseName: String, tagName: String) {
         val courseToInsert = CourseLocalDB(courseId, courseName, tagName)
+        Log.d(TAG, "Inserting course $courseName")
         mLock.withLock {
             mDb.coursesDao().insertOrUpdateCourse(courseToInsert)
         }

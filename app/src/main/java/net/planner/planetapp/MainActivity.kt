@@ -93,7 +93,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration)
+
+        val navController = this.findNavController(R.id.nav_host_fragment)
+        return when(navController.currentDestination?.id) {
+            R.id.welcomeFragment -> {
+                false
+            }
+            R.id.createPreferenceFragment -> {
+                createChangesNotSavedDialog()
+                true
+            }
+            else -> navController.navigateUp(appBarConfiguration)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,6 +149,23 @@ class MainActivity : AppCompatActivity() {
             .create()
             .show()
 
+    }
+
+    private fun createChangesNotSavedDialog() {
+        Log.d(TAG, "createChangesNotSavedDialog: Creating and showing the dialog")
+        val dialog = AlertDialog.Builder(this)
+            .setMessage(R.string.changes_detected_message)
+            .setTitle(R.string.select_tasks_dialog_title)
+            .setNegativeButton(android.R.string.cancel){ dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                returnBottomNavigation()
+                findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration)
+                dialog.cancel()
+            }
+            .create()
+            .show()
     }
 
 }

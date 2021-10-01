@@ -49,7 +49,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
             activity?.runOnUiThread {
                 mBinding.loadingTitle.visibility = INVISIBLE
                 mBinding.loadingCourses.visibility = INVISIBLE
-                adapter.updateCourses(it.toList())
+                adapter.updateCourses(it.toList(), true)
             }
         } })
 

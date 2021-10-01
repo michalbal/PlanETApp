@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -38,8 +39,8 @@ class PreferenceTimeViewAdapter(
 
     override fun onBindViewHolder(holder: PreferenceTimeViewAdapter.ViewHolder, position: Int) {
         val item = values[position]
-        holder.startTimeHour.setText(item.startHour)
-        holder.endTimeHour.setText(item.endHour)
+        holder.startTimeHour.text = item.startHour
+        holder.endTimeHour.text = item.endHour
 
         holder.startTimeHour.setOnClickListener { view ->
             // Show time picker dialog
@@ -56,8 +57,8 @@ class PreferenceTimeViewAdapter(
                     .build()
 
             picker.addOnPositiveButtonClickListener {
-                item.startHour = "${picker.hour}:${picker.minute}"
-                holder.startTimeHour.setText(item.startHour)
+                item.startHour = createTimeString(picker.hour, picker.minute)
+                holder.startTimeHour.text = item.startHour
             }
 
             picker.show(fm, "Choose start time:")
@@ -78,7 +79,7 @@ class PreferenceTimeViewAdapter(
                     .build()
 
             picker.addOnPositiveButtonClickListener {
-                item.endHour = "${picker.hour}:${picker.minute}"
+                item.endHour = createTimeString(picker.hour, picker.minute)
                 holder.endTimeHour.setText(item.endHour)
             }
 
@@ -174,7 +175,44 @@ class PreferenceTimeViewAdapter(
         }
     }
 
+    private fun createPickStartHourDialog(item: PreferenceTimeRep, holder: ViewHolder ) {
+        val splitted = item.startHour.split(":")
+        val hour = splitted[0].toInt()
+        val minutes = splitted[1].toInt()
+
+        val picker =
+            MaterialTimePicker.Builder()
+                .setInputMode(INPUT_MODE_KEYBOARD)
+                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setHour(hour)
+                .setMinute(minutes)
+                .build()
+
+        picker.addOnPositiveButtonClickListener {
+            item.startHour = "${picker.hour}:${picker.minute}"
+            holder.startTimeHour.setText(item.startHour)
+        }
+
+        picker.show(fm, "Choose start time:")
+    }
+
     override fun getItemCount(): Int = values.size
+
+
+    private fun createTimeString(hour: Int, minutes: Int): String{
+        var timeString = "$hour"
+        if (hour < 10) {
+            timeString = " 0" + hour.toString()
+        }
+        timeString += ":"
+        if(minutes < 10) {
+            timeString += "0"
+        }
+        timeString += minutes.toString()
+        return timeString
+
+
+    }
 
     private fun removeTime(time: PreferenceTimeRep) {
         values.remove(time)
@@ -197,8 +235,8 @@ class PreferenceTimeViewAdapter(
 
     inner class ViewHolder(binding: PreferenceTimeItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        var startTimeHour: EditText = binding.editStartTime
-        var endTimeHour: EditText = binding.editEndTime
+        var startTimeHour: TextView = binding.editStartTime
+        var endTimeHour: TextView = binding.editEndTime
         var removeButton: ImageButton = binding.removeTimeButton
         var sunCheck: CheckBox = binding.checkSun
         var monCheck: CheckBox = binding.checkMon

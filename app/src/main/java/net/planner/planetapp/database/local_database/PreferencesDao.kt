@@ -9,6 +9,9 @@ interface PreferencesDao {
     @get:Query("SELECT * FROM preferences")
     val preferences: LiveData<List<PreferencesLocalDB>>
 
+    @get:Query("SELECT * FROM preferences")
+    val preferencesSlow: List<PreferencesLocalDB>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdatePreference(preference: PreferencesLocalDB) : Long
 

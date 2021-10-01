@@ -202,6 +202,7 @@ public class TasksManager {
         addPreferenceTag(generalTag, true);
     }
 
+
     public LinkedList<PlannerTask> parseMoodleTasks(long currentTime) {
         Log.d(TAG, "parseMoodleTasks called");
         LinkedList<PlannerTask> filteredTasks = new LinkedList<>();
@@ -253,7 +254,7 @@ public class TasksManager {
 
     private String findTagOfCourse(String courseName) {
         try {
-            for(PreferencesLocalDB preference : LocalDBManager.INSTANCE.getDbLocalPreferencesData().getValue()) {
+            for(PreferencesLocalDB preference : LocalDBManager.INSTANCE.getDbLocalPreferences()) {
                 if (preference.getCourses().contains(courseName)) {
                     return preference.getTagName();
                 }
