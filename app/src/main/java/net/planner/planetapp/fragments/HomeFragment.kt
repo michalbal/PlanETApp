@@ -1,13 +1,13 @@
 package net.planner.planetapp.fragments
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.LinearLayoutCompat
+import android.widget.AdapterView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.planner.planetapp.*
@@ -15,16 +15,12 @@ import net.planner.planetapp.adapters.NextEventViewAdapter
 import net.planner.planetapp.adapters.TasksViewAdapter
 import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.databinding.HomeFragmentBinding
-import net.planner.planetapp.planner.PlannerEvent
-import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.viewmodels.HomeFragmentViewModel
-import java.util.concurrent.TimeUnit
 
 class HomeFragment : Fragment() {
 
     companion object {
         private const val TAG = "HomeFragment"
-        fun newInstance() = HomeFragment()
     }
 
     private lateinit var viewModel: HomeFragmentViewModel
@@ -65,9 +61,22 @@ class HomeFragment : Fragment() {
         val mainActivity = activity as? MainActivity
         tasksRecycler.adapter = TasksViewAdapter(listOf(), activity = mainActivity)
 
+        val  today = System.currentTimeMillis()
         LocalDBManager.dbLocalTasksData.observe(viewLifecycleOwner, Observer { it?.let {
+            // Sort tasks according to date and show from closest
+            val sorted = it.toSortedSet(Comparator { o1, o2 ->
+                if (o1.deadline < System.currentTimeMillis()) {
+                    if(o2.deadline < System.currentTimeMillis()) {
+                        o1.deadline.compareTo(o2.deadline)
+                    } else {
+                        -o1.deadline.compareTo(o2.deadline)
+                    }
+                } else {
+                    o1.deadline.compareTo(o2.deadline)
+                }
+            })
             val adapter = mBinding.tasksList.adapter as TasksViewAdapter
-            adapter.updateTasks(it)
+            adapter.updateTasks(sorted.toList())
         } })
 
         return mBinding.root

@@ -49,15 +49,22 @@ class TasksViewAdapter(
             }
         }
 
-        val progress: Double = item.subtaskDates.size / subTasksNotPassedNum.toDouble() * 100
+        val progress: Int = (item.subtaskDates.size / subTasksNotPassedNum.toDouble() * 100).toInt()
 
-        holder.progressPercent.text = progress.toString()
-        holder.progressBar.progress = progress.toInt()
+        holder.progressPercent.text = "$progress%"
+        holder.progressBar.progress = progress
 
         holder.preferenceName.setOnClickListener { view->
             activity?.runOnUiThread {
                 val navController = activity.findNavController(R.id.nav_host_fragment)
                 navController.navigate(HomeFragmentDirections.actionHomeFragmentToViewAndEditPreferenceFragment())
+            }
+        }
+
+        holder.itemView.setOnClickListener { view ->
+            activity?.runOnUiThread {
+                val navController = activity.findNavController(R.id.nav_host_fragment)
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToViewAndEditTaskFragment())
             }
         }
 

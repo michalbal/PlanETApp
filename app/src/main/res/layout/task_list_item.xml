@@ -15,99 +15,110 @@
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
 
-        <TextView
-            android:id="@+id/taskTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Task Title"
-            android:layout_gravity="start|start"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="10dp"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            />
-
-        <TextView
-            android:id="@+id/taskDueDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Due By: 30/09/2021 23:59"
-            android:layout_gravity="start|start"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            />
-
-        <TextView
-            android:id="@+id/preferredTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Preference:"
-            android:layout_gravity="center|start"
-            android:layout_marginBottom="0dp"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            />
-
-        <Button
-            android:id="@+id/preference_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tag Title"
-            android:textColor="@color/black"
-            android:layout_gravity="end|center"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:textSize="15sp"
-            android:layout_marginEnd="50dp"
-            android:elevation="10dp"
-            android:backgroundTint="@color/white"
-            />
-
-        <TextView
-            android:id="@+id/progressTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Progress:"
-            android:layout_gravity="start|center"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            />
-
-        <TextView
-            android:id="@+id/progressPercent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="15%"
-            android:layout_gravity="end|center"
-            android:layout_marginTop="72dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="20dp"
-            android:textSize="10sp"
-            />
-
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/taskProgress"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="190dp"
-            android:indeterminate="false"
-            app:indicatorColor="@color/colorPrimaryDark"
-            app:trackColor="@color/white"
-            app:trackThickness="10dp"
-            android:progress="25"/>
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/taskTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Task Title"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/taskDueDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due By: 30/09/2021 23:59"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/taskTitle"
+                />
+
+            <TextView
+                android:id="@+id/preferredTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preference:"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/taskDueDate"
+                />
+
+            <Button
+                android:id="@+id/preference_button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="Tag Title"
+                android:textColor="@color/black"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textSize="10sp"
+                android:layout_marginStart="5dp"
+                android:elevation="10dp"
+                android:backgroundTint="@color/white"
+                app:layout_constraintStart_toEndOf="@+id/preferredTitle"
+                app:layout_constraintTop_toBottomOf="@+id/taskDueDate"
+                />
+
+            <TextView
+                android:id="@+id/progressTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Progress:"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preference_button"
+                />
+
+            <TextView
+                android:id="@+id/progressPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15%"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="10dp"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/progressTitle"
+                />
 
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/taskProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:indeterminate="false"
+                app:indicatorColor="@color/colorPrimaryDark"
+                app:trackColor="@color/white"
+                app:trackThickness="10dp"
+                android:progress="25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressTitle"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
 
