@@ -98,5 +98,9 @@
         android:id="@+id/createPreferenceFragment"
         android:name="net.planner.planetapp.fragments.CreatePreferenceFragment"
         android:label="fragment_create_preference"
-        tools:layout="@layout/fragment_create_preference" />
+        tools:layout="@layout/fragment_create_preference" >
+        <action
+            android:id="@+id/action_createPreferenceFragment_to_PreferancesFragment"
+            app:destination="@id/PreferancesFragment" />
+    </fragment>
 </navigation>

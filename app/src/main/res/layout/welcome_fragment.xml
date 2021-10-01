@@ -21,18 +21,32 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/planet_introduction_text"
+        android:id="@+id/planet_introduction_text_part_1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
-        android:text="@string/planet_introduction"
+        android:text="@string/planet_introduction_part_1"
         android:textSize="20sp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcome_title" />
+
+    <TextView
+        android:id="@+id/planet_introduction_text_part_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:text="@string/planet_introduction_part_2"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/planet_introduction_text_part_1" />
 
     <TextView
         android:id="@+id/name_title"
@@ -44,23 +58,31 @@
         android:text="@string/name_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/planet_introduction_text" />
+        app:layout_constraintTop_toBottomOf="@+id/planet_introduction_text_part_2" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_edt"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="103dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="98dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Friend"
+        app:boxBackgroundColor="@color/white"
         android:autofillHints="Name"
-        android:backgroundTint="@color/colorPrimary"
+        app:endIconMode="clear_text"
+        app:helperTextEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/planet_introduction_text" />
+        app:layout_constraintTop_toBottomOf="@+id/name_title" >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Friend"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/continue_button"
@@ -72,4 +94,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name_edt" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="206dp"
+        android:layout_height="224dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/welcome"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="191dp"
+        android:layout_height="215dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/welcome_boy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

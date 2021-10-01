@@ -151,7 +151,7 @@ public class DBmanager {
 
     public void addUserMoodleCourses(HashMap<String, String> moodleCourses) {
         for (HashMap.Entry<String, String> parsedCourseName : moodleCourses.entrySet()) {
-            LocalDBManager.INSTANCE.insertOrUpdateCourse(parsedCourseName.getKey(), parsedCourseName.getKey(), PlannerObject.GENERAL_TAG);
+            LocalDBManager.INSTANCE.insertOrUpdateCourse(parsedCourseName.getKey(), parsedCourseName.getValue(), PlannerObject.GENERAL_TAG);
             addMoodleCourseName(parsedCourseName.getKey(), parsedCourseName.getValue());
         }
     }

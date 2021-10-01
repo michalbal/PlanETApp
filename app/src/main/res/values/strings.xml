@@ -27,10 +27,9 @@
 
     <!-- Welcome Fragment-->
     <string name="welcome_title">Welcome to PlanEt!</string>
-    <string name="planet_introduction">Your helper for getting the most out of your time!<br /><br />
-        We draw your upcoming tasks from Moodle, and combined with events from your Google Calender,
-    and Preferences you set, we create the right schedule for you!
-    </string>
+    <string name="planet_introduction_part_1">Your helper for getting the most out of your time!</string>
+    <string name="planet_introduction_part_2">We draw your upcoming tasks from Moodle, and combined with events from your Google Calender,
+    and Preferences you set, we create the right schedule for you!</string>
     <string name="name_title">What shall we call you?</string>
 
     <!-- Moodle Init-->
