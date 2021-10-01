@@ -21,6 +21,10 @@ import net.planner.planetapp.databinding.FragmentCreatePreferenceBinding
 import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.TasksManager
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class CreatePreferenceFragment : Fragment() {
@@ -99,23 +103,35 @@ class CreatePreferenceFragment : Fragment() {
         Log.d(TAG, "createNewPreferenceAndReturn")
 
         // Create and insert new Preference
-        val priority = mBinding.editPreferencePriority.editText?.text.toString().toInt() ?: 5
+        var priority = 5
+        try {
+            priority = mBinding.editPreferencePriority.editText?.text.toString().toInt()
+        } catch(e: Exception) {
+            Log.d(TAG, "Could not convert priority")
+        }
         val name = mBinding.editPreferenceName.editText?.text.toString() ?: return // TODO should show message here
         val forbiddenTimesAdapter = mBinding.forbiddenTimesList.adapter as PreferenceTimeViewAdapter
         val forbiddenTimes = forbiddenTimesAdapter.getTimesPreferenceFormat()
         val preferredTimesAdapter = mBinding.preferredTimesList.adapter as PreferenceTimeViewAdapter
         val preferredTimes = preferredTimesAdapter.getTimesPreferenceFormat()
-        val preference = PlannerTag(name, priority, forbiddenTimes, preferredTimes)
-
-        // Save preference in local db
         val coursesAdapter = mBinding.coursesAppliesList.adapter as MoodleCoursesViewAdapter
         val courses = coursesAdapter.courseIds
-        val preferenceLocal = PreferencesLocalDB(name, priority, preferredTimes, forbiddenTimes, courses)
-        LocalDBManager.insertOrUpdatePreference(preferenceLocal)
 
-        //Save preference to firebase db
-        TasksManager.getInstance().addPreferenceTag(preference, true)
-        // TODO update the necessary tasks from the courses?
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+
+                val preference = PlannerTag(name, priority, forbiddenTimes, preferredTimes)
+
+                // Save preference in local db
+                val preferenceLocal = PreferencesLocalDB(name, priority, preferredTimes, forbiddenTimes, courses)
+
+                LocalDBManager.insertOrUpdatePreference(preferenceLocal)
+
+                //Save preference to firebase db
+                TasksManager.getInstance().addPreferenceTag(preference, true)
+                // TODO update the necessary tasks from the courses?
+            }
+        }
 
         val mainActivity = activity as? MainActivity
         mainActivity?.returnBottomNavigation()
