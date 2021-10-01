@@ -99,17 +99,17 @@ tools:context=".fragments.CreatePreferenceFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/forbidden_times_list"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
             android:clipToPadding="false"
             app:layoutManager="LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/forbidden_times_title"
-            tools:listitem="@layout/google_account_list_item" />
+            tools:listitem="@layout/preference_time_item" />
 
         <ImageButton
             android:id="@+id/add_forbidden_button"

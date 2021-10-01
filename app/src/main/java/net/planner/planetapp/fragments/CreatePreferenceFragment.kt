@@ -8,13 +8,10 @@ import android.view.ViewGroup
 import android.view.autofill.AutofillValue
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.planner.planetapp.R
 import net.planner.planetapp.adapters.CalendarAccountAdapter
-import net.planner.planetapp.databinding.AccountsFragmentBinding
 import net.planner.planetapp.databinding.FragmentCreatePreferenceBinding
-import net.planner.planetapp.viewmodels.AccountsFragmentViewModel
 
 
 class CreatePreferenceFragment : Fragment() {
@@ -44,12 +41,11 @@ class CreatePreferenceFragment : Fragment() {
         editPreference?.setAdapter(adapter)
         editPreference?.setText("5")
 
-//        viewModel = ViewModelProvider(this).get(AccountsFragmentViewModel::class.java)
-//
-//        // Init Accounts Recycler View
-//        val accountsRecycler = mBinding.googleAccountsList
-//        accountsRecycler.layoutManager = LinearLayoutManager(context)
-//        accountsRecycler.adapter = CalendarAccountAdapter(listOf())
+
+        // Init Forbidden times Recycler View
+        val forbiddenTimesRecycler = mBinding.forbiddenTimesList
+        forbiddenTimesRecycler.layoutManager = LinearLayoutManager(context)
+        forbiddenTimesRecycler.adapter = CalendarAccountAdapter(listOf())
 
 
 
