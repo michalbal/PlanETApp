@@ -47,7 +47,9 @@ class DayFragmentViewModel : ViewModel() {
         events.let {
             withContext(Dispatchers.Main) {
                 Log.d(TAG, "Updating Day fragment with the events")
-                eventsToDisplay.postValue(it)
+                if (it?.isNotEmpty() == true) {
+                    eventsToDisplay.postValue(it)
+                }
             }
         }
         }

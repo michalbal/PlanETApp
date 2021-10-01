@@ -84,6 +84,11 @@ public class TasksManager {
         dBmanager = new DBmanager(username);
     }
 
+    public void initTasksManager(String user) {
+        Log.d(TAG, "initTasksManager called - No token");
+        dBmanager = new DBmanager(user);
+    }
+
     public Boolean addTasksReceivedListener(IOnTasksReceivedListener listener) {
         Log.d(TAG, "addTasksReceivedListener called");
         if (!tasksReceivedListeners.contains(listener)) {

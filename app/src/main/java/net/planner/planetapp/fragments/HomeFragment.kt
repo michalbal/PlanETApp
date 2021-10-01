@@ -3,6 +3,7 @@ package net.planner.planetapp.fragments
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
@@ -50,6 +51,7 @@ class HomeFragment : Fragment() {
         nextEventsRecycler.adapter = NextEventViewAdapter(listOf())
 
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
+            mBinding.noEventsFoundText.visibility = INVISIBLE
             val adapter = mBinding.nextEventsList.adapter as NextEventViewAdapter
             adapter.updateEvents(it.toList())
         } })
@@ -61,22 +63,24 @@ class HomeFragment : Fragment() {
         val mainActivity = activity as? MainActivity
         tasksRecycler.adapter = TasksViewAdapter(listOf(), activity = mainActivity)
 
-        val  today = System.currentTimeMillis()
         LocalDBManager.dbLocalTasksData.observe(viewLifecycleOwner, Observer { it?.let {
-            // Sort tasks according to date and show from closest
-            val sorted = it.toSortedSet(Comparator { o1, o2 ->
-                if (o1.deadline < System.currentTimeMillis()) {
-                    if(o2.deadline < System.currentTimeMillis()) {
-                        o1.deadline.compareTo(o2.deadline)
+            if (it.isNotEmpty()) {
+                mBinding.noTasksFoundText.visibility = INVISIBLE
+                // Sort tasks according to date and show from closest
+                val sorted = it.toSortedSet(Comparator { o1, o2 ->
+                    if (o1.deadline < System.currentTimeMillis()) {
+                        if(o2.deadline < System.currentTimeMillis()) {
+                            o1.deadline.compareTo(o2.deadline)
+                        } else {
+                            -o1.deadline.compareTo(o2.deadline)
+                        }
                     } else {
-                        -o1.deadline.compareTo(o2.deadline)
+                        o1.deadline.compareTo(o2.deadline)
                     }
-                } else {
-                    o1.deadline.compareTo(o2.deadline)
-                }
-            })
-            val adapter = mBinding.tasksList.adapter as TasksViewAdapter
-            adapter.updateTasks(sorted.toList())
+                })
+                val adapter = mBinding.tasksList.adapter as TasksViewAdapter
+                adapter.updateTasks(sorted.toList())
+            }
         } })
 
         return mBinding.root

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.R
+import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.databinding.MoodleSignInFragmentBinding
 import net.planner.planetapp.planner.TasksManager
 
@@ -61,6 +62,7 @@ class MoodleSignInFragment : Fragment() {
         mBinding.skipButton.setOnClickListener { view ->
             Log.d(TAG, "Skip was clicked! Moving to Initial Settings screen")
             activity?.runOnUiThread {
+                TasksManager.getInstance().initTasksManager(UserPreferencesManager.userName)
                 val navController = findNavController()
                 navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToInitialSettingsFragment())
             }
