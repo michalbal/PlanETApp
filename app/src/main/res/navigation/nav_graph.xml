@@ -34,6 +34,15 @@
         android:name="net.planner.planetapp.fragments.AccountsFragment"
         android:label="@string/accounts_label"
         tools:layout="@layout/accounts_fragment">
+        <action
+            android:id="@+id/action_AccountsFragment_to_moodleSignInFragment"
+            app:destination="@id/moodleSignInFragment" />
+        <action
+            android:id="@+id/action_AccountsFragment_to_moodleCoursesSelectionFragment"
+            app:destination="@id/moodleCoursesSelectionFragment" />
+        <action
+            android:id="@+id/action_AccountsFragment_to_googleAccountsFragment"
+            app:destination="@id/googleAccountsFragment" />
     </fragment>
 
     <fragment
@@ -96,6 +105,9 @@
         <action
             android:id="@+id/action_moodleCoursesSelectionFragment_to_initialSettingsFragment"
             app:destination="@id/initialSettingsFragment" />
+        <action
+            android:id="@+id/action_moodleCoursesSelectionFragment_to_AccountsFragment"
+            app:destination="@id/AccountsFragment" />
     </fragment>
     <fragment
         android:id="@+id/initialSettingsFragment"

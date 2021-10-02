@@ -23,6 +23,6 @@ class PreferencesLocalDB (
     val forbiddenTIsettings: HashMap<String, ArrayList<String>> = HashMap(),
 
     @ColumnInfo(name ="course_names")
-    val courses: Set<String>
+    var courses: Set<String>
 
 )

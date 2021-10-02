@@ -81,12 +81,20 @@ public class TasksManager {
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         Log.d(TAG, "initTasksManager called");
         token = connector.connectToCSEMoodle(username, password);
+        UserPreferencesManager.INSTANCE.setUserMoodleToken(token);
+        UserPreferencesManager.INSTANCE.setMoodleUserName(username);
         dBmanager = new DBmanager(username);
     }
 
     public void initTasksManager(String user) {
         Log.d(TAG, "initTasksManager called - No token");
         dBmanager = new DBmanager(user);
+    }
+
+    public void logoutOfMoodleUser() {
+        token = "";
+        String userName = UserPreferencesManager.INSTANCE.getUserName();
+        dBmanager = new DBmanager(userName);
     }
 
     public Boolean addTasksReceivedListener(IOnTasksReceivedListener listener) {
@@ -288,7 +296,6 @@ public class TasksManager {
 
         // Get user Settings for scheduling
         long spaceBetweenEvents = TimeUnit.MINUTES.toMillis(UserPreferencesManager.INSTANCE.getSpaceBetweenEventsMinutes());
-        // TODO get preferences from Local DB here, will probably be faster
 
         PlannerCalendar calendar = new PlannerCalendar(startTime, endTime, spaceBetweenEvents, events, preferences);
 
@@ -318,7 +325,7 @@ public class TasksManager {
         dBmanager.deleteTask(task);
     }
 
-    public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
+    public void processUserAcceptedSubtasks(List<PlannerEvent> acceptedEvents) {
 
         Log.d(TAG, "processUserAcceptedSubtasks called");
         for(PlannerEvent subtask : acceptedEvents){

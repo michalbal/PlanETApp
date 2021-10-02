@@ -47,6 +47,8 @@ class InitialSettingsFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            UserPreferencesManager.didFinishFirstSeq = true
+
             Log.d(TAG, "Moving on to Home Screen start retrieving tasks from moodle")
             viewModel.startGettingTasksFromMoodle()
 

@@ -98,6 +98,7 @@
         android:layout_marginTop="40dp"
         android:background="@color/moodle_orange"
         android:text="Login"
+        android:theme="@style/Button.color"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

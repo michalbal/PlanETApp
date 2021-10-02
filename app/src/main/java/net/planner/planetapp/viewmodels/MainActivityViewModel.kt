@@ -9,10 +9,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.IOnPlanCalculatedListener
 import net.planner.planetapp.IOnTasksReceivedListener
+import net.planner.planetapp.adapters.SubtaskPlanDayRep
+import net.planner.planetapp.getDayDate
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.planner.TasksManager
 import java.util.*
+import kotlin.collections.HashMap
 
 class MainActivityViewModel: ViewModel() {
 
@@ -23,7 +26,7 @@ class MainActivityViewModel: ViewModel() {
     }
 
     val showTasksDialog =  MutableLiveData<Collection<PlannerTask>>()
-    val showPlanCalculatedDialog =  MutableLiveData<Collection<PlannerEvent>>()
+    val showPlanCalculatedDialog =  MutableLiveData<List<SubtaskPlanDayRep>>()
 
     private val mOnTasksReceivedListener = OnTasksReceivedListener()
     private val mOnPlanCalculatedListener = OnPlanCalculatedListener()
@@ -59,9 +62,10 @@ class MainActivityViewModel: ViewModel() {
         // google calendar(all events that have passed and reduce the time of those remaining from the estimated duration)
     }
 
-    fun savePlan(subtasks: Collection<PlannerEvent>) {
+    fun savePlan(subtasks: List<PlannerEvent>) {
         Log.d(TAG, "savePlan: Received ${subtasks.size} subtasks")
         // Inform relevant parties that the plan was approved by the user
+        TasksManager.getInstance().processUserAcceptedSubtasks(subtasks)
     }
 
 
@@ -79,7 +83,28 @@ class MainActivityViewModel: ViewModel() {
     private inner class OnPlanCalculatedListener: IOnPlanCalculatedListener {
         override fun onPlanCalculated(subtasks: Collection<PlannerEvent>) {
             Log.d(TAG, "OnPlanCalculatedListener: Received ${subtasks.size} subtasks")
-            showPlanCalculatedDialog.postValue(subtasks)
+
+            // Create structures of subTasks that the adapter can work with
+            var subTasksPerDayMap: HashMap<String, MutableList<PlannerEvent>> = HashMap()
+            for(subTask in subtasks) {
+                val eventDate = getDayDate(subTask.startTime)
+                if(!subTasksPerDayMap.containsKey(eventDate)) {
+                    subTasksPerDayMap[eventDate] = mutableListOf<PlannerEvent>()
+                }
+                subTasksPerDayMap[eventDate]?.add(subTask)
+            }
+
+            var subTaskPerDayList = mutableListOf<SubtaskPlanDayRep>()
+            for(entry in subTasksPerDayMap.entries) {
+                // TODO consider adding all days between first and last event here
+                val sortedEvents = entry.value.toSortedSet(Comparator { o1, o2 ->
+                    o1.startTime.compareTo(o2.startTime)
+                })
+                val dayRep = SubtaskPlanDayRep(entry.key, sortedEvents.toList())
+                subTaskPerDayList.add(dayRep)
+            }
+
+            showPlanCalculatedDialog.postValue(subTaskPerDayList)
         }
     }
 

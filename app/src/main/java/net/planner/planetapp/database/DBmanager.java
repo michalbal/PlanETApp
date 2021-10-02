@@ -69,7 +69,7 @@ public class DBmanager {
                 plannerTask.getMoodleId()).delete();
     }
 
-    public void writeNewSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
+    public void writeNewSubtasks(List<PlannerEvent> acceptedEvents) {
         for (PlannerEvent subtask : acceptedEvents) {
             SubtaskDB subtaskDB = new SubtaskDB(Long.toString(subtask.getEventId()),
                                                 subtask.getStartTime(), subtask.getEndTime(),
