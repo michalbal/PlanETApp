@@ -7,11 +7,11 @@ import android.widget.CheckBox
 import net.planner.planetapp.databinding.FragmentMoodleCoursesItemBinding
 
 class MoodleCoursesViewAdapter(
-    private var values: List<String>
+    private var values: List<String>,
+    private val isClickable:  Boolean,
+    var courseIds: MutableSet<String> = mutableSetOf()
 ) : RecyclerView.Adapter<MoodleCoursesViewAdapter.ViewHolder>()  {
 
-    var courseIds: MutableSet<String> = mutableSetOf()
-    //TODO change to HashMap<String, String> to work with TasksManager
     var unwantedCourseIds: MutableSet<String> = mutableSetOf()
 
 
@@ -30,23 +30,29 @@ class MoodleCoursesViewAdapter(
         val item = values[position]
         holder.courseIdCheckbox.text = item
 
-        holder.courseIdCheckbox.setOnClickListener { view ->
-            if (holder.courseIdCheckbox.isChecked) {
-                courseIds.remove(item)
-                unwantedCourseIds.add(item)
-            } else {
+        holder.courseIdCheckbox.isClickable = isClickable
+
+        holder.courseIdCheckbox.isChecked = courseIds.contains(item)
+
+        holder.courseIdCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 courseIds.add(item)
                 if (unwantedCourseIds.contains(item)) {
                     unwantedCourseIds.remove(item)
                 }
+            } else {
+                courseIds.remove(item)
+                unwantedCourseIds.add(item)
             }
         }
-        }
+    }
 
 
-    fun updateCourses(courses: List<String>) {
+    fun updateCourses(courses: List<String>, areChecked: Boolean) {
         values = courses
-        courseIds.addAll(courses)
+        if(areChecked) {
+            courseIds.addAll(courses)
+        }
         notifyDataSetChanged()
     }
 

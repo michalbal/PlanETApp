@@ -15,7 +15,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import net.planner.planetapp.database.local_database.LocalDBManager;
 import net.planner.planetapp.planner.PlannerEvent;
+import net.planner.planetapp.planner.PlannerObject;
 import net.planner.planetapp.planner.PlannerTag;
 import net.planner.planetapp.planner.PlannerTask;
 import net.planner.planetapp.planner.TasksManager;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class DBmanager {
@@ -39,9 +42,10 @@ public class DBmanager {
 
         db.collection("users").document(username).set(
                 Collections.singletonMap("username", username), SetOptions.merge());
+        // tODO if possible, check if the user's document already exists and if it does update the local db
     }
 
-    public void writeAcceptedTasks(LinkedList<PlannerTask> acceptedTasks) {
+    public void writeAcceptedTasks(List<PlannerTask> acceptedTasks) {
         for (PlannerTask task : acceptedTasks) {
             TaskDB taskDB = new TaskDB(task.getMoodleId(), task.getTitle(), task.getCourseId(),
                                        task.getDescription(), task.getLocation(),
@@ -147,6 +151,7 @@ public class DBmanager {
 
     public void addUserMoodleCourses(HashMap<String, String> moodleCourses) {
         for (HashMap.Entry<String, String> parsedCourseName : moodleCourses.entrySet()) {
+            LocalDBManager.INSTANCE.insertOrUpdateCourse(parsedCourseName.getKey(), parsedCourseName.getValue(), PlannerObject.GENERAL_TAG);
             addMoodleCourseName(parsedCourseName.getKey(), parsedCourseName.getValue());
         }
     }
@@ -165,6 +170,8 @@ public class DBmanager {
         PreferenceDB preference = new PreferenceDB(tag.getTagName(), tag.getPriority(),
                                                    flattenKey(tag.getPreferredTIsettings()),
                                                    flattenKey(tag.getForbiddenTIsettings()));
+
+        // TODO add here to local db as well
 
         db.collection("users").document(username).collection("preferences")
                 .document(preference.getTagName()).set(preference, SetOptions.merge());

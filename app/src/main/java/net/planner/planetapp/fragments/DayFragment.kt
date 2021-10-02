@@ -72,6 +72,7 @@ class DayFragment : Fragment() {
 
         // Subscribe to updates to event list
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
+            mBinding.noEventsFoundText.visibility = View.INVISIBLE
             val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
             adapter.updateEvents(it.toList())
         } })
@@ -128,12 +129,16 @@ class DayFragment : Fragment() {
     }
 
     private fun updateDateWithPermission(dateUpdated: String) {
+        val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter
+        adapter.updateEvents(listOf())
+        mBinding.noEventsFoundText.visibility = View.VISIBLE
         date = dateUpdated
         mBinding.dateText.text = dateUpdated
         viewModel.updateEventsForDay(dateUpdated)
     }
 
     private fun updateDateNoPermission(dateUpdated: String) {
+        mBinding.noEventsFoundText.visibility = View.VISIBLE
         date = dateUpdated
         mBinding.dateText.text = dateUpdated
         val adapter = mBinding.subTasksList.adapter as NextEventViewAdapter

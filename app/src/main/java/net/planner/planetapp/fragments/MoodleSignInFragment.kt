@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.R
+import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.databinding.MoodleSignInFragmentBinding
 import net.planner.planetapp.planner.TasksManager
 
@@ -37,8 +38,8 @@ class MoodleSignInFragment : Fragment() {
 
         mBinding.loginButton.setOnClickListener { view ->
             Log.d(TAG, "Login was clicked! Getting token from Moodle")
-            val userName = mBinding.editMoodleUserName.text.toString()
-            val password = mBinding.editPassword.text.toString()
+            val userName = mBinding.editMoodleUserName.editText?.text.toString()
+            val password = mBinding.editPassword.editText?.text.toString()
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     try {
@@ -61,6 +62,7 @@ class MoodleSignInFragment : Fragment() {
         mBinding.skipButton.setOnClickListener { view ->
             Log.d(TAG, "Skip was clicked! Moving to Initial Settings screen")
             activity?.runOnUiThread {
+                TasksManager.getInstance().initTasksManager(UserPreferencesManager.userName)
                 val navController = findNavController()
                 navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToInitialSettingsFragment())
             }

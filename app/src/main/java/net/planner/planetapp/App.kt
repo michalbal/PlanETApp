@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.networking.GoogleCalenderCommunicator
 import net.planner.planetapp.planner.TasksManager
 import net.planner.planetapp.workers.CheckForNewTasksWorker
@@ -37,6 +38,7 @@ class App: Application()  {
             .enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.KEEP, periodicWorkReq)
 
         UserPreferencesManager.toString()
+        LocalDBManager.toString()
         // TODO add wait here before continuing to the others?
         GlobalScope.launch {
             GoogleCalenderCommunicator.initAccountsFromDb(context)
