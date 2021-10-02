@@ -44,11 +44,12 @@ class DayFragmentViewModel : ViewModel() {
             }.await()
         }
         Log.d(TAG, "getEventsForDay: Finished waiting")
-        // TODO maybe put this inside the get events
         events.let {
             withContext(Dispatchers.Main) {
                 Log.d(TAG, "Updating Day fragment with the events")
-                eventsToDisplay.postValue(it)
+                if (it?.isNotEmpty() == true) {
+                    eventsToDisplay.postValue(it)
+                }
             }
         }
         }

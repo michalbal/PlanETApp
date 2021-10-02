@@ -50,6 +50,19 @@
         app:layout_constraintTop_toBottomOf="@+id/inspText" />
 
     <TextView
+        android:id="@+id/no_events_found_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="50dp"
+        android:text="No events found"
+        android:textSize="23sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/upNextText" />
+
+    <TextView
         android:id="@+id/yourTasksText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,6 +72,19 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nextEventsList" />
+
+    <TextView
+        android:id="@+id/no_tasks_found_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="70dp"
+        android:text="No Tasks found"
+        android:textSize="25sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yourTasksText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksList"

@@ -186,15 +186,20 @@ object GoogleCalenderCommunicator {
     }
 
 
+    fun insertEvent(
+        activity: Context, insertedEvent: PlannerEvent): Long {
+        return insertEvent(activity, insertedEvent, mainCalendarID, null)
+    }
+
     /**
      * Add event to the google calendar sent.
      * If not specified, the event will be added to the main calendar found by the library, or specified with set.
      */
     fun insertEvent(
-        activity: Activity?, insertedEvent: PlannerEvent,
+        activity: Context, insertedEvent: PlannerEvent,
         calenderId: Long = mainCalendarID, timezone: String? = null
     ): Long {
-        val contentResolver = activity?.contentResolver
+        val contentResolver = activity.contentResolver
         val startMillis = insertedEvent.startTime
         val endMillis = insertedEvent.endTime
         val eventTitle = insertedEvent.title

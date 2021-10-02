@@ -13,25 +13,38 @@
     <string name="hello_greeting">Hello %s! </string>
 
     <!-- Day Fragment-->
-    <string name="alert_cannot_show_events">Cannot show events since Read Permission was not granted! </string>
+    <string name="alert_cannot_show_events">Cannot show events since Read from Calendar Permission was not granted! </string>
 
-    <!-- Dialog Messages-->
+    <!-- Dialogs -->
     <string name="request_read_permission">Requesting to read from your Calender </string>
-    <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.<br/>
+    <string name="request_read_events_message">In order to show your events we need to read from your Google Calender.<br />
         If we do not have access, no events will be shown. Will you allow us to read your events?</string>
+
+    <string name="select_tasks_dialog_title">Found new tasks from Moodle </string>
+    <string name="select_tasks_positive_button">Start Planning</string>
+    <string name="starting_to_plan_message">Planning your schedule</string>
+    <string name="changes_detected_message">Your changes will be lost, are you sure you want to continue?</string>
+    <string name="found_changes_dialog_title">Found unsaved changes </string>
 
 
     <!-- Welcome Fragment-->
     <string name="welcome_title">Welcome to PlanEt!</string>
-    <string name="planet_introduction">Your helper for getting the most out of your time!<br/><br/>
-        We draw your upcoming tasks from Moodle, and combined with events from your Google Calender,
-    and Preferences you set, we create the right schedule for you!
-    </string>
+    <string name="planet_introduction_part_1">Your helper for getting the most out of your time!</string>
+    <string name="planet_introduction_part_2">We draw your upcoming tasks from Moodle, and combined with events from your Google Calender,
+    and Preferences you set, we create the right schedule for you!</string>
     <string name="name_title">What shall we call you?</string>
 
     <!-- Moodle Init-->
-    <string name="login_error">Something went wrong during login,<br/>
+    <string name="login_error">Something went wrong during login,<br />
         make sure your credentials are correct</string>
+
+    <!-- Initial Settings-->
+    <string name="settings_instructions">One of the values was filled incorrectly.<br />
+    Please note, Average time a task takes must be a number, in hours, between 1 and 100.<br />
+    Preferred study session duration must be a number, in hours, between 1 and Average task time.<br />
+    Min time between sessions must be a number, in minutes, lower then 1440 </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

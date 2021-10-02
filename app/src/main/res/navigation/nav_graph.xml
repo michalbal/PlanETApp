@@ -11,6 +11,12 @@
         android:label="@string/home_label"
         tools:layout="@layout/home_fragment">
 
+        <action
+            android:id="@+id/action_HomeFragment_to_viewAndEditTaskFragment"
+            app:destination="@id/viewAndEditTaskFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_viewAndEditPreferenceFragment"
+            app:destination="@id/viewAndEditPreferenceFragment" />
     </fragment>
 
     <fragment
@@ -18,6 +24,9 @@
         android:name="net.planner.planetapp.fragments.DayFragment"
         android:label="@string/day_label"
         tools:layout="@layout/day_fragment">
+        <action
+            android:id="@+id/action_DayFragment_to_createTaskFragment"
+            app:destination="@id/createTaskFragment" />
     </fragment>
 
     <fragment
@@ -32,6 +41,12 @@
         android:name="net.planner.planetapp.fragments.PreferancesFragment"
         android:label="@string/preferances_label"
         tools:layout="@layout/preferances_list_item">
+        <action
+            android:id="@+id/action_PreferancesFragment_to_createPreferenceFragment"
+            app:destination="@id/createPreferenceFragment" />
+        <action
+            android:id="@+id/action_PreferancesFragment_to_viewAndEditPreferenceFragment"
+            app:destination="@id/viewAndEditPreferenceFragment" />
     </fragment>
 
     <fragment
@@ -90,5 +105,40 @@
         <action
             android:id="@+id/action_initialSettingsFragment_to_HomeFragment"
             app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createPreferenceFragment"
+        android:name="net.planner.planetapp.fragments.CreatePreferenceFragment"
+        android:label="fragment_create_preference"
+        tools:layout="@layout/fragment_create_preference" >
+        <action
+            android:id="@+id/action_createPreferenceFragment_to_PreferancesFragment"
+            app:destination="@id/PreferancesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createTaskFragment"
+        android:name="net.planner.planetapp.fragments.CreateTaskFragment"
+        android:label="fragment_create_task"
+        tools:layout="@layout/fragment_create_task" >
+        <action
+            android:id="@+id/action_createTaskFragment_to_DayFragment"
+            app:destination="@id/DayFragment" />
+        <action
+            android:id="@+id/action_createTaskFragment_to_createPreferenceFragment"
+            app:destination="@id/createPreferenceFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewAndEditPreferenceFragment"
+        android:name="net.planner.planetapp.fragments.ViewAndEditPreferenceFragment"
+        android:label="view_and_edit_preference_fragment"
+        tools:layout="@layout/view_and_edit_preference_fragment" />
+    <fragment
+        android:id="@+id/viewAndEditTaskFragment"
+        android:name="net.planner.planetapp.fragments.ViewAndEditTaskFragment"
+        android:label="view_and_edit_task_fragment"
+        tools:layout="@layout/view_and_edit_task_fragment" >
+        <action
+            android:id="@+id/action_viewAndEditTaskFragment_to_createPreferenceFragment"
+            app:destination="@id/createPreferenceFragment" />
     </fragment>
 </navigation>

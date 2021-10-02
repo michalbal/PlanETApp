@@ -29,18 +29,21 @@ class CalendarAccountAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.account.text = item
+        holder.account.isChecked = googleAccounts.contains(item)
+        holder.isMainRadio.isChecked = item == mainCalendarName
 
-        holder.account.setOnClickListener { view ->
-            if (holder.account.isChecked) {
-                googleAccounts.remove(item)
-            } else {
+        holder.account.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 googleAccounts.add(item)
+            } else {
+                googleAccounts.remove(item)
             }
         }
 
         holder.isMainRadio.setOnClickListener { view ->
             if (!holder.account.text.equals(mainCalendarName)) {
                 mainCalendarName = holder.account.text.toString()
+                notifyDataSetChanged()
             }
         }
 

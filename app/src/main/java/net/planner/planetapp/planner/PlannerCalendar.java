@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class PlannerCalendar {
 
     // Constants
-    private static final int SPACE_IN_MINUTES = 15;
+    public static final int SPACE_IN_MINUTES = 15;
     private static final int MIN_SPACE_IN_SECONDS = 1;
     private static final long DEFAULT_LENGTH = TimeUnit.DAYS.toMillis(30);
     private static final long MIN_SPACE_IN_MILLIS = MIN_SPACE_IN_SECONDS * 1000L;
@@ -121,7 +121,7 @@ public class PlannerCalendar {
         tags = new HashMap<>(tagList.size());
         for (PlannerTag tag : tagList) {
             String tagName = tag.getTagName();
-            if (!tagName.equals(PlannerObject.NO_TAG)) {
+            if (!tagName.equals(PlannerObject.GENERAL_TAG)) {
                 tags.put(tagName, tag);
             }
         }
@@ -514,7 +514,7 @@ public class PlannerCalendar {
      * Helper function: Returns the tag if it exists in this calendar. Return null if name is null or NO_TAG.
      */
     private PlannerTag safeGetTag(String tagName) {
-        if (tagName == null || tagName.equals(PlannerObject.NO_TAG)) {
+        if (tagName == null || tagName.equals(PlannerObject.GENERAL_TAG)) {
             return null;
         }
         return tags.get(tagName);

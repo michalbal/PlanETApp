@@ -7,14 +7,144 @@
     tools:context=".fragments.InitialSettingsFragment">
 
 
+    <EditText
+        android:id="@+id/edit_min_session"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:text="15"
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/min_time_title"
+        app:layout_constraintTop_toBottomOf="@+id/study_session_title" />
+
+    <TextView
+        android:id="@+id/hours_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:layout_marginEnd="56dp"
+        android:text="Hours"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/initial_settings_title" />
+
     <Button
         android:id="@+id/save_initisl_settings_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
-        android:text="Save"
+        android:layout_marginTop="280dp"
         android:background="@color/colorPrimary"
+        android:text="Save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/initial_settings_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Scheduling Settings:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/average_task_time_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Average time a task takes:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/initial_settings_title" />
+
+    <EditText
+        android:id="@+id/edit_average_task_duration"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:ems="10"
+        android:text="5"
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="number"
+        app:layout_constraintEnd_toStartOf="@+id/hours_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/average_task_time_title"
+        app:layout_constraintTop_toBottomOf="@+id/initial_settings_title" />
+
+    <TextView
+        android:id="@+id/hours_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="60dp"
+        android:text="Hours"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/initial_settings_title" />
+
+    <TextView
+        android:id="@+id/study_session_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Preferred study session duration:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/average_task_time_title" />
+
+    <EditText
+        android:id="@+id/edit_preferred_session"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:text="2"
+        android:backgroundTint="@color/colorPrimary"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/study_session_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration" />
+
+    <TextView
+        android:id="@+id/min_time_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Min time between sessions:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/study_session_title" />
+
+    <TextView
+        android:id="@+id/minutes_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="35dp"
+        android:text="Minutes"
+        app:layout_constraintStart_toEndOf="@+id/edit_min_session"
+        app:layout_constraintTop_toBottomOf="@+id/hours_title2" />
+
+    <TextView
+        android:id="@+id/warning_instructions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="invisible"
+        android:text="@string/settings_instructions"
+        android:textColor="@color/moodle_orange"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/save_initisl_settings_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>
