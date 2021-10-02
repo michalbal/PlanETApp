@@ -202,7 +202,7 @@ public class PlannerTag {
 
     /** Get tree with the time intervals in which it's preferred to create tasks tagged with it **/
     public final IntervalTree getPreferredTimeIntervalsTree(long startTime, long endTime) {
-        if (preferredTimeIntervals.isEmpty() ||
+        if (preferredTIsettings.isEmpty() ||
                 (cachePreferredStartTime == startTime && cachePreferredEndTime == endTime)) {
             return preferredTimeIntervals;
         }
@@ -283,8 +283,6 @@ public class PlannerTag {
                 continue;
             }
 
-            intervalStart += startTime;
-            intervalEnd += startTime;
             for (String day : days) {
                 long numDaysInMillis = UtilsKt.getMillisSinceSunday(day);
                 if (numDaysInMillis == -1L) {
@@ -317,13 +315,14 @@ public class PlannerTag {
     }
 
     private static LongInterval getFirstValidTime(long validStart, long validEnd, long intervalStart, long intervalEnd) {
+
         long attemptStart = getTimeAtStartOfWeek(validStart) + intervalStart;
 
         while (attemptStart < validStart) {
             attemptStart += ONE_WEEK;
-            if (attemptStart > validEnd) {
-                return null;
-            }
+        }
+        if (attemptStart > validEnd) {
+            return null;
         }
 
         long duration = intervalEnd - intervalStart;
