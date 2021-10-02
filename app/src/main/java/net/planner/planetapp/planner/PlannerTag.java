@@ -164,6 +164,7 @@ public class PlannerTag {
                 return forbiddenTimeIntervals;
         }
 
+        Log.d(TAG, "New forbiddenTimeIntervals:");
         forbiddenTimeIntervals = generateTreeOutOfSettings(forbiddenTIsettings, startTime, endTime);
         cacheForbiddenStartTime = startTime;
         cacheForbiddenEndTime = endTime;
@@ -202,11 +203,12 @@ public class PlannerTag {
 
     /** Get tree with the time intervals in which it's preferred to create tasks tagged with it **/
     public final IntervalTree getPreferredTimeIntervalsTree(long startTime, long endTime) {
-        if (preferredTimeIntervals.isEmpty() ||
+        if (preferredTIsettings.isEmpty() ||
                 (cachePreferredStartTime == startTime && cachePreferredEndTime == endTime)) {
             return preferredTimeIntervals;
         }
 
+        Log.d(TAG, "New preferredTimeIntervals:");
         preferredTimeIntervals = generateTreeOutOfSettings(preferredTIsettings, startTime, endTime);
         cachePreferredStartTime = startTime;
         cachePreferredEndTime = endTime;
@@ -274,6 +276,8 @@ public class PlannerTag {
         for(HashMap.Entry<Pair<String, String>, ArrayList<String>> intervalToDays : settings.entrySet()) {
             Pair<String, String> stringInterval = intervalToDays.getKey();
             ArrayList<String> days = intervalToDays.getValue();
+            Log.d(TAG, "Time: " + stringInterval);
+            Log.d(TAG, "Days: " + days);
 
             // Translate string interval to long interval after startTime.
             Long intervalStart = UtilsKt.getMillisFromHour(stringInterval.first);
@@ -282,11 +286,13 @@ public class PlannerTag {
                 Log.e(TAG, "Illegal time string: " + stringInterval);
                 continue;
             }
+            Log.d(TAG, "intervalStart: " + intervalStart);
+            Log.d(TAG, "intervalEnd: " + intervalEnd);
 
-            intervalStart += startTime;
-            intervalEnd += startTime;
             for (String day : days) {
                 long numDaysInMillis = UtilsKt.getMillisSinceSunday(day);
+                Log.d(TAG, "numDaysInMillis: " + numDaysInMillis);
+
                 if (numDaysInMillis == -1L) {
                     Log.e(TAG, "Illegal day string: " + day);
                     continue;
@@ -299,6 +305,13 @@ public class PlannerTag {
                     validTime = getNextValidTime(endTime, validTime);
                 }
             }
+        }
+
+        Log.d(TAG, "Results:");
+        for (IInterval iInterval : newTree) {
+            LongInterval interval = (LongInterval) iInterval;
+            Log.d(TAG, "Start: " + UtilsKt.getDate(interval.getStart()));
+            Log.d(TAG, "End: " + UtilsKt.getDate(interval.getEnd()));
         }
 
         return newTree;
@@ -317,13 +330,19 @@ public class PlannerTag {
     }
 
     private static LongInterval getFirstValidTime(long validStart, long validEnd, long intervalStart, long intervalEnd) {
+        Log.d(TAG, "validStart: " + validStart);
+        Log.d(TAG, "validEnd: " + validEnd);
+        Log.d(TAG, "intervalStart: " + intervalStart);
+        Log.d(TAG, "intervalEnd: " + intervalEnd);
+
         long attemptStart = getTimeAtStartOfWeek(validStart) + intervalStart;
+        Log.d(TAG, "attemptStart: " + attemptStart);
 
         while (attemptStart < validStart) {
             attemptStart += ONE_WEEK;
-            if (attemptStart > validEnd) {
-                return null;
-            }
+        }
+        if (attemptStart > validEnd) {
+            return null;
         }
 
         long duration = intervalEnd - intervalStart;
