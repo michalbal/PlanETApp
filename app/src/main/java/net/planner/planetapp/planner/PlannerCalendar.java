@@ -9,7 +9,6 @@ import com.brein.time.timeintervals.intervals.IInterval;
 import com.brein.time.timeintervals.intervals.LongInterval;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -107,14 +106,7 @@ public class PlannerCalendar {
      * Helper function: Actual constructor (receives default values from other constructors).
      */
     private void init(long startTime, long endTime, long spaceBetweenEvents, List<PlannerEvent> eventList, List<PlannerTag> tagList) {
-        // Get time at start of day.
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(startTime);
-        startDate.set(Calendar.HOUR_OF_DAY, 0);
-        startDate.set(Calendar.MINUTE, 0);
-        startDate.set(Calendar.SECOND, 0);
-        startDate.set(Calendar.MILLISECOND, 0);
-        this.startTime = startDate.getTimeInMillis();
+        this.startTime = startTime;
         this.endTime = endTime;
 
         // Add tags.
@@ -189,7 +181,7 @@ public class PlannerCalendar {
      * Attempts to insert the given event into this calendar (interval must not overlap). Returns true if successful.
      */
     public boolean insertEvent(PlannerEvent event) {
-        if (isInvalidDate(event.getStartTime()) || isInvalidDate(event.getEndTime())) {
+        if (isInvalidInterval(event.getStartTime(), event.getEndTime())) {
             return false;
         }
 
@@ -201,7 +193,7 @@ public class PlannerCalendar {
      * Attempts to insert the given event into this calendar (can overlap with others). Returns true if successful.
      */
     public boolean forceInsertEvent(PlannerEvent event) {
-        if (isInvalidDate(event.getStartTime()) || isInvalidDate(event.getEndTime())) {
+        if (isInvalidInterval(event.getStartTime(), event.getEndTime())) {
             return false;
         }
 
@@ -384,7 +376,6 @@ public class PlannerCalendar {
         PlannerTag tag = safeGetTag(task.getTagName());
         if (tag == null) {
             findIntervalForUntaggedTask(task, freeTimeIt, options);
-
             return task.splitIntoEvents(options, spaceBetweenEvents);
         }
 
@@ -523,8 +514,8 @@ public class PlannerCalendar {
     /**
      * Helper function: Returns true if the given date is not within the calendar's valid time interval.
      */
-    private boolean isInvalidDate(long time) {
-        return startTime > time || time > endTime;
+    private boolean isInvalidInterval(long intervalStart, long intervalEnd) {
+        return intervalEnd <= intervalStart || intervalEnd < this.startTime || intervalStart > this.endTime;
     }
 
     // Inner classes

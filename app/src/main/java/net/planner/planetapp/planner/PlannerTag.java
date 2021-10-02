@@ -9,23 +9,34 @@ import com.brein.time.timeintervals.indexes.IntervalTreeBuilder;
 import com.brein.time.timeintervals.intervals.IInterval;
 import com.brein.time.timeintervals.intervals.LongInterval;
 
+import net.planner.planetapp.UtilsKt;
+
 import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class PlannerTag {
+
+    // Constants
+    private static final long ONE_WEEK = TimeUnit.DAYS.toMillis(7);
     private static final String TAG = "PlannerTag";
+
+    // Fields
     private String tagName;
     private IntervalTree forbiddenTimeIntervals;
     private IntervalTree preferredTimeIntervals;
     private int priority;
     private HashMap<Pair<String, String>, ArrayList<String>> forbiddenTIsettings;
     private HashMap<Pair<String, String>, ArrayList<String>> preferredTIsettings;
+    private long cacheForbiddenStartTime, cacheForbiddenEndTime;
+    private long cachePreferredStartTime, cachePreferredEndTime;
 
     // constructor
     /** Create PlannerTag from its title **/
@@ -39,6 +50,8 @@ public class PlannerTag {
                 .collectIntervals(interval -> new ListIntervalCollection()).build();
         this.forbiddenTIsettings = new HashMap<>();
         this.preferredTIsettings = new HashMap<>();
+        invalidateForbiddenCache();
+        invalidatePreferredCache();
     }
 
     public PlannerTag(String tagName,int priority,
@@ -61,15 +74,17 @@ public class PlannerTag {
     }
 
     public void addNewForbiddenTIsetting(String day, String startTime, String endTime){
-        Pair pair = new Pair<>(startTime, endTime);
+        Pair<String, String> pair = new Pair<>(startTime, endTime);
         if (forbiddenTIsettings.containsKey(pair)){
             if (!forbiddenTIsettings.get(pair).contains(day)) {
                 forbiddenTIsettings.get(pair).add(day);
+                invalidateForbiddenCache();
             }
         } else {
             ArrayList<String> days = new ArrayList<>();
             days.add(day);
             forbiddenTIsettings.put(pair, days);
+            invalidateForbiddenCache();
         }
     }
 
@@ -78,15 +93,17 @@ public class PlannerTag {
     }
 
     public void addNewPreferredTIsetting(String day, String startTime, String endTime){
-        Pair pair = new Pair<>(startTime, endTime);
+        Pair<String, String> pair = new Pair<>(startTime, endTime);
         if (preferredTIsettings.containsKey(pair)){
             if (!preferredTIsettings.get(pair).contains(day)) {
                 preferredTIsettings.get(pair).add(day);
+                invalidatePreferredCache();
             }
         } else {
             ArrayList<String> days = new ArrayList<>();
             days.add(day);
             preferredTIsettings.put(pair, days);
+            invalidatePreferredCache();
         }
     }
 
@@ -130,8 +147,26 @@ public class PlannerTag {
         return forbiddenTimeIntervals.iterator();
     }
 
+    /** Get iterator over time intervals in which it's forbidden to create tasks tagged with it **/
+    public Iterator<IInterval> getForbiddenTimeIntervalsIterator(long startTime, long endTime) {
+        return getForbiddenTimeIntervalsTree(startTime, endTime).iterator();
+    }
+
     /** Get tree with the time intervals in which it's forbidden to create tasks tagged with it **/
     public final IntervalTree getForbiddenTimeIntervalsTree() {
+        return forbiddenTimeIntervals;
+    }
+
+    /** Get tree with the time intervals in which it's forbidden to create tasks tagged with it **/
+    public final IntervalTree getForbiddenTimeIntervalsTree(long startTime, long endTime) {
+        if (forbiddenTIsettings.isEmpty() ||
+            (cacheForbiddenStartTime == startTime && cacheForbiddenEndTime == endTime)) {
+                return forbiddenTimeIntervals;
+        }
+
+        forbiddenTimeIntervals = generateTreeOutOfSettings(forbiddenTIsettings, startTime, endTime);
+        cacheForbiddenStartTime = startTime;
+        cacheForbiddenEndTime = endTime;
         return forbiddenTimeIntervals;
     }
 
@@ -155,8 +190,26 @@ public class PlannerTag {
         return preferredTimeIntervals.iterator();
     }
 
+    /** Get iterator over time intervals in which it's preferred to create tasks tagged with it **/
+    public Iterator<IInterval> getPreferredTimeIntervalsIterator(long startTime, long endTime) {
+        return getPreferredTimeIntervalsTree(startTime, endTime).iterator();
+    }
+
     /** Get tree with the time intervals in which it's preferred to create tasks tagged with it **/
     public final IntervalTree getPreferredTimeIntervalsTree() {
+        return preferredTimeIntervals;
+    }
+
+    /** Get tree with the time intervals in which it's preferred to create tasks tagged with it **/
+    public final IntervalTree getPreferredTimeIntervalsTree(long startTime, long endTime) {
+        if (preferredTimeIntervals.isEmpty() ||
+                (cachePreferredStartTime == startTime && cachePreferredEndTime == endTime)) {
+            return preferredTimeIntervals;
+        }
+
+        preferredTimeIntervals = generateTreeOutOfSettings(preferredTIsettings, startTime, endTime);
+        cachePreferredStartTime = startTime;
+        cachePreferredEndTime = endTime;
         return preferredTimeIntervals;
     }
 
@@ -201,6 +254,97 @@ public class PlannerTag {
     @Override
     public int hashCode() {
         return Objects.hash(tagName);
-
     }
+
+    // Helper functions
+    private void invalidateForbiddenCache() {
+        cacheForbiddenStartTime = cacheForbiddenEndTime = -1L;
+    }
+
+    private void invalidatePreferredCache() {
+        cachePreferredStartTime = cachePreferredEndTime = -1L;
+    }
+
+    private static IntervalTree generateTreeOutOfSettings(
+            HashMap<Pair<String, String>, ArrayList<String>> settings, long startTime, long endTime) {
+        IntervalTree newTree = IntervalTreeBuilder.newBuilder()
+                .usePredefinedType(IntervalTreeBuilder.IntervalType.LONG)
+                .collectIntervals(interval -> new ListIntervalCollection()).build();
+
+        for(HashMap.Entry<Pair<String, String>, ArrayList<String>> intervalToDays : settings.entrySet()) {
+            Pair<String, String> stringInterval = intervalToDays.getKey();
+            ArrayList<String> days = intervalToDays.getValue();
+
+            // Translate string interval to long interval after startTime.
+            Long intervalStart = UtilsKt.getMillisFromHour(stringInterval.first);
+            Long intervalEnd = UtilsKt.getMillisFromHour(stringInterval.second);
+            if (intervalStart == null || intervalEnd == null) {
+                Log.e(TAG, "Illegal time string: " + stringInterval);
+                continue;
+            }
+
+            intervalStart += startTime;
+            intervalEnd += startTime;
+            for (String day : days) {
+                long numDaysInMillis = UtilsKt.getMillisSinceSunday(day);
+                if (numDaysInMillis == -1L) {
+                    Log.e(TAG, "Illegal day string: " + day);
+                    continue;
+                }
+
+                LongInterval validTime = getFirstValidTime(startTime, endTime,
+                        intervalStart + numDaysInMillis, intervalEnd + numDaysInMillis);
+                while (validTime != null) {
+                    newTree.add(validTime);
+                    validTime = getNextValidTime(endTime, validTime);
+                }
+            }
+        }
+
+        return newTree;
+    }
+
+    private static long getTimeAtStartOfWeek(long time) {
+        Calendar timeAtStartOfWeek = Calendar.getInstance();
+        timeAtStartOfWeek.setTimeInMillis(time);
+        timeAtStartOfWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        timeAtStartOfWeek.set(Calendar.HOUR_OF_DAY, 0);
+        timeAtStartOfWeek.set(Calendar.MINUTE, 0);
+        timeAtStartOfWeek.set(Calendar.SECOND, 0);
+        timeAtStartOfWeek.set(Calendar.MILLISECOND, 0);
+
+        return timeAtStartOfWeek.getTimeInMillis();
+    }
+
+    private static LongInterval getFirstValidTime(long validStart, long validEnd, long intervalStart, long intervalEnd) {
+        long attemptStart = getTimeAtStartOfWeek(validStart) + intervalStart;
+
+        while (attemptStart < validStart) {
+            attemptStart += ONE_WEEK;
+            if (attemptStart > validEnd) {
+                return null;
+            }
+        }
+
+        long duration = intervalEnd - intervalStart;
+        long attemptEnd = attemptStart + duration;
+        if (attemptEnd > validEnd) {
+            return new LongInterval(attemptStart, validEnd);
+        }
+        return new LongInterval(attemptStart, attemptEnd);
+    }
+
+    private static LongInterval getNextValidTime(long validEnd, LongInterval lastValid) {
+        long attemptStart = lastValid.getStart() + ONE_WEEK;
+        if (attemptStart > validEnd) {
+            return null;
+        }
+
+        long attemptEnd = lastValid.getEnd() + ONE_WEEK;
+        if (attemptEnd > validEnd) {
+            return new LongInterval(attemptStart, validEnd);
+        }
+        return new LongInterval(attemptStart, attemptEnd);
+    }
+
 }
