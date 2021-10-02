@@ -96,7 +96,10 @@ class MainActivityViewModel: ViewModel() {
             var subTaskPerDayList = mutableListOf<SubtaskPlanDayRep>()
             for(entry in subTasksPerDayMap.entries) {
                 // TODO consider adding all days between first and last event here
-                val dayRep = SubtaskPlanDayRep(entry.key, entry.value)
+                val sortedEvents = entry.value.toSortedSet(Comparator { o1, o2 ->
+                    o1.startTime.compareTo(o2.startTime)
+                })
+                val dayRep = SubtaskPlanDayRep(entry.key, sortedEvents.toList())
                 subTaskPerDayList.add(dayRep)
             }
 
