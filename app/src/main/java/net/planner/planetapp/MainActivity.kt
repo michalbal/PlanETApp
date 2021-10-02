@@ -18,8 +18,11 @@ import androidx.navigation.ui.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import net.planner.planetapp.adapters.SubtaskPlanDayRep
+import net.planner.planetapp.adapters.SubtasksDayAdapter
 import net.planner.planetapp.adapters.TaskChoosingViewAdapter
 import net.planner.planetapp.databinding.ActivityMainBinding
+import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.viewmodels.MainActivityViewModel
 
@@ -68,6 +71,15 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 runOnUiThread {
                     createTaskSelectionDialog(it)
+                }
+            }
+        })
+
+        mViewModel.showPlanCalculatedDialog.observe(this, Observer {
+            Log.d(TAG, "showPlanCalculatedDialog - Received new subTasks $it")
+            it?.let {
+                runOnUiThread {
+                    createPlanApprovalDialog(it)
                 }
             }
         })
@@ -144,6 +156,39 @@ class MainActivity : AppCompatActivity() {
                 val tasksChosen = adapter.tasksToPlan
                 Toast.makeText(this, App.context.getText(R.string.starting_to_plan_message), Toast.LENGTH_SHORT).show()
                 mViewModel.startPlanningScheduleForTasks(tasksChosen)
+                dialog.cancel()
+            }
+            .create()
+            .show()
+
+    }
+
+
+    private fun createPlanApprovalDialog(subTasks: List<SubtaskPlanDayRep>) {
+        Log.d(TAG, "createPlanApprovalDialog called")
+
+        val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_plan_approval, null)
+        val adapter = SubtasksDayAdapter(subTasks, this)
+        val recyclerView = dialogView.findViewById(R.id.sub_tasks_per_day_list) as RecyclerView
+        recyclerView.layoutManager  = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        Log.d(TAG, "createPlanApprovalDialog: Creating and showing the dialog")
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(R.string.plan_approval_dialog_title)
+            .setNegativeButton(android.R.string.cancel){ dialog, _ ->
+                dialog.cancel()
+            }
+            .setNeutralButton(R.string.plan_approval_neutral_button) { dialog, _ ->
+                // Call for task choosing dialog with all tasks and have user choose the tasks to recalculate
+                dialog.cancel()
+            }
+            .setPositiveButton(R.string.plan_approval_positive_button) { dialog, _ ->
+                val eventsChosen = adapter.getEventsApproved()
+                Toast.makeText(this, App.context.getText(R.string.saving_your_schedule), Toast.LENGTH_SHORT).show()
+                mViewModel.savePlan(eventsChosen)
                 dialog.cancel()
             }
             .create()

@@ -9,10 +9,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.IOnPlanCalculatedListener
 import net.planner.planetapp.IOnTasksReceivedListener
+import net.planner.planetapp.adapters.SubtaskPlanDayRep
+import net.planner.planetapp.getDayDate
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.planner.TasksManager
 import java.util.*
+import kotlin.collections.HashMap
 
 class MainActivityViewModel: ViewModel() {
 
@@ -23,7 +26,7 @@ class MainActivityViewModel: ViewModel() {
     }
 
     val showTasksDialog =  MutableLiveData<Collection<PlannerTask>>()
-    val showPlanCalculatedDialog =  MutableLiveData<Collection<PlannerEvent>>()
+    val showPlanCalculatedDialog =  MutableLiveData<List<SubtaskPlanDayRep>>()
 
     private val mOnTasksReceivedListener = OnTasksReceivedListener()
     private val mOnPlanCalculatedListener = OnPlanCalculatedListener()
@@ -79,7 +82,25 @@ class MainActivityViewModel: ViewModel() {
     private inner class OnPlanCalculatedListener: IOnPlanCalculatedListener {
         override fun onPlanCalculated(subtasks: Collection<PlannerEvent>) {
             Log.d(TAG, "OnPlanCalculatedListener: Received ${subtasks.size} subtasks")
-            showPlanCalculatedDialog.postValue(subtasks)
+
+            // Create structures of subTasks that the adapter can work with
+            var subTasksPerDayMap: HashMap<String, MutableList<PlannerEvent>> = HashMap()
+            for(subTask in subtasks) {
+                val eventDate = getDayDate(subTask.startTime)
+                if(!subTasksPerDayMap.containsKey(eventDate)) {
+                    subTasksPerDayMap[eventDate] = mutableListOf<PlannerEvent>()
+                }
+                subTasksPerDayMap[eventDate]?.add(subTask)
+            }
+
+            var subTaskPerDayList = mutableListOf<SubtaskPlanDayRep>()
+            for(entry in subTasksPerDayMap.entries) {
+                // TODO consider adding all days between first and last event here
+                val dayRep = SubtaskPlanDayRep(entry.key, entry.value)
+                subTaskPerDayList.add(dayRep)
+            }
+
+            showPlanCalculatedDialog.postValue(subTaskPerDayList)
         }
     }
 

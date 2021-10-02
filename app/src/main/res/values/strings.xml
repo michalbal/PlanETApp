@@ -25,6 +25,15 @@
     <string name="starting_to_plan_message">Planning your schedule</string>
     <string name="changes_detected_message">Your changes will be lost, are you sure you want to continue?</string>
     <string name="found_changes_dialog_title">Found unsaved changes </string>
+    <string name="plan_approval_dialog_title">Finished calculating the study plan </string>
+    <string name="plan_approval_positive_button">Approve</string>
+    <string name="plan_approval_neutral_button">Recalculate</string>
+    <string name="saving_your_schedule">Saving your schedule</string>
+    <string name="plan_calculation_finished_message_part_1">This is the schedule calculated for you.<br/>
+    You can choose which subtasks to keep and which not by tapping on them.</string>
+    <string name="plan_calculation_finished_message_part_2">If this schedule works for you, press Approve.<br/>
+    If it does not, press on Recalculate. (We will need different parameters for a different result,
+        You will be asked to choose more Tasks to recalculate this task with)</string>
 
 
     <!-- Welcome Fragment-->
