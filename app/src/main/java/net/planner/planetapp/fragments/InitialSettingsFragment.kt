@@ -67,7 +67,7 @@ class InitialSettingsFragment : Fragment() {
     private fun testInputIntegrity(): Boolean {
         try {
             Log.d(TAG, "testInputIntegrity")
-            val avgTaskHours = mBinding.editAverageTaskDuration.text.toString().toDouble().toLong()
+            val avgTaskHours = mBinding.editAverageTaskDuration.editText?.text.toString().toDouble().toLong()
             val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
             if (avgTaskMinutes < 30 || avgTaskMinutes > 6000) {
                 Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $avgTaskHours")
@@ -78,7 +78,7 @@ class InitialSettingsFragment : Fragment() {
             // Can save avgTask
             UserPreferencesManager.avgTaskDurationMinutes = avgTaskMinutes
 
-            val preferredSessionTimeHours = mBinding.editPreferredSession.text.toString().toDouble().toLong()
+            val preferredSessionTimeHours = mBinding.editPreferredSession.editText?.text.toString().toDouble().toLong()
             val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
             if (preferredSessionTimeMinutes < 30 || preferredSessionTimeMinutes >= avgTaskMinutes) {
                 Log.d(TAG, "testInputIntegrity: preferredSessionTimeHours with wrong value! value is $preferredSessionTimeHours")
@@ -90,7 +90,7 @@ class InitialSettingsFragment : Fragment() {
             // Can save min session
             UserPreferencesManager.preferredSessionTime = preferredSessionTimeMinutes
 
-            val spaceBetweenSessions = mBinding.editMinSession.text.toString().toDouble().toLong()
+            val spaceBetweenSessions = mBinding.editMinSession.editText?.text.toString().toDouble().toLong()
             Log.d(TAG, "testInputIntegrity: spaceBetweenSessions OK value is $spaceBetweenSessions")
 
             // Can save preferred session

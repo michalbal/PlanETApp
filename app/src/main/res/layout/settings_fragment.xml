@@ -1,14 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".fragments.SettingsFragment">
 
+    <data>
+        <import type="android.view.View"/>
+        <import type="net.planner.planetapp.UtilsKt"/>
+        <import type="net.planner.planetapp.UserPreferencesManager"/>
+
+
+        <variable
+            name="content"
+            type="net.planner.planetapp.viewmodels.SettingsFragmentViewModel.Content"
+            />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Settings" />
+        android:id="@+id/settings_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="10dp"
+        android:text="Settings"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/settings_name_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Name:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_title" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_user_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint=""
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:clickable="@{content.editing ? true : false}"
+        app:boxBackgroundColor="@color/white"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/settings_name_title"
+        app:layout_constraintTop_toBottomOf="@+id/settings_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:text="@{UserPreferencesManager.INSTANCE.userName}"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/average_task_time_settings_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Average time a task takes:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_user_name" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_average_task_duration_settings"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="0dp"
+        android:ems="10"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:clickable="@{content.editing ? true : false}"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/hours_title_settings"
+        app:layout_constraintStart_toEndOf="@+id/average_task_time_settings_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_user_name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="@{content.avgTaskTimeHours}"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/hours_title_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="60dp"
+        android:text="Hours"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_user_name" />
+
+    <TextView
+        android:id="@+id/study_session_title_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Preferred study session duration:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration_settings" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_preferred_session_settings"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="0dp"
+        android:ems="10"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:clickable="@{content.editing ? true : false}"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toEndOf="@+id/study_session_title_settings"
+        app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration_settings" >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="@{content.preferredSessionHours}"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/hours_title2_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="56dp"
+        android:text="Hours"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration_settings" />
+
+
+
+    <TextView
+        android:id="@+id/min_time_title_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="60dp"
+        android:text="Min time between sessions:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/study_session_title_settings" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_min_session_settings"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:ems="10"
+        android:clickable="@{content.editing ? true : false}"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toEndOf="@+id/min_time_title_settings"
+        app:layout_constraintTop_toBottomOf="@+id/study_session_title_settings">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="@{content.minSessionTime"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/minutes_title_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="65dp"
+        android:text="Minutes"
+        app:layout_constraintStart_toEndOf="@+id/edit_min_session_settings"
+        app:layout_constraintTop_toBottomOf="@+id/hours_title2_settings" />
+
+    <Button
+        android:id="@+id/save_settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimary"
+        android:text="@{content.editing ? @string/save : @string/edit}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_min_session_settings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -12,6 +12,10 @@
     <string name="due_date">Due By: %s </string>
     <string name="hello_greeting">Hello %s! </string>
 
+    <!-- Settings Fragment-->
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+
     <!-- Day Fragment-->
     <string name="alert_cannot_show_events">Cannot show events since Read from Calendar Permission was not granted! </string>
 
