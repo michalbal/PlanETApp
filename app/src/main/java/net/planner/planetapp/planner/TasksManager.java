@@ -81,12 +81,21 @@ public class TasksManager {
     public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
         Log.d(TAG, "initTasksManager called");
         token = connector.connectToCSEMoodle(username, password);
+        UserPreferencesManager.INSTANCE.setUserMoodleToken(token);
+        UserPreferencesManager.INSTANCE.setMoodleUserName(username);
         dBmanager = new DBmanager(username);
     }
 
     public void initTasksManager(String user) {
         Log.d(TAG, "initTasksManager called - No token");
         dBmanager = new DBmanager(user);
+    }
+
+    public void logoutOfMoodleUser() {
+        token = "";
+        String userName = UserPreferencesManager.INSTANCE.getUserName();
+        dBmanager = new DBmanager(userName);
+        // TODO clear all data
     }
 
     public Boolean addTasksReceivedListener(IOnTasksReceivedListener listener) {

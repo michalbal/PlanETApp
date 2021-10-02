@@ -104,6 +104,12 @@ object LocalDBManager {
         }
     }
 
+    fun clearTasks() {
+        mLock.withLock {
+            mDb.tasksDao().deleteAllTasks()
+        }
+    }
+
     fun insertOrUpdatePreference(preference: PreferenceDB) {
         var courseNames = setOf<String>()
         mDb.preferencesDao().getPreference(preference.tagName)?.let {
@@ -135,12 +141,32 @@ object LocalDBManager {
         }
     }
 
+    fun getPreference(tagName: String): PreferencesLocalDB? {
+        val prerference: PreferencesLocalDB?
+        mLock.withLock {
+            prerference = mDb.preferencesDao().getPreference(tagName)
+        }
+        return prerference
+    }
+
+    fun clearPreferences() {
+        mLock.withLock {
+            mDb.preferencesDao().deleteAllPreferences()
+        }
+    }
+
 
     fun insertOrUpdateCourse(courseId: String, courseName: String, tagName: String) {
         val courseToInsert = CourseLocalDB(courseId, courseName, tagName)
         Log.d(TAG, "Inserting course $courseName")
         mLock.withLock {
             mDb.coursesDao().insertOrUpdateCourse(courseToInsert)
+        }
+    }
+
+    fun clearCourses() {
+        mLock.withLock {
+            mDb.coursesDao().deleteAllCourses()
         }
     }
 

@@ -17,6 +17,7 @@ object UserPreferencesManager {
     private const val AVG_TASK_DURATION_MINUTES = "avg_task_duration"
     private const val PREFERRED_SESSION_TIME_MINUTES = "max_session"
     private const val SPACE_BETWEEN_EVENTS_MINUTES = "space_between_events"
+    private const val FINISHEd_FIRST_SEQ = "finished_seq"
 
     var moodleUserName: String? = null
         set(name) {
@@ -48,6 +49,12 @@ object UserPreferencesManager {
             preferences.edit().putStringSet(CALENDAR_ACCOUNTS_KEY, accounts).apply()
         }
 
+    var didFinishFirstSeq: Boolean = false
+        set(didFinish) {
+            field = didFinish
+            preferences.edit().putBoolean(FINISHEd_FIRST_SEQ, didFinish).apply()
+        }
+
     var avgTaskDurationMinutes: Long = TimeUnit.HOURS.toMinutes(5L)
         set(duration) {
             field = duration
@@ -76,6 +83,7 @@ object UserPreferencesManager {
         avgTaskDurationMinutes = preferences.getLong(AVG_TASK_DURATION_MINUTES, TimeUnit.HOURS.toMinutes(5L))
         spaceBetweenEventsMinutes = preferences.getLong(SPACE_BETWEEN_EVENTS_MINUTES, PlannerCalendar.SPACE_IN_MINUTES.toLong())
         preferredSessionTime = preferences.getLong(PREFERRED_SESSION_TIME_MINUTES, 30L)
+        didFinishFirstSeq = preferences.getBoolean(FINISHEd_FIRST_SEQ, false)
     }
 
 

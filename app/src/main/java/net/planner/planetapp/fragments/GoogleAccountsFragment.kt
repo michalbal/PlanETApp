@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.adapters.CalendarAccountAdapter
 import net.planner.planetapp.databinding.GoogleAccountsFragmentBinding
 import net.planner.planetapp.networking.GoogleCalenderCommunicator
@@ -57,9 +58,17 @@ class GoogleAccountsFragment : Fragment() {
             if (adapter.mainCalendarName != "") {
                 GoogleCalenderCommunicator.setMainCalendar(adapter.mainCalendarName)
             }
-            Log.d(TAG, "Moving on to moodle sign in screen")
+
+
             val navController = findNavController()
-            navController.navigate(GoogleAccountsFragmentDirections.actionGoogleAccountsFragmentToMoodleSignInFragment())
+            if (UserPreferencesManager.didFinishFirstSeq) {
+                Log.d(TAG, "Going back to Accounts screen")
+                navController.navigateUp()
+            } else {
+                Log.d(TAG, "Moving on to moodle sign in screen")
+                navController.navigate(GoogleAccountsFragmentDirections.actionGoogleAccountsFragmentToMoodleSignInFragment())
+            }
+
         }
 
         viewModel.updateAccounts()

@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.adapters.MoodleCoursesViewAdapter
 import net.planner.planetapp.databinding.FragmentMoodleCoursesSelectionBinding
 import net.planner.planetapp.viewmodels.MoodleCoursesSelectionFragmentViewModel
@@ -62,7 +63,13 @@ class MoodleCoursesSelectionFragment : Fragment() {
 
             activity?.runOnUiThread {
                 val navController = findNavController()
-                navController.navigate(MoodleCoursesSelectionFragmentDirections.actionMoodleCoursesSelectionFragmentToInitialSettingsFragment())
+                if (UserPreferencesManager.didFinishFirstSeq) {
+                    navController.navigate(MoodleCoursesSelectionFragmentDirections.actionMoodleCoursesSelectionFragmentToAccountsFragment())
+                } else {
+                    // This is the first Sequence, we continue
+                    navController.navigate(MoodleCoursesSelectionFragmentDirections.actionMoodleCoursesSelectionFragmentToInitialSettingsFragment())
+                }
+
             }
         }
 

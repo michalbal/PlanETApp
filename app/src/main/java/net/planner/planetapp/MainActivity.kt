@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
-        if (UserPreferencesManager.mainCalendarAccount == null) {
+        if (!UserPreferencesManager.didFinishFirstSeq) {
             navController.navigate(R.id.welcomeFragment)
             hideBottomNavigation()
         }
