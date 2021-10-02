@@ -113,9 +113,7 @@ public class PlannerCalendar {
         tags = new HashMap<>(tagList.size());
         for (PlannerTag tag : tagList) {
             String tagName = tag.getTagName();
-            if (!tagName.equals(PlannerObject.GENERAL_TAG)) {
-                tags.put(tagName, tag);
-            }
+            tags.put(tagName, tag);
         }
 
         // Create occupiedTree and add events.
@@ -505,7 +503,7 @@ public class PlannerCalendar {
      * Helper function: Returns the tag if it exists in this calendar. Return null if name is null or NO_TAG.
      */
     private PlannerTag safeGetTag(String tagName) {
-        if (tagName == null || tagName.equals(PlannerObject.GENERAL_TAG)) {
+        if (tagName == null) {
             return null;
         }
         return tags.get(tagName);

@@ -95,7 +95,6 @@ public class TasksManager {
         token = "";
         String userName = UserPreferencesManager.INSTANCE.getUserName();
         dBmanager = new DBmanager(userName);
-        // TODO clear all data
     }
 
     public Boolean addTasksReceivedListener(IOnTasksReceivedListener listener) {
@@ -297,7 +296,6 @@ public class TasksManager {
 
         // Get user Settings for scheduling
         long spaceBetweenEvents = TimeUnit.MINUTES.toMillis(UserPreferencesManager.INSTANCE.getSpaceBetweenEventsMinutes());
-        // TODO get preferences from Local DB here, will probably be faster
 
         PlannerCalendar calendar = new PlannerCalendar(startTime, endTime, spaceBetweenEvents, events, preferences);
 
@@ -327,7 +325,7 @@ public class TasksManager {
         dBmanager.deleteTask(task);
     }
 
-    public void processUserAcceptedSubtasks(LinkedList<PlannerEvent> acceptedEvents) {
+    public void processUserAcceptedSubtasks(List<PlannerEvent> acceptedEvents) {
 
         Log.d(TAG, "processUserAcceptedSubtasks called");
         for(PlannerEvent subtask : acceptedEvents){

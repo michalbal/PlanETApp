@@ -62,9 +62,10 @@ class MainActivityViewModel: ViewModel() {
         // google calendar(all events that have passed and reduce the time of those remaining from the estimated duration)
     }
 
-    fun savePlan(subtasks: Collection<PlannerEvent>) {
+    fun savePlan(subtasks: List<PlannerEvent>) {
         Log.d(TAG, "savePlan: Received ${subtasks.size} subtasks")
         // Inform relevant parties that the plan was approved by the user
+        TasksManager.getInstance().processUserAcceptedSubtasks(subtasks)
     }
 
 
