@@ -2,6 +2,7 @@ package net.planner.planetapp
 
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 private const val DATE_DATA_FORMAT_SHORT = "dd/MM H:mm"
 private const val DATE_DATA_FORMAT = "dd/MM/yyyy H:mm"
@@ -52,4 +53,29 @@ fun getMillisFromDateAndTime(date: String): Long? {
 
 fun getMillisFromDate(date: String): Long? {
     return SimpleDateFormat(DAY_DATA_FORMAT, Locale.getDefault()).parse(date)?.time
+}
+
+fun getMillisFromHour(date: String): Long? {
+    return SimpleDateFormat(HOUR_DATA_FORMAT, Locale.getDefault()).parse(date)?.time
+}
+
+fun getNumberOfDaysSinceSunday(day: String): Int {
+    return when(day) {
+        SUNDAY -> 0
+        MONDAY -> 1
+        TUESDAY -> 2
+        WEDNESDAY -> 3
+        THURSDAY -> 4
+        FRIDAY -> 5
+        SATURDAY -> 6
+        else -> -1
+    }
+}
+
+fun getMillisSinceSunday(day: String): Long {
+    val numDays = getNumberOfDaysSinceSunday(day)
+    if (numDays == -1) {
+        return -1L
+    }
+    return TimeUnit.DAYS.toMillis(numDays.toLong())
 }

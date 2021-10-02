@@ -3,6 +3,7 @@ package net.planner.planetapp.planner;
 import android.util.Log;
 
 import net.planner.planetapp.database.TaskDB;
+import net.planner.planetapp.planner.PlannerCalendar.OccupiedInterval;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -255,16 +256,16 @@ public class PlannerTask extends PlannerObject {
     /**
      * Splits this task into events from the given option intervals.
      **/
-    public List<PlannerEvent> splitIntoEvents(PriorityQueue<PlannerCalendar.OccupiedInterval> options, long spaceBetweenEvents) {
+    public List<PlannerEvent> splitIntoEvents(PriorityQueue<OccupiedInterval> options, long spaceBetweenEvents) {
         LinkedList<PlannerEvent> children = new LinkedList<>();
-        PriorityQueue<PlannerCalendar.OccupiedInterval> tempOptions = new PriorityQueue<>(options);
+        PriorityQueue<OccupiedInterval> tempOptions = new PriorityQueue<>(options);
 
         long maxSessionTime = getMaxSessionTimeInMillis();
         long minSlotLength = getMinSessionTimeInMillis() + spaceBetweenEvents;
         long leftToFill = getDurationInMillis();
 
         while (true) {
-            PlannerCalendar.OccupiedInterval current = tempOptions.poll();
+            OccupiedInterval current = tempOptions.poll();
             if (current == null) {
                 return new LinkedList<>();
             }
@@ -287,7 +288,7 @@ public class PlannerTask extends PlannerObject {
             // If not done then check if we can still use the rest of current.
             long remainingTimeInInterval = intervalLength - lengthToTake;
             if (remainingTimeInInterval >= minSlotLength) {
-                tempOptions.add(new PlannerCalendar.OccupiedInterval(
+                tempOptions.add(new OccupiedInterval(
                         newEndTime + spaceBetweenEvents, endTime, current.getId(), current.isPreferred()));
             }
         }
