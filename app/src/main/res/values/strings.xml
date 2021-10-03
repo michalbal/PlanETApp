@@ -15,6 +15,9 @@
     <!-- Settings Fragment-->
     <string name="save">Save</string>
     <string name="edit">Edit</string>
+    <string name="cannot_edit_text_field">none</string>
+    <string name="text">text</string>
+    <string name="number">number</string>
 
     <!-- Day Fragment-->
     <string name="alert_cannot_show_events">Cannot show events since Read from Calendar Permission was not granted! </string>

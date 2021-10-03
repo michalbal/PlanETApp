@@ -9,6 +9,7 @@
         <import type="android.view.View"/>
         <import type="net.planner.planetapp.UtilsKt"/>
         <import type="net.planner.planetapp.UserPreferencesManager"/>
+        <import type="android.text.InputType"/>
 
 
         <variable
@@ -62,7 +63,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL}"
             android:text="@{UserPreferencesManager.INSTANCE.userName}"
             />
 
@@ -99,7 +100,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
             android:text="@{content.avgTaskTimeHours}"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -145,7 +146,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
             android:text="@{content.preferredSessionHours}"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -191,7 +192,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
             android:text="@{content.minSessionTime"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -211,11 +212,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="220dp"
         android:background="@color/colorPrimary"
         android:text="@{content.editing ? @string/save : @string/edit}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_min_session_settings" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_min_session_settings"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

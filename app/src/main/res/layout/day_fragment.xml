@@ -84,28 +84,29 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/subTasksList"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="0dp"
         android:layout_marginTop="0dp"
+        android:layout_marginBottom="10dp"
         app:layoutManager="LinearLayoutManager"
         android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateText"
+        app:layout_constraintBottom_toTopOf="@+id/addTaskButton"
         tools:listitem="@layout/next_event_list_item" />
 
     <ImageButton
         android:id="@+id/addTaskButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="50dp"
         android:elevation="10dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/add_task_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subTasksList"
-        app:layout_constraintVertical_bias="0.313" />
+        app:layout_constraintTop_toBottomOf="@+id/subTasksList" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
