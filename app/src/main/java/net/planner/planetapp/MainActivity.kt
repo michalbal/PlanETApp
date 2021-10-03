@@ -1,11 +1,14 @@
 package net.planner.planetapp
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -14,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +26,8 @@ import net.planner.planetapp.adapters.SubtaskPlanDayRep
 import net.planner.planetapp.adapters.SubtasksDayAdapter
 import net.planner.planetapp.adapters.TaskChoosingViewAdapter
 import net.planner.planetapp.databinding.ActivityMainBinding
+import net.planner.planetapp.fragments.WelcomeFragment
+import net.planner.planetapp.fragments.WelcomeFragmentDirections
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.viewmodels.MainActivityViewModel
@@ -37,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mViewModel: MainActivityViewModel
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,21 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        // This defines what happens after requesting permission for Google Calendar write access
+        requestPermissionLauncher = this.registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            Log.d(TAG, "Received response from write permission request. isGranted is: $isGranted")
+            if (isGranted) {
+                // Move to Google Accounts Screen
+                Log.d(TAG, "Permission was granted, writing events to calendar")
+
+            } else {
+                // Move to Moodle Screen
+                Log.d(TAG, "Permission was denied, saving events only to our db")
+
+            }
+        }
     }
 
     override fun onStart() {
@@ -188,6 +210,8 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.plan_approval_positive_button) { dialog, _ ->
                 val eventsChosen = adapter.getEventsApproved()
                 Toast.makeText(this, App.context.getText(R.string.saving_your_schedule), Toast.LENGTH_SHORT).show()
+
+                requestPermissionLauncher.apply { launch(Manifest.permission.WRITE_CALENDAR) }
                 mViewModel.savePlan(eventsChosen)
                 dialog.cancel()
             }
