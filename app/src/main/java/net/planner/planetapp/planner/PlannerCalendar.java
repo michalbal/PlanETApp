@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class PlannerCalendar {
 
     // Constants
+    private static final String TAG = "PlannerCalendar";
     public static final int SPACE_IN_MINUTES = 15;
     private static final int MIN_SPACE_IN_SECONDS = 1;
     private static final long DEFAULT_LENGTH = TimeUnit.DAYS.toMillis(30);
@@ -378,14 +379,14 @@ public class PlannerCalendar {
         }
 
         // Attempt to insert only in preferred time.
-        findIntervalForTask(task, tag.getPreferredTimeIntervalsIterator(), occupiedTree, options);
+        findIntervalForTask(task, tag.getPreferredTimeIntervalsIterator(startTime, endTime), occupiedTree, options);
         List<PlannerEvent> events = task.splitIntoEvents(options, spaceBetweenEvents);
         if (!events.isEmpty()) {
             return events;
         }
 
         // Attempt to insert only in non-forbidden free time.
-        findIntervalForTask(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(), options);
+        findIntervalForTask(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(startTime, endTime), options);
         return task.splitIntoEvents(options, spaceBetweenEvents);
     }
 
@@ -409,7 +410,10 @@ public class PlannerCalendar {
     /**
      * Helper function: Returns a collection where all overlapping intervals have been merged.
      */
-    private Collection<IInterval> mergeOverlapping(Collection<IInterval> intervals) {
+    private Collection<IInterval> mergeOverlapping(Collection<IInterval> intervalCollection) {
+        ArrayList<IInterval> intervals = new ArrayList<>(intervalCollection);
+        Collections.sort(intervals, new IntervalByStartTimeComparator());
+
         if (intervals.size() <= 1) {
             return intervals;
         }
@@ -424,7 +428,8 @@ public class PlannerCalendar {
                 merged.add(previous);
                 previous = current;
             } else {
-                previous = new LongInterval(previous.getStart(), current.getEnd());
+                long newEnd = Math.max(previous.getEnd(), current.getEnd());
+                previous = new LongInterval(previous.getStart(), newEnd);
             }
 
         }
@@ -736,6 +741,25 @@ public class PlannerCalendar {
 
             // If they share the same priority then order by duration length. (biggest first)
             return Integer.compare(task2.getDurationInMinutes(), task1.getDurationInMinutes());
+        }
+    }
+
+    /**
+     * Comparator that is used to sort intervals for merging (done according to startTime and endTime).
+     */
+    static class IntervalByStartTimeComparator implements Comparator<IInterval> {
+
+        @Override
+        public int compare(IInterval i1, IInterval i2) {
+            LongInterval interval1 = (LongInterval) i1;
+            LongInterval interval2 = (LongInterval) i2;
+
+            int comparison = Long.compare(((LongInterval) i1).getStart(), ((LongInterval) i2).getStart());
+            if (comparison != 0) {
+                return comparison;
+            }
+
+            return Long.compare(((LongInterval) i1).getEnd(), ((LongInterval) i2).getEnd());
         }
     }
 }

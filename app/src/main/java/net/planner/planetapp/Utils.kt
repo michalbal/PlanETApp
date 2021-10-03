@@ -58,7 +58,9 @@ fun getMillisFromDate(date: String): Long? {
 }
 
 fun getMillisFromHour(date: String): Long? {
-    return SimpleDateFormat(HOUR_DATA_FORMAT, Locale.getDefault()).parse(date)?.time
+    val dateFormat = SimpleDateFormat(HOUR_DATA_FORMAT, Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+    return dateFormat.parse(date)?.time
 }
 
 fun getNumberOfDaysSinceSunday(day: String): Int {
