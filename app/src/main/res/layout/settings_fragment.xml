@@ -193,7 +193,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
-            android:text="@{content.minSessionTime"
+            android:text="@{content.minSessionTime}"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
