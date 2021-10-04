@@ -47,17 +47,21 @@ public class DBmanager {
 
     public void writeAcceptedTasks(List<PlannerTask> acceptedTasks) {
         for (PlannerTask task : acceptedTasks) {
+            saveTask(task);
+        }
+    }
+
+    public void saveTask(PlannerTask task) {
             TaskDB taskDB = new TaskDB(task.getMoodleId(), task.getTitle(), task.getCourseId(),
-                                       task.getDescription(), task.getLocation(),
-                                       task.isExclusiveForItsTimeSlot(), task.getReminder(),
-                                       task.getTagName(), task.getDeadline(), task.getPriority(),
-                                       task.getMaxSessionTimeInMinutes(),
-                                       task.getMaxDivisionsNumber(), task.getDurationInMinutes());
+                    task.getDescription(), task.getLocation(),
+                    task.isExclusiveForItsTimeSlot(), task.getReminder(),
+                    task.getTagName(), task.getDeadline(), task.getPriority(),
+                    task.getMaxSessionTimeInMinutes(),
+                    task.getMaxDivisionsNumber(), task.getDurationInMinutes());
 
 
             db.collection("users").document(username).collection("tasks").document(
                     task.getMoodleId()).set(taskDB, SetOptions.merge());
-        }
     }
 
     public void deleteTask(PlannerTask plannerTask) {

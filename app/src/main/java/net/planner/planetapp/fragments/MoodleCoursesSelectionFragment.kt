@@ -56,9 +56,14 @@ class MoodleCoursesSelectionFragment : Fragment() {
 
         mBinding.continueToSettingsButton.setOnClickListener { clicked->
             Log.d(TAG, "Clicked on Continue!")
+
+            if (mBinding.loadingTitle.visibility == View.VISIBLE) {
+                Log.d(TAG, "Havn't received courses yet!")
+                return@setOnClickListener
+            }
+
             val adapter = mBinding.coursesList.adapter as MoodleCoursesViewAdapter
             val courses = adapter.courseIds
-            // TODO maybe also get the courses not chosen here? need to see if maybe only the ones we have is enough
             viewModel.saveChosenCourses(courses)
 
             activity?.runOnUiThread {

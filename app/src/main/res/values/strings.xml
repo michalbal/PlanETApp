@@ -63,6 +63,7 @@
     <string name="error_task_duration">input: 1..100</string>
     <string name="error_preferred_session">input: 1..TaskTime</string>
     <string name="error_min_time">input: 0..1440</string>
+    <string name="error_max_divisions">input: 0..100</string>
 
     <!-- Accounts Fragment-->
     <string name="user_name_moodle">User Name: %s</string>

@@ -283,6 +283,18 @@ public class TasksManager {
     }
 
 
+    public void saveTask(PlannerTask task) {
+        Log.d(TAG, "saveTask called");
+
+        if (task.getDeadline() > furthestDeadline){
+            furthestDeadline = task.getDeadline();
+        }
+
+        // Add task to db
+        LocalDBManager.INSTANCE.insertOrUpdateTask(task);
+        dBmanager.saveTask(task);
+    }
+
     public LinkedList<PlannerEvent> planSchedule(List<PlannerTask> plannerTasks) {
         Log.d(TAG, "planSchedule called");
         dBmanager.writeAcceptedTasks(plannerTasks);

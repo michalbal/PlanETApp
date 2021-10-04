@@ -26,7 +26,7 @@ tools:context=".fragments.CreateTaskFragment">
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
-        android:text="Create Task"
+        android:text="@{content.taskScreenTitle}"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,6 +99,21 @@ tools:context=".fragments.CreateTaskFragment">
         app:layout_constraintTop_toBottomOf="@+id/edit_task_title" />
 
     <TextView
+        android:id="@+id/edit_deadline_time"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="20sp"
+        android:text=" 23:59"
+        android:background="@drawable/frame"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toTopOf="@+id/task_preference_title"
+        app:layout_constraintStart_toEndOf="@+id/edit_deadline_date"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_title"/>
+
+    <TextView
         android:id="@+id/task_preference_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -124,6 +139,7 @@ tools:context=".fragments.CreateTaskFragment">
         <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@{content.taskPreferenceName}"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -166,6 +182,7 @@ tools:context=".fragments.CreateTaskFragment">
         <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@{content.taskPriority}"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -262,18 +279,18 @@ tools:context=".fragments.CreateTaskFragment">
 
 
     <TextView
-        android:id="@+id/min_time_title_task"
+        android:id="@+id/max_num_sessions_title_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="60dp"
-        android:text="Min time between sessions:"
+        android:text="Max number of sessions:"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/study_session_title_task" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_min_session_task"
+        android:id="@+id/edit_max_num_sessions_task"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="47dp"
@@ -283,26 +300,17 @@ tools:context=".fragments.CreateTaskFragment">
         app:boxBackgroundColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
         app:errorEnabled="true"
-        app:layout_constraintStart_toEndOf="@+id/min_time_title_task"
+        app:layout_constraintStart_toEndOf="@+id/max_num_sessions_title_task"
         app:layout_constraintTop_toBottomOf="@+id/study_session_title_task">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:text="@{content.minSessionTime"
+            android:text="@{content.maxNumSessions"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/minutes_title_task"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="65dp"
-        android:text="Minutes"
-        app:layout_constraintStart_toEndOf="@+id/edit_min_session_task"
-        app:layout_constraintTop_toBottomOf="@+id/hours_title2_task" />
 
 
     <Button
@@ -315,7 +323,7 @@ tools:context=".fragments.CreateTaskFragment">
         android:text="Save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_min_session_task"
+        app:layout_constraintTop_toBottomOf="@+id/edit_max_num_sessions_task"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -51,7 +51,7 @@ class PreferancesFragment : Fragment() {
         mBinding.addPreferenceButton.setOnClickListener { view ->
             activity?.runOnUiThread {
                 val navController = findNavController()
-                navController.navigate(PreferancesFragmentDirections.actionPreferancesFragmentToCreatePreferenceFragment())
+                navController.navigate(PreferancesFragmentDirections.actionPreferancesFragmentToCreatePreferenceFragment(null))
             }
         }
 

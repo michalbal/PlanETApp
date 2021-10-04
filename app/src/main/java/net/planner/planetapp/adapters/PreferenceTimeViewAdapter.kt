@@ -199,21 +199,6 @@ class PreferenceTimeViewAdapter(
     override fun getItemCount(): Int = values.size
 
 
-    private fun createTimeString(hour: Int, minutes: Int): String{
-        var timeString = "$hour"
-        if (hour < 10) {
-            timeString = " 0" + hour.toString()
-        }
-        timeString += ":"
-        if(minutes < 10) {
-            timeString += "0"
-        }
-        timeString += minutes.toString()
-        return timeString
-
-
-    }
-
     private fun removeTime(time: PreferenceTimeRep) {
         values.remove(time)
         notifyDataSetChanged()

@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import net.planner.planetapp.databinding.GoogleAccountListItemBinding
 
 class CalendarAccountAdapter(
-    private var values: List<String>
+    private var values: List<String>,
+    private var isClickable: Boolean = true
     ) : RecyclerView.Adapter<CalendarAccountAdapter.ViewHolder>()  {
 
     var mainCalendarName = ""
@@ -31,6 +32,9 @@ class CalendarAccountAdapter(
         holder.account.text = item
         holder.account.isChecked = googleAccounts.contains(item)
         holder.isMainRadio.isChecked = item == mainCalendarName
+
+        holder.account.isClickable = isClickable
+        holder.isMainRadio.isClickable = isClickable
 
         holder.account.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

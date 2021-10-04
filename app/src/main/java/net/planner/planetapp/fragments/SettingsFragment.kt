@@ -20,7 +20,7 @@ class SettingsFragment : Fragment() {
 
     companion object {
 
-        private const val TAG = "InitialSettingsFragment"
+        private const val TAG = "SettingsFragment"
 
     }
 
