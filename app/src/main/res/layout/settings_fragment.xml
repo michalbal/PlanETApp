@@ -63,9 +63,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="@{content.editing ? true : false}"
-            android:focusable="@{content.editing ? true : false}"
-            android:inputType="text"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL}"
             android:text="@{UserPreferencesManager.INSTANCE.userName}"
             />
 
@@ -148,9 +146,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="@{content.editing ? true : false}"
-            android:focusable="@{content.editing ? true : false}"
-            android:inputType="number"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
             android:text="@{content.preferredSessionHours}"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -196,9 +192,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="@{content.editing ? true : false}"
-            android:focusable="@{content.editing ? true : false}"
-            android:inputType="number"
+            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
             android:text="@{content.minSessionTime}"
             />
     </com.google.android.material.textfield.TextInputLayout>

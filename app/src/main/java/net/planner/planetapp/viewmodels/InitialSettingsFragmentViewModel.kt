@@ -19,38 +19,6 @@ class InitialSettingsFragmentViewModel : ViewModel() {
 
     }
 
-    fun isAvgTaskInputValid(input: String): Boolean {
-        try {
-            val avgTaskHours = input.toDouble().toLong()
-            val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
-            if (avgTaskMinutes < 30 || avgTaskMinutes > 6000) {
-                Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $avgTaskHours")
-                return false
-            } else {
-                return true
-            }
-        } catch (e: java.lang.Exception) {
-            return false
-        }
-    }
-
-
-    fun isPreferredTimeInputValid(input: String, avgTaskHours: Double): Boolean {
-        try {
-            val preferredSessionTimeHours = input.toDouble().toLong()
-            val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
-            val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours.toLong())
-            if (preferredSessionTimeMinutes < 30 || preferredSessionTimeMinutes > avgTaskMinutes) {
-                Log.d(TAG, "isPreferredTimeInputValid: preferredSessionTimeHours with wrong value! value is $preferredSessionTimeHours")
-                return false
-            }
-            return true
-        } catch (e: java.lang.Exception) {
-            return false
-        }
-    }
-
-
     fun startGettingTasksFromMoodle() {
         Log.d(TAG, "startGettingTasksFromMoodle called")
         viewModelScope.launch {

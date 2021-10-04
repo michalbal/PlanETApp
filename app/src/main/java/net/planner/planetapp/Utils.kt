@@ -1,5 +1,7 @@
 package net.planner.planetapp
 
+import android.util.Log
+import net.planner.planetapp.viewmodels.InitialSettingsFragmentViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -82,4 +84,32 @@ fun getMillisSinceSunday(day: String): Long {
         return -1L
     }
     return TimeUnit.DAYS.toMillis(numDays.toLong())
+}
+
+fun isAvgTaskInputValid(input: String): Boolean {
+    try {
+        val avgTaskHours = input.toDouble().toLong()
+        val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
+        if (avgTaskMinutes < 30 || avgTaskMinutes > 6000) {
+            return false
+        } else {
+            return true
+        }
+    } catch (e: Exception) {
+        return false
+    }
+}
+
+fun isPreferredTimeInputValid(input: String, avgTaskHours: Double): Boolean {
+    try {
+        val preferredSessionTimeHours = input.toDouble().toLong()
+        val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
+        val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours.toLong())
+        if (preferredSessionTimeMinutes < 30 || preferredSessionTimeMinutes > avgTaskMinutes) {
+            return false
+        }
+        return true
+    } catch (e: Exception) {
+        return false
+    }
 }

@@ -7,10 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
-import net.planner.planetapp.MainActivity
-import net.planner.planetapp.R
-import net.planner.planetapp.UserPreferencesManager
+import net.planner.planetapp.*
 import net.planner.planetapp.databinding.InitialSettingsFragmentBinding
 import net.planner.planetapp.databinding.SettingsFragmentBinding
 import net.planner.planetapp.viewmodels.InitialSettingsFragmentViewModel
@@ -53,7 +52,46 @@ class SettingsFragment : Fragment() {
             Log.d(TAG, "Edit enabled")
             viewModel.content.isEditing = true
         }
-        // TODO add input validation here
+        mBinding.editAverageTaskDurationSettings.editText?.doOnTextChanged { inputText, _, _, _ ->
+            // Respond to input text change
+            if (!isAvgTaskInputValid(inputText.toString())) {
+                Log.d(TAG, "Task duration Hours with wrong value! value is $inputText")
+                // Set error text
+                mBinding.editAverageTaskDurationSettings.error = getString(R.string.error_task_duration)
+            } else {
+                // Clear error text
+                mBinding.editAverageTaskDurationSettings.error = null
+            }
+        }
+
+        mBinding.editPreferredSessionSettings.editText?.doOnTextChanged { inputText, _, _, _ ->
+            val avgTaskTime: Double = try {
+                mBinding.editAverageTaskDurationSettings.editText.toString().toDouble()
+            } catch (e: Exception) {
+                UserPreferencesManager.avgTaskDurationMinutes.toDouble() / 60
+            }
+
+            // Respond to input text change
+            if (!isPreferredTimeInputValid(inputText.toString(), avgTaskTime)) {
+                Log.d(TAG, "isPreferredTimeInputValid: preferredSessionTimeHours with wrong value! value is $inputText")
+                // Set error text
+                mBinding.editPreferredSessionSettings.error = getString(R.string.error_preferred_session)
+            } else {
+                // Clear error text
+                mBinding.editPreferredSessionSettings.error = null
+            }
+        }
+
+        mBinding.editMinSessionSettings.editText?.doOnTextChanged { inputText, _, _, _ ->
+            // Respond to input text change
+            try {
+                val spaceBetweenSessions = inputText.toString().toDouble()
+                Log.d(TAG, " spaceBetweenSessions OK value is $spaceBetweenSessions")
+                mBinding.editMinSessionSettings.error = null
+            } catch(e: Exception) {
+                mBinding.editMinSessionSettings.error = getString(R.string.error_min_time)
+            }
+        }
 
 
     }

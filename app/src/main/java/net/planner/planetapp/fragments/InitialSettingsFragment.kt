@@ -10,9 +10,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
-import net.planner.planetapp.MainActivity
-import net.planner.planetapp.R
-import net.planner.planetapp.UserPreferencesManager
+import net.planner.planetapp.*
 import net.planner.planetapp.databinding.InitialSettingsFragmentBinding
 import net.planner.planetapp.viewmodels.InitialSettingsFragmentViewModel
 import java.util.concurrent.TimeUnit
@@ -41,7 +39,8 @@ class InitialSettingsFragment : Fragment() {
 
         mBinding.editAverageTaskDuration.editText?.doOnTextChanged { inputText, _, _, _ ->
             // Respond to input text change
-            if (!viewModel.isAvgTaskInputValid(inputText.toString())) {
+            if (!isAvgTaskInputValid(inputText.toString())) {
+                Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $inputText")
                 // Set error text
                 mBinding.editAverageTaskDuration.error = getString(R.string.error_task_duration)
             } else {
@@ -58,7 +57,8 @@ class InitialSettingsFragment : Fragment() {
             }
 
             // Respond to input text change
-            if (!viewModel.isPreferredTimeInputValid(inputText.toString(), avgTaskTime)) {
+            if (!isPreferredTimeInputValid(inputText.toString(), avgTaskTime)) {
+                Log.d(TAG, "isPreferredTimeInputValid: preferredSessionTimeHours with wrong value! value is $inputText")
                 // Set error text
                 mBinding.editPreferredSession.error = getString(R.string.error_preferred_session)
             } else {
@@ -113,7 +113,7 @@ class InitialSettingsFragment : Fragment() {
             val preferredSessionTimeInput = mBinding.editPreferredSession.editText?.text.toString()
             val spaceBetweenSessions = mBinding.editMinSession.editText?.text.toString().toDouble().toLong()
 
-            if (!viewModel.isAvgTaskInputValid(avgTaskInput) || !viewModel.isPreferredTimeInputValid(preferredSessionTimeInput, avgTaskInput.toDouble())) {
+            if (!isAvgTaskInputValid(avgTaskInput) || !isPreferredTimeInputValid(preferredSessionTimeInput, avgTaskInput.toDouble())) {
                 return false
             }
 
