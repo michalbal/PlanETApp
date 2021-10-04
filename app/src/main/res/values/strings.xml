@@ -59,8 +59,10 @@
     Please note, Average time a task takes must be a number, in hours, between 1 and 100.<br />
     Preferred study session duration must be a number, in hours, between 1 and Average task time.<br />
     Min time between sessions must be a number, in minutes, lower then 1440 </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="error_task_duration">input: 1..100</string>
+    <string name="error_preferred_session">input: 1..TaskTime</string>
+    <string name="error_min_time">input: 0..1440</string>
 
     <!-- Accounts Fragment-->
     <string name="user_name_moodle">User Name: %s</string>

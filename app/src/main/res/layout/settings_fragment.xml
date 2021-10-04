@@ -53,9 +53,9 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
-        android:clickable="@{content.editing ? true : false}"
         app:boxBackgroundColor="@color/white"
         app:endIconMode="clear_text"
+        android:clickable="@{content.editing ? true : false}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/settings_name_title"
         app:layout_constraintTop_toBottomOf="@+id/settings_title">
@@ -63,7 +63,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="@{content.editing ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL}"
+            android:clickable="@{content.editing ? true : false}"
+            android:focusable="@{content.editing ? true : false}"
+            android:inputType="text"
             android:text="@{UserPreferencesManager.INSTANCE.userName}"
             />
 
@@ -89,9 +91,9 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="0dp"
         android:ems="10"
+        android:clickable="@{content.editing ? true : false}"
         app:boxBackgroundColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
-        android:clickable="@{content.editing ? true : false}"
         app:errorEnabled="true"
         app:layout_constraintEnd_toStartOf="@+id/hours_title_settings"
         app:layout_constraintStart_toEndOf="@+id/average_task_time_settings_title"
@@ -136,9 +138,9 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="0dp"
         android:ems="10"
+        android:clickable="@{content.editing ? true : false}"
         app:boxBackgroundColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
-        android:clickable="@{content.editing ? true : false}"
         app:errorEnabled="true"
         app:layout_constraintStart_toEndOf="@+id/study_session_title_settings"
         app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration_settings" >
@@ -146,7 +148,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
+            android:clickable="@{content.editing ? true : false}"
+            android:focusable="@{content.editing ? true : false}"
+            android:inputType="number"
             android:text="@{content.preferredSessionHours}"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -192,7 +196,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="@{content.editing ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
+            android:clickable="@{content.editing ? true : false}"
+            android:focusable="@{content.editing ? true : false}"
+            android:inputType="number"
             android:text="@{content.minSessionTime}"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -214,7 +220,22 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="220dp"
         android:background="@color/colorPrimary"
-        android:text="@{content.editing ? @string/save : @string/edit}"
+        android:visibility="@{content.editing ? View.VISIBLE : View.INVISIBLE}"
+        android:text="Save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_min_session_settings"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/edit_settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="220dp"
+        android:background="@color/colorPrimary"
+        android:visibility="@{content.editing ? View.INVISIBLE : View.VISIBLE}"
+        android:text="Edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_min_session_settings"

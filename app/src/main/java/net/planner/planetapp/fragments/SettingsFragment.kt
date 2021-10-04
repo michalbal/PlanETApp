@@ -38,23 +38,23 @@ class SettingsFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         viewModel = ViewModelProvider(this).get(SettingsFragmentViewModel::class.java)
+        mBinding.content = viewModel.content
 
         mBinding.saveSettingsButton.setOnClickListener { view ->
             Log.d(TAG, "Saving settings")
-            if (viewModel.content.isEditing) {
-                // Save settings
-                saveInputIfPossible()
-
-                viewModel.content.isEditing = false
-            } else {
-                viewModel.content.isEditing = true
-            }
-
-            // TODO add input validation here
-
-
+            // Save settings
+            saveInputIfPossible()
+            viewModel.content.isEditing = false
         }
+
+        mBinding.editSettingsButton.setOnClickListener { view ->
+            Log.d(TAG, "Edit enabled")
+            viewModel.content.isEditing = true
+        }
+        // TODO add input validation here
+
 
     }
 

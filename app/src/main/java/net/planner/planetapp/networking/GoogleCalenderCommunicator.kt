@@ -188,7 +188,10 @@ object GoogleCalenderCommunicator {
 
     fun insertEvent(
         activity: Context, insertedEvent: PlannerEvent): Long {
-        return insertEvent(activity, insertedEvent, mainCalendarID, null)
+        if (haveCalendarWritePermissions(activity)) {
+            return insertEvent(activity, insertedEvent, mainCalendarID, null)
+        }
+        return System.currentTimeMillis()
     }
 
     /**
@@ -439,6 +442,17 @@ object GoogleCalenderCommunicator {
         var permissionCheck = ContextCompat.checkSelfPermission(
             caller,
             Manifest.permission.READ_CALENDAR
+        )
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+        return false
+    }
+
+    fun haveCalendarWritePermissions(caller: Context): Boolean {
+        var permissionCheck = ContextCompat.checkSelfPermission(
+            caller,
+            Manifest.permission.WRITE_CALENDAR
         )
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             return true

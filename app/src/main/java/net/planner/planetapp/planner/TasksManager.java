@@ -196,23 +196,27 @@ public class TasksManager {
 
     public void saveChosenMoodleCourses(HashMap<String, String> courses) {
         Log.d(TAG, "saveChosenMoodleCourses called");
-        // Create general preference with all course names
-        HashMap<String, ArrayList<String>> forbiddenSettings = new HashMap();
-        ArrayList allDays = new ArrayList(Arrays.asList(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY));
-        forbiddenSettings.put("00:00-08:30", allDays);
-        forbiddenSettings.put("23:00-23:59", allDays);
-        HashMap<String, ArrayList<String>> preferredSettings = new HashMap();
-        PlannerTag generalTag = new PlannerTag(PlannerObject.GENERAL_TAG, 9 ,forbiddenSettings, preferredSettings);
 
-        // Save tag in local DB
-        PreferencesLocalDB preference = new PreferencesLocalDB(PlannerObject.GENERAL_TAG, 9, forbiddenSettings, preferredSettings, new TreeSet<String>(courses.values()));
-        LocalDBManager.INSTANCE.insertOrUpdatePreference(preference);
+        if (LocalDBManager.INSTANCE.getPreference(PlannerObject.GENERAL_TAG) == null) {
+            // Create general preference with all course names
+            HashMap<String, ArrayList<String>> forbiddenSettings = new HashMap();
+            ArrayList allDays = new ArrayList(Arrays.asList(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY));
+            forbiddenSettings.put("00:00-08:30", allDays);
+            forbiddenSettings.put("23:00-23:59", allDays);
+            HashMap<String, ArrayList<String>> preferredSettings = new HashMap();
+            PlannerTag generalTag = new PlannerTag(PlannerObject.GENERAL_TAG, 9 ,forbiddenSettings, preferredSettings);
+
+            // Save tag in local DB
+            PreferencesLocalDB preference = new PreferencesLocalDB(PlannerObject.GENERAL_TAG, 9, forbiddenSettings, preferredSettings, new TreeSet<String>(courses.values()));
+            LocalDBManager.INSTANCE.insertOrUpdatePreference(preference);
+
+            // Save general tag in firebase db
+            addPreferenceTag(generalTag, true);
+        }
 
         // Save courses in both firebase db and local db
         dBmanager.addUserMoodleCourses(courses);
 
-        // Save general tag in firebase db
-        addPreferenceTag(generalTag, true);
     }
 
 
@@ -330,7 +334,7 @@ public class TasksManager {
         Log.d(TAG, "processUserAcceptedSubtasks called");
         for(PlannerEvent subtask : acceptedEvents){
             // Write to selected Google Calendar and get Id
-            Long eventId = GoogleCalenderCommunicator.INSTANCE.insertEvent(App.context, subtask);
+            long eventId = GoogleCalenderCommunicator.INSTANCE.insertEvent(App.context, subtask);
             subtask.setEventId(eventId);
 
             // Add event to Task subtask dates in Local DB

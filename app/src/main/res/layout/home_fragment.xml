@@ -15,27 +15,34 @@
         android:text="Hello Name!"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/inspText"/>
 
     <TextView
         android:id="@+id/inspText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="10dp"
         android:text="Inspirational sentence :)"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/helloText" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/helloText"
+        app:layout_constraintBottom_toTopOf="@+id/upNextText"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/nextEventsList"
-        android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layoutManager="LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/upNextText"
+        app:layout_constraintBottom_toTopOf="@+id/yourTasksText"
         tools:listitem="@layout/next_event_list_item" />
 
     <TextView
@@ -44,22 +51,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:text="Up Next:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inspText" />
+        app:layout_constraintTop_toBottomOf="@+id/inspText"
+        app:layout_constraintBottom_toTopOf="@+id/nextEventsList" />
 
     <TextView
         android:id="@+id/no_events_found_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:text="No events found"
         android:textSize="23sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/yourTasksText"
         app:layout_constraintTop_toBottomOf="@+id/upNextText" />
 
     <TextView
@@ -71,28 +82,31 @@
         android:text="Your Tasks:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nextEventsList" />
+        app:layout_constraintTop_toBottomOf="@+id/nextEventsList"
+        app:layout_constraintBottom_toTopOf="@+id/tasksList"/>
 
     <TextView
         android:id="@+id/no_tasks_found_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:text="No Tasks found"
         android:textSize="25sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/yourTasksText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksList"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="0dp"
         android:layout_marginStart="10dp"
-        android:layout_marginBottom="27dp"
+        android:layout_marginBottom="10dp"
         app:layoutManager="LinearLayoutManager"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/yourTasksText"

@@ -28,6 +28,7 @@ import net.planner.planetapp.adapters.TaskChoosingViewAdapter
 import net.planner.planetapp.databinding.ActivityMainBinding
 import net.planner.planetapp.fragments.WelcomeFragment
 import net.planner.planetapp.fragments.WelcomeFragmentDirections
+import net.planner.planetapp.networking.GoogleCalenderCommunicator
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.viewmodels.MainActivityViewModel
@@ -97,13 +98,14 @@ class MainActivity : AppCompatActivity() {
         ) { isGranted: Boolean ->
             Log.d(TAG, "Received response from write permission request. isGranted is: $isGranted")
             if (isGranted) {
-                // Move to Google Accounts Screen
+                // Save plan
                 Log.d(TAG, "Permission was granted, writing events to calendar")
+                mViewModel.savePlan()
 
             } else {
                 // Move to Moodle Screen
                 Log.d(TAG, "Permission was denied, saving events only to our db")
-
+                mViewModel.savePlan()
             }
         }
     }
@@ -210,9 +212,13 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.plan_approval_positive_button) { dialog, _ ->
                 val eventsChosen = adapter.getEventsApproved()
                 Toast.makeText(this, App.context.getText(R.string.saving_your_schedule), Toast.LENGTH_SHORT).show()
+                if (GoogleCalenderCommunicator.haveCalendarWritePermissions(App.context)) {
+                    mViewModel.savePlan(eventsChosen)
+                } else {
+                    mViewModel.saveSubTasksForLater(eventsChosen)
+                    requestPermissionLauncher.apply { launch(Manifest.permission.WRITE_CALENDAR) }
+                }
 
-                requestPermissionLauncher.apply { launch(Manifest.permission.WRITE_CALENDAR) }
-                mViewModel.savePlan(eventsChosen)
                 dialog.cancel()
             }
             .create()

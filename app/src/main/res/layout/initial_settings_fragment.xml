@@ -30,9 +30,9 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edit_average_task_duration"
-        android:layout_width="70dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="0dp"
         android:ems="10"
@@ -57,8 +57,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="40dp"
         android:text="Hours"
+        app:layout_constraintStart_toEndOf="@+id/edit_average_task_duration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/initial_settings_title" />
 
@@ -66,25 +67,28 @@
         android:id="@+id/study_session_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="30dp"
         android:text="Preferred study session duration:"
         android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_preferred_session"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration" />
 
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edit_preferred_session"
-        android:layout_width="50dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="0dp"
         android:ems="10"
         app:boxBackgroundColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
         app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/hours_title2"
         app:layout_constraintStart_toEndOf="@+id/study_session_title"
         app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration" >
 
@@ -101,9 +105,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
-        android:layout_marginEnd="56dp"
+        android:layout_marginEnd="25dp"
         android:text="Hours"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edit_preferred_session"
         app:layout_constraintTop_toBottomOf="@+id/edit_average_task_duration" />
 
 
@@ -113,25 +118,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="50dp"
         android:text="Min time between sessions:"
         android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_min_session"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/study_session_title" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_preferred_session" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edit_min_session"
-        android:layout_width="50dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="47dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="5dp"
         android:ems="10"
         app:boxBackgroundColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
         app:errorEnabled="true"
         app:layout_constraintStart_toEndOf="@+id/min_time_title"
-        app:layout_constraintTop_toBottomOf="@+id/study_session_title">
+        app:layout_constraintEnd_toStartOf="@+id/minutes_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_preferred_session">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -145,11 +153,13 @@
         android:id="@+id/minutes_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="65dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="50dp"
         android:text="Minutes"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edit_min_session"
-        app:layout_constraintTop_toBottomOf="@+id/hours_title2" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_preferred_session" />
 
     <Button
         android:id="@+id/save_initisl_settings_button"
