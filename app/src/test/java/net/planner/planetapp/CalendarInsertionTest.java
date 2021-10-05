@@ -8,29 +8,22 @@ import static net.planner.planetapp.UtilsKt.THURSDAY;
 import static net.planner.planetapp.UtilsKt.TUESDAY;
 import static net.planner.planetapp.UtilsKt.WEDNESDAY;
 
-import net.planner.planetapp.networking.GoogleCalenderCommunicator;
 import net.planner.planetapp.planner.PlannerCalendar;
 import net.planner.planetapp.planner.PlannerEvent;
 import net.planner.planetapp.planner.PlannerObject;
 import net.planner.planetapp.planner.PlannerTag;
 import net.planner.planetapp.planner.PlannerTask;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import kotlin.Pair;
 
 public class CalendarInsertionTest {
 
@@ -42,7 +35,7 @@ public class CalendarInsertionTest {
         forbiddenSettings.put("00:00-08:30", allDays);
         forbiddenSettings.put("23:00-23:59", allDays);
         HashMap<String, ArrayList<String>> preferredSettings = new HashMap<>();
-        PlannerTag generalTag = new PlannerTag(PlannerObject.GENERAL_TAG, 9 ,forbiddenSettings, preferredSettings);
+        PlannerTag generalTag = new PlannerTag(PlannerObject.GENERAL_TAG, 9, forbiddenSettings, preferredSettings);
 
         ArrayList<PlannerTag> preferences = new ArrayList<>();
         preferences.add(generalTag);
@@ -51,7 +44,7 @@ public class CalendarInsertionTest {
 
         LinkedList<PlannerEvent> subtasks = planSchedule(plannerTasks, preferences);
 
-        for (PlannerEvent subtask: subtasks) {
+        for (PlannerEvent subtask : subtasks) {
             System.out.println(subtask);
         }
 
