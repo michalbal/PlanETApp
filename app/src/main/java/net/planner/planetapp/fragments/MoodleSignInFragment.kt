@@ -38,8 +38,8 @@ class MoodleSignInFragment : Fragment() {
 
         mBinding.loginButton.setOnClickListener { view ->
             Log.d(TAG, "Login was clicked! Getting token from Moodle")
-            val userName = mBinding.editMoodleUserName.editText?.text.toString()
-            val password = mBinding.editPassword.editText?.text.toString()
+            val userName = mBinding.editMoodleUserName.editText?.text.toString().trim()
+            val password = mBinding.editPassword.editText?.text.toString().trim()
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     try {

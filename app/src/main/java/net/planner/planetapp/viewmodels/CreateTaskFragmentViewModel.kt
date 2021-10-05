@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.database.local_database.TaskLocalDB
 import net.planner.planetapp.planner.PlannerObject
 import net.planner.planetapp.planner.PlannerTask
@@ -24,6 +25,20 @@ class CreateTaskFragmentViewModel : ViewModel() {
             withContext(Dispatchers.IO) {
                 val taskPlanner = PlannerTask(taskUpdated)
                 TasksManager.getInstance().saveTask(taskPlanner)
+                TasksManager.getInstance().planSchedule(listOf(taskPlanner))
+            }
+        }
+    }
+
+    fun calculateTask(taskId: String?) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                taskId?.let {
+                    val task = LocalDBManager.getTask(it)
+                    val taskPlanner = PlannerTask(task)
+                    // TODO remove former subTasks if exist
+                    TasksManager.getInstance().planSchedule(listOf(taskPlanner))
+                }
             }
         }
     }
@@ -46,7 +61,7 @@ class CreateTaskFragmentViewModel : ViewModel() {
             }
 
         @get:Bindable
-        var taskTitle: String = task?.description ?: ""
+        var taskTitle: String = task?.name ?: ""
             set(title) {
                 field = title
                 notifyPropertyChanged(BR.taskTitle)

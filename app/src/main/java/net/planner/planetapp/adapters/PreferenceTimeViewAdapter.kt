@@ -45,8 +45,8 @@ class PreferenceTimeViewAdapter(
         holder.startTimeHour.setOnClickListener { view ->
             // Show time picker dialog
             val splitted = item.startHour.split(":")
-            val hour = splitted[0].toInt()
-            val minutes = splitted[1].toInt()
+            val hour = splitted[0].trim().toInt()
+            val minutes = splitted[1].trim().toInt()
 
             val picker =
                 MaterialTimePicker.Builder()
@@ -67,8 +67,8 @@ class PreferenceTimeViewAdapter(
         holder.endTimeHour.setOnClickListener { view ->
             // Show time picker dialog
             val splitted = item.endHour.split(":")
-            val hour = splitted[0].toInt()
-            val minutes = splitted[1].toInt()
+            val hour = splitted[0].trim().toInt()
+            val minutes = splitted[1].trim().toInt()
 
             val picker =
                 MaterialTimePicker.Builder()

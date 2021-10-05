@@ -30,7 +30,7 @@
             android:layout_marginTop="10dp"
             android:textColor="@color/black"
             android:text="23/09/2021"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

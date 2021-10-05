@@ -28,9 +28,11 @@
         If we do not have access, no events will be shown. Will you allow us to read your events?</string>
 
     <string name="select_tasks_dialog_title">Found new tasks from Moodle </string>
+    <string name="are_you_sure_dialog_title">Are you sure </string>
     <string name="select_tasks_positive_button">Start Planning</string>
     <string name="starting_to_plan_message">Planning your schedule</string>
     <string name="changes_detected_message">Your changes will be lost, are you sure you want to continue?</string>
+    <string name="recalculate_warning_message">Any schedule formerly planned for this task will be lost, are you sure you want to continue?</string>
     <string name="found_changes_dialog_title">Found unsaved changes </string>
     <string name="plan_approval_dialog_title">Finished calculating the study plan </string>
     <string name="plan_approval_positive_button">Approve</string>

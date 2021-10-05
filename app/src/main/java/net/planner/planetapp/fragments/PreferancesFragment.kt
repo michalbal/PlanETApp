@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import net.planner.planetapp.MainActivity
 import net.planner.planetapp.adapters.PreferancesViewAdapter
 import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.databinding.FragmentPreferancesListBinding
@@ -39,7 +40,7 @@ class PreferancesFragment : Fragment() {
         // Init Preferences Recycler View
         val preferencesRecycler = mBinding.preferancesList
         preferencesRecycler.layoutManager = LinearLayoutManager(context)
-        preferencesRecycler.adapter = PreferancesViewAdapter(preferences)
+        preferencesRecycler.adapter = PreferancesViewAdapter(preferences, activity as? MainActivity)
 
         LocalDBManager.dbLocalPreferencesData.observe(viewLifecycleOwner, Observer { it?.let {
             activity?.runOnUiThread {

@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.navigateUp
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -25,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.*
 import net.planner.planetapp.database.local_database.LocalDBManager
+import net.planner.planetapp.database.local_database.PreferencesLocalDB
 import net.planner.planetapp.database.local_database.TaskLocalDB
 import net.planner.planetapp.databinding.FragmentCreateTaskBinding
 import net.planner.planetapp.planner.PlannerTask
@@ -44,6 +48,7 @@ class CreateTaskFragment : Fragment() {
     private lateinit var mBinding: FragmentCreateTaskBinding
     private val args: CreateTaskFragmentArgs by navArgs()
     private var mTask:TaskLocalDB? = null
+    private var preferences: List<PreferencesLocalDB> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,6 +88,8 @@ class CreateTaskFragment : Fragment() {
         mBinding.editTaskButton.setOnClickListener { view ->
             Log.d(TAG, "Edit enabled")
             viewModel.content.isEditingTask = true
+            createPreferenceAdapter()
+            createPriorityAdapter()
         }
 
         // Init deadline date picker
@@ -119,8 +126,8 @@ class CreateTaskFragment : Fragment() {
         mBinding.editDeadlineTime.setOnClickListener { view ->
             // Show time picker dialog
             val splitted = mBinding.editDeadlineTime.text.split(":")
-            val hour = splitted[0].toInt()
-            val minutes = splitted[1].toInt()
+            val hour = splitted[0].trim().toInt()
+            val minutes = splitted[1].trim().toInt()
 
             val picker =
                 MaterialTimePicker.Builder()
@@ -148,19 +155,20 @@ class CreateTaskFragment : Fragment() {
         // Fill preferences adapter
         LocalDBManager.dbLocalPreferencesData.observe(viewLifecycleOwner, Observer {
             it?.let {
-                // Preference choice adapter
-                val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, it)
-                val editPreference = mBinding.editTaskPriority.editText as? AutoCompleteTextView
-                editPreference?.setAdapter(adapter)
+                preferences = it
+
+                if (viewModel.content.isEditingTask) {
+                    createPreferenceAdapter()
+                }
             }
         })
 
-
-        // Priority choice adapter
-        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
-        val editPreference = mBinding.editTaskPriority.editText as? AutoCompleteTextView
-        editPreference?.setAdapter(adapter)
+        if (viewModel.content.isEditingTask) {
+            createPreferenceAdapter()
+            createPriorityAdapter()
+        } else {
+            mBinding.editTaskPreference.editText?.setText(viewModel.content.taskPreferenceName)
+        }
 
 
         mBinding.editEstimatedDuration.editText?.doOnTextChanged { inputText, _, _, _ ->
@@ -209,7 +217,45 @@ class CreateTaskFragment : Fragment() {
             }
         }
 
+        mBinding.calculateTaskButton.setOnClickListener { view ->
 
+            Log.d(TAG, "calculateTaskButton: pressd Creating and showing the dialog")
+            val dialog = activity?.let {
+                AlertDialog.Builder(it)
+                    .setMessage(R.string.recalculate_warning_message)
+                    .setTitle(R.string.are_you_sure_dialog_title)
+                    .setNegativeButton(android.R.string.cancel){ dialog, _ ->
+                        dialog.cancel()
+                    }
+                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                        viewModel.calculateTask(args.taskId)
+                        dialog.cancel()
+                    }
+                    .create()
+                    .show()
+            }
+        }
+
+
+    }
+
+    private fun createPriorityAdapter() {
+        // Priority choice adapter
+        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+        val priorityId = items.indexOf(viewModel.content.taskPriority)
+        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
+        val editPreference = mBinding.editTaskPriority.editText as? AutoCompleteTextView
+        editPreference?.setAdapter(adapter)
+        editPreference?.setText(items[priorityId], false)
+    }
+
+
+    private fun createPreferenceAdapter() {
+        // Preference choice adapter
+        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, preferences.map { it.tagName })
+        val editPreference = mBinding.editTaskPreference.editText as? AutoCompleteTextView
+        editPreference?.setAdapter(adapter)
+        editPreference?.setText(viewModel.content.taskPreferenceName, false)
     }
 
     private fun saveInputIfPossible(): Boolean {
@@ -243,6 +289,14 @@ class CreateTaskFragment : Fragment() {
                 maxDivisionsNumber = maxDivisionsNum.toInt(), subtaskDates = listOf())
 
             viewModel.saveTask(taskUpdated)
+
+            if(mTask == null) {
+                activity?.runOnUiThread {
+                    val navController = findNavController()
+                    navController.navigateUp()
+                }
+            }
+
         } catch (e: Exception) {
             Log.e(TAG, "saveInputIfPossible: Received exception ${e.message}")
             return false

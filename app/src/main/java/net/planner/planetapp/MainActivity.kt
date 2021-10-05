@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             R.id.welcomeFragment -> {
                 false
             }
-            R.id.createPreferenceFragment -> {
+            R.id.createPreferenceFragment, R.id.createTaskFragment -> {
                 createChangesNotSavedDialog()
                 true
             }
@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "createPlanApprovalDialog: Creating and showing the dialog")
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
-            .setTitle(R.string.plan_approval_dialog_title)
+            .setTitle("")
             .setNegativeButton(android.R.string.cancel){ dialog, _ ->
                 dialog.cancel()
             }
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "createChangesNotSavedDialog: Creating and showing the dialog")
         val dialog = AlertDialog.Builder(this)
             .setMessage(R.string.changes_detected_message)
-            .setTitle(R.string.select_tasks_dialog_title)
+            .setTitle(R.string.are_you_sure_dialog_title)
             .setNegativeButton(android.R.string.cancel){ dialog, _ ->
                 dialog.cancel()
             }
