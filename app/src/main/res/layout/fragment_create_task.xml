@@ -1,14 +1,373 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context=".fragments.CreateTaskFragment">
+
+<data>
+    <import type="android.view.View"/>
+    <import type="net.planner.planetapp.UtilsKt"/>
+    <import type="net.planner.planetapp.UserPreferencesManager"/>
+    <import type="android.text.InputType"/>
+
+
+    <variable
+        name="content"
+        type="net.planner.planetapp.viewmodels.CreateTaskFragmentViewModel.Content"
+        />
+</data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.CreateTaskFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/task_name_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Title:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_task_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-</FrameLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_task_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:hint=""
+        app:boxBackgroundColor="@color/white"
+        app:endIconMode="clear_text"
+        app:helperText="required"
+        app:helperTextEnabled="@{content.editingTask ? true : false}"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/task_name_title"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="@{content.editingTask ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL}"
+            android:text="@{content.taskTitle}" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/deadline_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:text="Deadline:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_deadline_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edit_deadline_date"/>
+
+    <TextView
+        android:id="@+id/edit_deadline_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/frame"
+        android:text=" 24/09/2021"
+        android:clickable="@{content.editingTask ? true : false}"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/task_preference_title"
+        app:layout_constraintStart_toEndOf="@+id/deadline_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_title" />
+
+    <TextView
+        android:id="@+id/edit_deadline_time"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="20sp"
+        android:text=" 23:59"
+        android:clickable="@{content.editingTask ? true : false}"
+        android:background="@drawable/frame"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintStart_toEndOf="@+id/edit_deadline_date"
+        app:layout_constraintTop_toTopOf="@+id/edit_deadline_date"/>
+
+    <TextView
+        android:id="@+id/task_preference_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Preference:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/edit_task_preference"
+        app:layout_constraintTop_toBottomOf="@+id/edit_deadline_date" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_task_preference"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        app:boxBackgroundColor="@color/white"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:layout_constraintBottom_toTopOf="@+id/edit_task_priority"
+        app:layout_constraintEnd_toStartOf="@+id/add_preference_button"
+        app:layout_constraintStart_toEndOf="@+id/task_preference_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_deadline_date">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="@{content.editingTask ? true : false}"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/add_preference_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:clickable="@{content.editingTask ? true : false}"
+        android:src="@drawable/add_icon"
+        app:layout_constraintStart_toEndOf="@+id/edit_task_preference"
+        app:layout_constraintTop_toTopOf="@+id/edit_task_preference" />
+
+    <TextView
+        android:id="@+id/task_priority_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="40dp"
+        android:text="Priority:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_task_priority"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_preference" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_task_priority"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        app:boxBackgroundColor="@color/white"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:layout_constraintStart_toEndOf="@+id/task_priority_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_preference"
+        app:layout_constraintBottom_toTopOf="@+id/edit_estimated_duration"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="@{content.editingTask ? true : false}"
+            android:text="@{content.taskPriority}"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/estimated_time_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="Estimated time for this task:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_estimated_duration"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_priority" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_estimated_duration"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="0dp"
+        android:ems="10"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/hours_title_task"
+        app:layout_constraintStart_toEndOf="@+id/estimated_time_title"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_priority">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="@{content.editingTask ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
+            android:text="@{content.estimatedTimeHours}"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/hours_title_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="20dp"
+        android:text="Hours"
+        app:layout_constraintStart_toEndOf="@+id/edit_estimated_duration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_task_priority" />
+
+    <TextView
+        android:id="@+id/study_session_title_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="30dp"
+        android:text="Preferred study session duration:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_preferred_session_task"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_estimated_duration" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_preferred_session_task"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="0dp"
+        android:ems="10"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/hours_title2_task"
+        app:layout_constraintStart_toEndOf="@+id/study_session_title_task"
+        app:layout_constraintTop_toBottomOf="@+id/edit_estimated_duration" >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="@{content.editingTask ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
+            android:text="@{content.preferredSessionHours}"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/hours_title2_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="20dp"
+        android:text="Hours"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edit_preferred_session_task"
+        app:layout_constraintTop_toBottomOf="@+id/edit_estimated_duration" />
+
+
+
+    <TextView
+        android:id="@+id/max_num_sessions_title_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="20dp"
+        android:text="Max number of sessions:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_max_num_sessions_task"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_preferred_session_task" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_max_num_sessions_task"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="10dp"
+        android:ems="10"
+        android:clickable="@{content.editingTask ? true : false}"
+        app:boxBackgroundColor="@color/white"
+        android:backgroundTint="@color/colorPrimary"
+        app:errorEnabled="true"
+        app:layout_constraintStart_toEndOf="@+id/max_num_sessions_title_task"
+        app:layout_constraintTop_toBottomOf="@+id/edit_preferred_session_task">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="@{content.editingTask ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL}"
+            android:text="@{content.maxNumSessions}"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <Button
+        android:id="@+id/save_task_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/colorPrimary"
+        android:text="Save"
+        android:visibility="@{content.editingTask ? View.VISIBLE : View.INVISIBLE}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_max_num_sessions_task"
+        app:layout_constraintBottom_toTopOf="@+id/calculate_task_button"/>
+
+    <Button
+        android:id="@+id/edit_task_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/colorPrimary"
+        android:text="Edit"
+        android:visibility="@{content.editingTask ? View.INVISIBLE : View.VISIBLE}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_max_num_sessions_task"
+        app:layout_constraintBottom_toTopOf="@+id/calculate_task_button"/>
+
+    <Button
+        android:id="@+id/calculate_task_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:theme="@style/dark_button"
+        android:text="Calculate"
+        android:visibility="@{content.editingTask ? View.INVISIBLE : View.VISIBLE}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_task_button"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

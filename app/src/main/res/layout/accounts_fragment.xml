@@ -126,6 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="Edit"
+            android:theme="@style/dark_button"
             android:background="@color/colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

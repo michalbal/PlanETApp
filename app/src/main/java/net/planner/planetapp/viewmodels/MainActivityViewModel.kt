@@ -31,6 +31,8 @@ class MainActivityViewModel: ViewModel() {
     private val mOnTasksReceivedListener = OnTasksReceivedListener()
     private val mOnPlanCalculatedListener = OnPlanCalculatedListener()
 
+    private var subTasksToSave: List<PlannerEvent> = listOf()
+
 
 
     fun onStart() {
@@ -65,9 +67,30 @@ class MainActivityViewModel: ViewModel() {
     fun savePlan(subtasks: List<PlannerEvent>) {
         Log.d(TAG, "savePlan: Received ${subtasks.size} subtasks")
         // Inform relevant parties that the plan was approved by the user
-        TasksManager.getInstance().processUserAcceptedSubtasks(subtasks)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                TasksManager.getInstance().processUserAcceptedSubtasks(subtasks)
+            }
+        }
     }
 
+    fun savePlan() {
+        Log.d(TAG, "savePlan: Saving plan from saved Subtasks")
+        // Inform relevant parties that the plan was approved by the user
+        if(subTasksToSave.isEmpty()) {
+            return
+        }
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                TasksManager.getInstance().processUserAcceptedSubtasks(subTasksToSave)
+            }
+        }
+    }
+
+    fun saveSubTasksForLater(subtasks: List<PlannerEvent>) {
+        subTasksToSave = subtasks
+    }
 
 
     private inner class OnTasksReceivedListener: IOnTasksReceivedListener {

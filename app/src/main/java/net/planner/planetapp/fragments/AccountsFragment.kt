@@ -90,7 +90,7 @@ class AccountsFragment : Fragment() {
         // Init Accounts Recycler View
         val accountsRecycler = mBinding.googleAccountsList
         accountsRecycler.layoutManager = LinearLayoutManager(context)
-        val googleAccountsAdapter = CalendarAccountAdapter(listOf())
+        val googleAccountsAdapter = CalendarAccountAdapter(listOf(), false)
         accountsRecycler.adapter = googleAccountsAdapter
 
         UserPreferencesManager.mainCalendarAccount?.let {

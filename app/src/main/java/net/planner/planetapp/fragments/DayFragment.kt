@@ -13,7 +13,12 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import kotlinx.android.synthetic.main.fragment_create_task.*
 import net.planner.planetapp.App
 import net.planner.planetapp.R
 import net.planner.planetapp.adapters.NextEventViewAdapter
@@ -90,8 +95,45 @@ class DayFragment : Fragment() {
             updateDateShown(lastDayDate)
         }
 
+        // Init date picker
+        mBinding.chooseDayImage.setOnClickListener { view->
+
+            val dateMillis: Long =
+                try {
+                    getMillisFromDate(mBinding.dateText.text.toString())
+                } catch (e: Exception) {
+                    System.currentTimeMillis()
+                } ?: System.currentTimeMillis()
+
+
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setSelection(dateMillis)
+                    .build()
+
+            datePicker.addOnPositiveButtonClickListener {
+                updateDateShown(getDayDate(it))
+            }
+
+            datePicker.show(parentFragmentManager, null)
+        }
+
+        // Init add task button
+        mBinding.addTaskButton.setOnClickListener { view ->
+            activity?.runOnUiThread {
+                val dateMillis: Long =
+                    try {
+                        getMillisFromDate(mBinding.dateText.text.toString())
+                    } catch (e: Exception) {
+                        System.currentTimeMillis()
+                    } ?: System.currentTimeMillis()
+                val navController = findNavController()
+                navController.navigate(DayFragmentDirections.actionDayFragmentToCreateTaskFragment(dateMillis, null))
+            }
+        }
+
         updateDateShown(getDayDate(System.currentTimeMillis()))
-        // TODO show spinning wheel
     }
 
     private fun updateDateShown(date: String) = when {

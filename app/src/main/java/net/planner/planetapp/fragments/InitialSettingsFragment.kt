@@ -8,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
-import net.planner.planetapp.MainActivity
-import net.planner.planetapp.UserPreferencesManager
+import net.planner.planetapp.*
 import net.planner.planetapp.databinding.InitialSettingsFragmentBinding
 import net.planner.planetapp.viewmodels.InitialSettingsFragmentViewModel
 import java.util.concurrent.TimeUnit
@@ -36,6 +36,47 @@ class InitialSettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this).get(InitialSettingsFragmentViewModel::class.java)
+
+        mBinding.editAverageTaskDuration.editText?.doOnTextChanged { inputText, _, _, _ ->
+            // Respond to input text change
+            if (!isAvgTaskInputValid(inputText.toString())) {
+                Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $inputText")
+                // Set error text
+                mBinding.editAverageTaskDuration.error = getString(R.string.error_task_duration)
+            } else {
+            // Clear error text
+            mBinding.editAverageTaskDuration.error = null
+            }
+        }
+
+        mBinding.editPreferredSession.editText?.doOnTextChanged { inputText, _, _, _ ->
+            val avgTaskTime: Double = try {
+                mBinding.editAverageTaskDuration.editText.toString().toDouble()
+            } catch (e: Exception) {
+                UserPreferencesManager.avgTaskDurationMinutes.toDouble() / 60
+            }
+
+            // Respond to input text change
+            if (!isPreferredTimeInputValid(inputText.toString(), avgTaskTime)) {
+                Log.d(TAG, "isPreferredTimeInputValid: preferredSessionTimeHours with wrong value! value is $inputText")
+                // Set error text
+                mBinding.editPreferredSession.error = getString(R.string.error_preferred_session)
+            } else {
+                // Clear error text
+                mBinding.editPreferredSession.error = null
+            }
+        }
+
+        mBinding.editMinSession.editText?.doOnTextChanged { inputText, _, _, _ ->
+            // Respond to input text change
+            try {
+                val spaceBetweenSessions = inputText.toString().toDouble()
+                Log.d(TAG, "testInputIntegrity: spaceBetweenSessions OK value is $spaceBetweenSessions")
+                mBinding.editMinSession.error = null
+            } catch(e: Exception) {
+                mBinding.editMinSession.error = getString(R.string.error_min_time)
+            }
+        }
 
         mBinding.saveInitislSettingsButton.setOnClickListener { view ->
 
@@ -67,33 +108,28 @@ class InitialSettingsFragment : Fragment() {
     private fun testInputIntegrity(): Boolean {
         try {
             Log.d(TAG, "testInputIntegrity")
-            val avgTaskHours = mBinding.editAverageTaskDuration.text.toString().toDouble().toLong()
-            val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
-            if (avgTaskMinutes < 30 || avgTaskMinutes > 6000) {
-                Log.d(TAG, "testInputIntegrity: Avg Hours with wrong value! value is $avgTaskHours")
+
+            val avgTaskInput = mBinding.editAverageTaskDuration.editText?.text.toString()
+            val preferredSessionTimeInput = mBinding.editPreferredSession.editText?.text.toString()
+            val spaceBetweenSessions = mBinding.editMinSession.editText?.text.toString().toDouble().toLong()
+
+            if (!isAvgTaskInputValid(avgTaskInput) || !isPreferredTimeInputValid(preferredSessionTimeInput, avgTaskInput.toDouble())) {
                 return false
             }
 
-            Log.d(TAG, "testInputIntegrity: Avg Hours OK value is $avgTaskHours")
+            val avgTaskHours = avgTaskInput.toDouble().toLong()
+            val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
+
             // Can save avgTask
             UserPreferencesManager.avgTaskDurationMinutes = avgTaskMinutes
 
-            val preferredSessionTimeHours = mBinding.editPreferredSession.text.toString().toDouble().toLong()
+            val preferredSessionTimeHours = preferredSessionTimeInput.toDouble().toLong()
             val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
-            if (preferredSessionTimeMinutes < 30 || preferredSessionTimeMinutes >= avgTaskMinutes) {
-                Log.d(TAG, "testInputIntegrity: preferredSessionTimeHours with wrong value! value is $preferredSessionTimeHours")
-                return false
-            }
-
-            Log.d(TAG, "testInputIntegrity: preferredSessionTimeHours OK value is $preferredSessionTimeHours")
-
-            // Can save min session
-            UserPreferencesManager.preferredSessionTime = preferredSessionTimeMinutes
-
-            val spaceBetweenSessions = mBinding.editMinSession.text.toString().toDouble().toLong()
-            Log.d(TAG, "testInputIntegrity: spaceBetweenSessions OK value is $spaceBetweenSessions")
 
             // Can save preferred session
+            UserPreferencesManager.preferredSessionTime = preferredSessionTimeMinutes
+
+            // Can save min session
             UserPreferencesManager.spaceBetweenEventsMinutes = spaceBetweenSessions
 
 

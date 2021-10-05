@@ -50,7 +50,7 @@ class CreatePreferenceFragment : Fragment() {
         mainActivity?.hideBottomNavigation()
 
         // Priority choice adapter
-        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
+        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
         val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
         val editPreference = mBinding.editPreferencePriority.editText as? AutoCompleteTextView
         editPreference?.setAdapter(adapter)
@@ -138,7 +138,7 @@ class CreatePreferenceFragment : Fragment() {
 
         activity?.runOnUiThread {
             val navController = findNavController()
-            navController.navigate(CreatePreferenceFragmentDirections.actionCreatePreferenceFragmentToPreferancesFragment())
+            navController.navigateUp()
         }
 
 

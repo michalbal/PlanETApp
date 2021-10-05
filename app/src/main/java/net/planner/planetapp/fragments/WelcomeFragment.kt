@@ -55,7 +55,7 @@ class WelcomeFragment : Fragment() {
 
         mBinding.continueButton.setOnClickListener { button ->
             // Save name
-            UserPreferencesManager.userName = mBinding.nameEdt.editText?.text.toString() ?: ""
+            UserPreferencesManager.userName = (mBinding.nameEdt.editText?.text ?: "").toString().trim()
 
             // Request permissions  - If granted move to next screen
             requestPermissionLauncher.apply { launch(Manifest.permission.READ_CALENDAR) }

@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.planner.planetapp.R
+import net.planner.planetapp.fragments.InitialSettingsFragment
 import net.planner.planetapp.getMillisFromDate
 import net.planner.planetapp.planner.TasksManager
+import java.util.concurrent.TimeUnit
 
 class InitialSettingsFragmentViewModel : ViewModel() {
     companion object {
