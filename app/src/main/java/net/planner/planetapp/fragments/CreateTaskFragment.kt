@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -81,8 +82,12 @@ class CreateTaskFragment : Fragment() {
         mBinding.saveTaskButton.setOnClickListener { view ->
             Log.d(TAG, "Saving task ${mBinding.editTaskTitle}")
             // Save task
-            saveInputIfPossible()
-            viewModel.content.isEditingTask = false
+            if (saveInputIfPossible()) {
+                Toast.makeText(activity, App.context.getText(R.string.saving_task_message), Toast.LENGTH_SHORT).show()
+                viewModel.content.isEditingTask = false
+            } else {
+                Toast.makeText(activity, App.context.getText(R.string.wrong_input_not_saving_message), Toast.LENGTH_LONG).show()
+            }
         }
 
         mBinding.editTaskButton.setOnClickListener { view ->
