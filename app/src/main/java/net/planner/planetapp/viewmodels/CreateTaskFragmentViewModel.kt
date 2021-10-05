@@ -20,12 +20,14 @@ class CreateTaskFragmentViewModel : ViewModel() {
 
     lateinit var content: Content
 
-    fun saveTask(taskUpdated: TaskLocalDB) {
+    fun saveTask(taskUpdated: TaskLocalDB, shouldPlan: Boolean) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val taskPlanner = PlannerTask(taskUpdated)
                 TasksManager.getInstance().saveTask(taskPlanner)
-                TasksManager.getInstance().planSchedule(listOf(taskPlanner))
+                if (shouldPlan) {
+                    TasksManager.getInstance().planSchedule(listOf(taskPlanner))
+                }
             }
         }
     }

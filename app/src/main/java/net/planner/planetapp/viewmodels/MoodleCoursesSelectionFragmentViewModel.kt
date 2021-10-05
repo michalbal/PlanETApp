@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.fragments.MoodleSignInFragment
+import net.planner.planetapp.getMillisFromDate
 import net.planner.planetapp.planner.TasksManager
 
 class MoodleCoursesSelectionFragmentViewModel : ViewModel() {
@@ -72,6 +73,17 @@ class MoodleCoursesSelectionFragmentViewModel : ViewModel() {
             }
             Log.d(TAG, "saveCourses: Calling to save chosen courses")
             TasksManager.getInstance().saveChosenMoodleCourses(moodleCourseIdsToNames)
+        }
+    }
+
+    fun startGettingTasksFromMoodle() {
+        Log.d(TAG, "startGettingTasksFromMoodle called")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val millisToPlanFrom = System.currentTimeMillis()
+//                val millisToPlanFrom = getMillisFromDate("20/05/2021") ?: System.currentTimeMillis()
+                TasksManager.getInstance().parseMoodleTasks(millisToPlanFrom)
+            }
         }
     }
 }

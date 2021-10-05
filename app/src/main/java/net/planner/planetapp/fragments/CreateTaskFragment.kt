@@ -288,7 +288,7 @@ class CreateTaskFragment : Fragment() {
                 maxSessionTimeInMinutes = preferredSessionTimeMinutes.toInt(),
                 maxDivisionsNumber = maxDivisionsNum.toInt(), subtaskDates = listOf())
 
-            viewModel.saveTask(taskUpdated)
+            viewModel.saveTask(taskUpdated, mTask == null)
 
             if(mTask == null) {
                 activity?.runOnUiThread {

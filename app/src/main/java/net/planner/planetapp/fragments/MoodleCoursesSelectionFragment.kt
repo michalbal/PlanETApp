@@ -69,6 +69,7 @@ class MoodleCoursesSelectionFragment : Fragment() {
             activity?.runOnUiThread {
                 val navController = findNavController()
                 if (UserPreferencesManager.didFinishFirstSeq) {
+                    viewModel.startGettingTasksFromMoodle()
                     navController.navigate(MoodleCoursesSelectionFragmentDirections.actionMoodleCoursesSelectionFragmentToAccountsFragment())
                 } else {
                     // This is the first Sequence, we continue
