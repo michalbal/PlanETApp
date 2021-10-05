@@ -46,6 +46,13 @@ class CreateTaskFragmentViewModel : ViewModel() {
             }
 
         @get:Bindable
+        var taskTitle: String = task?.description ?: ""
+            set(title) {
+                field = title
+                notifyPropertyChanged(BR.taskTitle)
+            }
+
+        @get:Bindable
         var estimatedTimeHours: String = TimeUnit.MINUTES.toHours(task?.durationInMinutes?.toLong() ?: UserPreferencesManager.avgTaskDurationMinutes).toString()
             set(taskTime) {
                 field = taskTime
