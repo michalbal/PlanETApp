@@ -1,9 +1,11 @@
 package net.planner.planetapp.adapters
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -11,10 +13,6 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import net.planner.planetapp.*
 import net.planner.planetapp.database.local_database.TaskLocalDB
 import net.planner.planetapp.databinding.TaskListItemBinding
-import net.planner.planetapp.fragments.HomeFragmentDirections
-import net.planner.planetapp.fragments.PreferancesFragmentDirections
-import net.planner.planetapp.planner.PlannerTask
-
 class TasksViewAdapter(
     private var values: List<TaskLocalDB>,
     private val activity: MainActivity?
@@ -57,14 +55,16 @@ class TasksViewAdapter(
         holder.preferenceName.setOnClickListener { view->
             activity?.runOnUiThread {
                 val navController = activity.findNavController(R.id.nav_host_fragment)
-                navController.navigate(HomeFragmentDirections.actionHomeFragmentToViewAndEditPreferenceFragment())
+                val bundle = bundleOf("preferenceName" to item.tag)
+                navController.navigate(R.id.createPreferenceFragment, bundle)
             }
         }
 
         holder.itemView.setOnClickListener { view ->
             activity?.runOnUiThread {
                 val navController = activity.findNavController(R.id.nav_host_fragment)
-                navController.navigate(HomeFragmentDirections.actionHomeFragmentToViewAndEditTaskFragment())
+                val bundle = bundleOf("deadlineDateStart" to item.deadline, "taskId" to item.taskId)
+                navController.navigate(R.id.createTaskFragment, bundle)
             }
         }
 

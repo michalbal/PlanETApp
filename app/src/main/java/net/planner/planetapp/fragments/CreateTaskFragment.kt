@@ -19,6 +19,10 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.android.synthetic.main.fragment_create_task.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.planner.planetapp.*
 import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.database.local_database.TaskLocalDB
@@ -45,6 +49,14 @@ class CreateTaskFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                mTask = args.taskId?.let {
+                    LocalDBManager.getTask(it)
+                }
+            }
+        }
+
         mBinding = FragmentCreateTaskBinding.inflate(inflater, container, false)
         return mBinding.root
     }
@@ -54,9 +66,6 @@ class CreateTaskFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(CreateTaskFragmentViewModel::class.java)
         val deadlineDateStart = args.deadlineDateStart
-        mTask = args.taskId?.let {
-            LocalDBManager.getTask(it)
-        }
 
         viewModel.content = CreateTaskFragmentViewModel.Content(mTask)
         mBinding.content = viewModel.content
@@ -167,7 +176,7 @@ class CreateTaskFragment : Fragment() {
         }
 
 
-        mBinding.editPreferredSessionSettings.editText?.doOnTextChanged { inputText, _, _, _ ->
+        mBinding.editPreferredSessionTask.editText?.doOnTextChanged { inputText, _, _, _ ->
             val avgTaskTime: Double = try {
                 mBinding.editEstimatedDuration.editText.toString().toDouble()
             } catch (e: Exception) {
@@ -178,10 +187,10 @@ class CreateTaskFragment : Fragment() {
             if (!isPreferredTimeInputValid(inputText.toString(), avgTaskTime)) {
                 Log.d(TAG, "isPreferredTimeInputValid: preferredSessionTimeHours with wrong value! value is $inputText")
                 // Set error text
-                mBinding.editPreferredSessionSettings.error = getString(R.string.error_preferred_session)
+                mBinding.editPreferredSessionTask.error = getString(R.string.error_preferred_session)
             } else {
                 // Clear error text
-                mBinding.editPreferredSessionSettings.error = null
+                mBinding.editPreferredSessionTask.error = null
             }
         }
 
@@ -222,7 +231,7 @@ class CreateTaskFragment : Fragment() {
             val avgTaskHours = mBinding.editEstimatedDuration.editText?.text.toString().toDouble().toLong()
             val avgTaskMinutes = TimeUnit.HOURS.toMinutes(avgTaskHours)
 
-            val preferredSessionTimeHours = mBinding.editPreferredSessionSettings.editText?.text.toString().toDouble().toLong()
+            val preferredSessionTimeHours = mBinding.editPreferredSessionTask.editText?.text.toString().toDouble().toLong()
             val preferredSessionTimeMinutes = TimeUnit.HOURS.toMinutes(preferredSessionTimeHours)
 
             val maxDivisionsNum = mBinding.editMaxNumSessionsTask.editText?.text.toString().toDouble().toLong()
