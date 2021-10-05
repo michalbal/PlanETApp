@@ -27,6 +27,7 @@ import java.util.Objects;
 
 public class CalendarInsertionTest {
 
+    // To run please change android.util.Pair to kotlin.Pair in PlannerTag and DBManager.
     @Test
     public void noGoogleCalendarGroupOfTasks() throws ParseException {
         // Create general preference with all course names

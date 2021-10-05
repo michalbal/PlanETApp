@@ -227,7 +227,6 @@ public class PlannerCalendar {
 
         while (size != full_size) {
             ++fail_count;
-            // System.out.println("FAILED " + fail_count + " TIMES WITH (SIZE, FULL_SIZE) = (" + size + ", " + full_size + ")");
 
             int shift = full_size - fail_count - 1;
             if (shift < 0) {
@@ -370,12 +369,11 @@ public class PlannerCalendar {
     private List<PlannerEvent> splitTask(PlannerTask task) {
         OccupiedInterval.setMaxSessionTime(task.getMaxSessionTimeInMillis());
         PriorityQueue<OccupiedInterval> options = new PriorityQueue<>(task.getMaxDivisionsNumber(), new IntervalByLengthComparator());
-        FreeTimeIterator freeTimeIt = new FreeTimeIterator();
 
         // If there is no tag then use specific function for tag-less tasks.
         PlannerTag tag = safeGetTag(task.getTagName());
         if (tag == null) {
-            findIntervalForUntaggedTask(task, freeTimeIt, options);
+            findIntervalForUntaggedTask(task, new FreeTimeIterator(), options);
             return task.splitIntoEvents(options, spaceBetweenEvents);
         }
 
@@ -387,7 +385,7 @@ public class PlannerCalendar {
         }
 
         // Attempt to insert only in non-forbidden free time.
-        findIntervalForTask(task, freeTimeIt, tag.getForbiddenTimeIntervalsTree(startTime, endTime), options, NORMAL);
+        findIntervalForTask(task, new FreeTimeIterator(), tag.getForbiddenTimeIntervalsTree(startTime, endTime), options, NORMAL);
         return task.splitIntoEvents(options, spaceBetweenEvents);
     }
 
@@ -574,7 +572,7 @@ public class PlannerCalendar {
 
             while (occupiedIt.hasNext()) {
                 nextOccupied = (LongInterval) occupiedIt.next();
-                if (nextOccupied.irAfter(nextOccupied)) {
+                if (nextOccupied.irAfter(previous)) {
                     return previous;
                 } else {
                     previous = new LongInterval(previous.getStart(), nextOccupied.getEnd());
@@ -609,6 +607,7 @@ public class PlannerCalendar {
                     startTime = current.getEnd() + spaceBetweenEvents;
                     return free;
                 }
+                startTime = current.getEnd() + spaceBetweenEvents;
             }
         }
     }
