@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.planner.planetapp.MainActivity
@@ -21,10 +22,17 @@ import net.planner.planetapp.databinding.FragmentCreatePreferenceBinding
 import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.TasksManager
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.planner.planetapp.App
+import net.planner.planetapp.database.local_database.TaskLocalDB
+import net.planner.planetapp.turnTimesMapIntoListTimeRep
+import net.planner.planetapp.viewmodels.CreatePreferenceViewModel
+import net.planner.planetapp.viewmodels.CreateTaskFragmentViewModel
 
 
 class CreatePreferenceFragment : Fragment() {
@@ -35,11 +43,24 @@ class CreatePreferenceFragment : Fragment() {
     }
 
     private lateinit var mBinding: FragmentCreatePreferenceBinding
+    private lateinit var viewModel: CreatePreferenceViewModel
+    private lateinit var moodleAdapter: MoodleCoursesViewAdapter
+    private lateinit var forbiddenAdapter: PreferenceTimeViewAdapter
+    private lateinit var preferredAdapter: PreferenceTimeViewAdapter
+    private val args: CreatePreferenceFragmentArgs by navArgs()
+    private var mPreference: PreferencesLocalDB? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        GlobalScope.launch(Dispatchers.IO)  {
+            mPreference = args.preferenceName?.let {
+                LocalDBManager.getPreference(it)
+            }
+        }
+
         mBinding = FragmentCreatePreferenceBinding.inflate(inflater, container, false)
         return mBinding.root
     }
@@ -49,29 +70,61 @@ class CreatePreferenceFragment : Fragment() {
         val mainActivity = activity as? MainActivity
         mainActivity?.hideBottomNavigation()
 
-        // Priority choice adapter
-        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
-        val editPreference = mBinding.editPreferencePriority.editText as? AutoCompleteTextView
-        editPreference?.setAdapter(adapter)
+        viewModel = ViewModelProvider(this).get(CreatePreferenceViewModel::class.java)
+
+        viewModel.content = CreatePreferenceViewModel.Content(mPreference)
+        mBinding.content = viewModel.content
+
+        mBinding.savePreferenceButton.setOnClickListener { view ->
+            Log.d(TAG, "Saving preference ${mBinding.editPreferenceName}")
+            // Save task
+            if (savePreferenceIfPossibleAndReturn()) {
+                Toast.makeText(activity, App.context.getText(R.string.saving_preference_message), Toast.LENGTH_SHORT).show()
+                viewModel.content.isEditingPreference = false
+                val mainActivity = activity as? MainActivity
+                mainActivity?.returnBottomNavigation()
+
+                activity?.runOnUiThread {
+                    Toast.makeText(activity, App.context.getText(R.string.saving_preference_message), Toast.LENGTH_SHORT).show()
+                    val navController = findNavController()
+                    navController.navigateUp()
+                }
+            } else {
+                moodleAdapter.updateIsEditable(false)
+                preferredAdapter.updateIsEditable(false)
+                forbiddenAdapter.updateIsEditable(false)
+                Toast.makeText(activity, App.context.getText(R.string.wrong_input_not_saving_message), Toast.LENGTH_LONG).show()
+            }
+        }
+
+        mBinding.editPreferenceButton.setOnClickListener { view ->
+            Log.d(TAG, "Edit enabled")
+            viewModel.content.isEditingPreference = true
+            createPriorityAdapter()
+            moodleAdapter.updateIsEditable(true)
+            preferredAdapter.updateIsEditable(true)
+            forbiddenAdapter.updateIsEditable(true)
+        }
+
 
         // Init Forbidden times Recycler View
         val forbiddenTimesRecycler = mBinding.forbiddenTimesList
         forbiddenTimesRecycler.layoutManager = LinearLayoutManager(context)
-        val forbiddenTimesAdapter = PreferenceTimeViewAdapter(ArrayList(), parentFragmentManager)
-        forbiddenTimesRecycler.adapter = forbiddenTimesAdapter
+        forbiddenAdapter = PreferenceTimeViewAdapter(turnTimesMapIntoListTimeRep(viewModel.content.forbiddenTimes), parentFragmentManager, false)
+        forbiddenTimesRecycler.adapter = forbiddenAdapter
 
 
         // Init preferred times Recycler View
         val preferredTimesRecycler = mBinding.preferredTimesList
         preferredTimesRecycler.layoutManager = LinearLayoutManager(context)
-        val preferredTimesAdapter = PreferenceTimeViewAdapter(ArrayList(), parentFragmentManager)
-        preferredTimesRecycler.adapter = preferredTimesAdapter
+        preferredAdapter = PreferenceTimeViewAdapter(turnTimesMapIntoListTimeRep(viewModel.content.preferredTimes) , parentFragmentManager, false)
+        preferredTimesRecycler.adapter = preferredAdapter
 
         // Init courses applies to Recycler View
         val coursesRecycler = mBinding.coursesAppliesList
         coursesRecycler.layoutManager = LinearLayoutManager(coursesRecycler.context)
-        coursesRecycler.adapter = MoodleCoursesViewAdapter(listOf(), true)
+        moodleAdapter = MoodleCoursesViewAdapter(viewModel.content.courses.toList(), false)
+        coursesRecycler.adapter = moodleAdapter
 
         LocalDBManager.dbLocalCoursesData.observe(viewLifecycleOwner, Observer { it?.let {
             activity?.runOnUiThread {
@@ -86,20 +139,34 @@ class CreatePreferenceFragment : Fragment() {
             }
         } })
 
+        if (viewModel.content.isEditingPreference) {
+            createPriorityAdapter()
+        }
+
+
         mBinding.addForbiddenButton.setOnClickListener { view->
-            forbiddenTimesAdapter.addTime(PreferenceTimeRep())
+            forbiddenAdapter.addTime(PreferenceTimeRep())
         }
 
         mBinding.addPreferredButton.setOnClickListener { view->
-            preferredTimesAdapter.addTime(PreferenceTimeRep())
+            preferredAdapter.addTime(PreferenceTimeRep())
         }
 
-        mBinding.savePreferenceButton.setOnClickListener {
-            createNewPreferenceAndReturn()
-        }
     }
 
-    fun createNewPreferenceAndReturn() {
+    private fun createPriorityAdapter() {
+        // Priority choice adapter
+        val items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+        val priorityId = items.indexOf(viewModel.content.preferencePriority)
+        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
+        val editPreference = mBinding.editPreferencePriority.editText as? AutoCompleteTextView
+        editPreference?.setAdapter(adapter)
+        editPreference?.setText(items[priorityId], false)
+    }
+
+
+
+    fun savePreferenceIfPossibleAndReturn(): Boolean {
         Log.d(TAG, "createNewPreferenceAndReturn")
 
         // Create and insert new Preference
@@ -109,7 +176,7 @@ class CreatePreferenceFragment : Fragment() {
         } catch(e: Exception) {
             Log.d(TAG, "Could not convert priority")
         }
-        val name = mBinding.editPreferenceName.editText?.text.toString() ?: return // TODO should show message here
+        val name = mBinding.editPreferenceName.editText?.text.toString() ?: return false
         val forbiddenTimesAdapter = mBinding.forbiddenTimesList.adapter as PreferenceTimeViewAdapter
         val forbiddenTimes = forbiddenTimesAdapter.getTimesPreferenceFormat()
         val preferredTimesAdapter = mBinding.preferredTimesList.adapter as PreferenceTimeViewAdapter
@@ -132,13 +199,7 @@ class CreatePreferenceFragment : Fragment() {
             }
         }
 
-        val mainActivity = activity as? MainActivity
-        mainActivity?.returnBottomNavigation()
-
-        activity?.runOnUiThread {
-            val navController = findNavController()
-            navController.navigateUp()
-        }
+        return true
 
 
     }

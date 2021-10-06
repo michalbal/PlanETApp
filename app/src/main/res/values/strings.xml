@@ -45,6 +45,7 @@
         You will be asked to choose more Tasks to recalculate this task with)</string>
     <string name="saving_task_message">Saving Task</string>
     <string name="wrong_input_not_saving_message">Please check your input- Cannot Save</string>
+    <string name="saving_preference_message">Saving Preference</string>
 
 
     <!-- Welcome Fragment-->

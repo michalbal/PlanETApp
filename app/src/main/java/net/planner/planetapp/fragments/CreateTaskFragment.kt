@@ -55,11 +55,9 @@ class CreateTaskFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                mTask = args.taskId?.let {
-                    LocalDBManager.getTask(it)
-                }
+        GlobalScope.launch(Dispatchers.IO)  {
+            mTask = args.taskId?.let {
+                LocalDBManager.getTask(it)
             }
         }
 

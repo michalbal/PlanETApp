@@ -24,7 +24,7 @@ import java.util.HashMap
 class PreferenceTimeViewAdapter(
     private var values: ArrayList<PreferenceTimeRep>,
     private val fm: FragmentManager,
-    private val isEditable: Boolean = true
+    private var isEditable: Boolean = true
 ) : RecyclerView.Adapter<PreferenceTimeViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreferenceTimeViewAdapter.ViewHolder {
@@ -37,6 +37,11 @@ class PreferenceTimeViewAdapter(
             )
         )
 
+    }
+
+    fun updateIsEditable(isEditableNew: Boolean) {
+        isEditable = isEditableNew
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: PreferenceTimeViewAdapter.ViewHolder, position: Int) {

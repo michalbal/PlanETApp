@@ -212,10 +212,6 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(android.R.string.cancel){ dialog, _ ->
                 dialog.cancel()
             }
-            .setNeutralButton(R.string.plan_approval_neutral_button) { dialog, _ ->
-                // Call for task choosing dialog with all tasks and have user choose the tasks to recalculate
-                dialog.cancel()
-            }
             .setPositiveButton(R.string.plan_approval_positive_button) { dialog, _ ->
                 val eventsChosen = adapter.getEventsApproved()
                 Toast.makeText(this, App.context.getText(R.string.saving_your_schedule), Toast.LENGTH_SHORT).show()

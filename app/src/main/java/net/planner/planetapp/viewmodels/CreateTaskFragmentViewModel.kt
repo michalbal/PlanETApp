@@ -38,7 +38,8 @@ class CreateTaskFragmentViewModel : ViewModel() {
                 taskId?.let {
                     val task = LocalDBManager.getTask(it)
                     val taskPlanner = PlannerTask(task)
-                    // TODO remove former subTasks if exist
+                    // Remove former subTasks if exist
+                    LocalDBManager.insertOrUpdateTask(taskPlanner, listOf())
                     TasksManager.getInstance().planSchedule(listOf(taskPlanner))
                 }
             }

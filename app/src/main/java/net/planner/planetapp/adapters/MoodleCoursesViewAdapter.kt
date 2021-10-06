@@ -8,7 +8,7 @@ import net.planner.planetapp.databinding.FragmentMoodleCoursesItemBinding
 
 class MoodleCoursesViewAdapter(
     private var values: List<String>,
-    private val isClickable:  Boolean,
+    private var isClickable:  Boolean,
     var courseIds: MutableSet<String> = mutableSetOf()
 ) : RecyclerView.Adapter<MoodleCoursesViewAdapter.ViewHolder>()  {
 
@@ -53,6 +53,11 @@ class MoodleCoursesViewAdapter(
         if(areChecked) {
             courseIds.addAll(courses)
         }
+        notifyDataSetChanged()
+    }
+
+    fun updateIsEditable(isEditable: Boolean) {
+        isClickable = isEditable
         notifyDataSetChanged()
     }
 
