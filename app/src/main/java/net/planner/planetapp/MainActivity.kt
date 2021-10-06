@@ -78,7 +78,9 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "showTasksDialog - Received new tasks $it")
             it?.let {
                 runOnUiThread {
-                    createTaskSelectionDialog(it)
+                    if (it.isNotEmpty()) {
+                        createTaskSelectionDialog(it)
+                    }
                 }
             }
         })

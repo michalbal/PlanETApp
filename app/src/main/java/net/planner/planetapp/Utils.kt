@@ -3,6 +3,7 @@ package net.planner.planetapp
 import android.util.Log
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
+import net.planner.planetapp.adapters.PreferenceTimeRep
 import net.planner.planetapp.viewmodels.InitialSettingsFragmentViewModel
 import java.lang.Math.abs
 import java.text.SimpleDateFormat
@@ -128,6 +129,21 @@ fun createTimeString(hour: Int, minutes: Int): String{
     timeString += minutes.toString()
     return timeString
 }
+
+
+fun turnTimesMapIntoListTimeRep(times: HashMap<String, ArrayList<String>>): ArrayList<PreferenceTimeRep> {
+    var timesRep = ArrayList<PreferenceTimeRep>()
+
+    for (entry in times.entries) {
+        val splitted = entry.key.split("-")
+        val start = splitted[0]
+        val end = splitted[1]
+        val rep = PreferenceTimeRep(start, end, entry.value)
+        timesRep.add(rep)
+    }
+    return timesRep
+}
+
 
 
 fun RecyclerView.enforceSingleScrollDirection() {
