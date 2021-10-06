@@ -1,5 +1,6 @@
 package net.planner.planetapp.adapters
 
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -7,6 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import net.planner.planetapp.R
 import net.planner.planetapp.databinding.DayPlanItemBinding
 import net.planner.planetapp.planner.PlannerEvent
 
@@ -16,6 +18,13 @@ class SubtasksDayAdapter(
 ) : RecyclerView.Adapter<SubtasksDayAdapter.ViewHolder>() {
 
     private var subtasksDayList: List<SubtaskPlanDayRep> = values
+
+    private val scrollStates: MutableMap<String, Parcelable?> = mutableMapOf()
+
+    private fun getSectionID(position: Int): String {
+        return values[position].dayDate
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -29,8 +38,24 @@ class SubtasksDayAdapter(
 
     }
 
+    override fun onViewRecycled(holder: SubtasksDayAdapter.ViewHolder) {
+        super.onViewRecycled(holder)
+        // Save scroll state
+        val key = getSectionID(holder.layoutPosition)
+        scrollStates[key] = holder.itemView.findViewById<RecyclerView>(R.id.sub_tasks_day_list).layoutManager?.onSaveInstanceState()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
+
+        // Restore scroll state
+        val key = getSectionID(holder.layoutPosition)
+        val state = scrollStates[key]
+        if (state != null) {
+            holder.subtasksRecycler.layoutManager?.onRestoreInstanceState(state)
+        } else {
+            holder.subtasksRecycler.layoutManager?.scrollToPosition(0)
+        }
 
         // Init Subtasks Recycler View
         holder.subtasksRecycler = holder.subtasksRecycler

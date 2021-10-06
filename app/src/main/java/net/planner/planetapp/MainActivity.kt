@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.dialog_plan_approval, null)
         val adapter = SubtasksDayAdapter(subTasks, this)
         val recyclerView = dialogView.findViewById(R.id.sub_tasks_per_day_list) as RecyclerView
-        recyclerView.layoutManager  = LinearLayoutManager(this)
+        recyclerView.layoutManager  = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
 
         Log.d(TAG, "createPlanApprovalDialog: Creating and showing the dialog")
