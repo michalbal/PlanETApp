@@ -129,7 +129,6 @@ class CreatePreferenceFragment : Fragment() {
 
                 //Save preference to firebase db
                 TasksManager.getInstance().addPreferenceTag(preference, true)
-                // TODO update the necessary tasks from the courses?
             }
         }
 
