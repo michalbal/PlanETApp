@@ -36,6 +36,7 @@ import static net.planner.planetapp.UtilsKt.SUNDAY;
 import static net.planner.planetapp.UtilsKt.TUESDAY;
 import static net.planner.planetapp.UtilsKt.WEDNESDAY;
 import static net.planner.planetapp.UtilsKt.THURSDAY;
+import static net.planner.planetapp.UtilsKt.getMillisFromDate;
 
 public class TasksManager {
     private String token;
@@ -303,7 +304,12 @@ public class TasksManager {
         ArrayList<PlannerEvent> events = new ArrayList<>();
 
         // TODO startTime is specific to demo
-        long startTime = 1602968400000L;
+        long startTime;
+        if (getMillisFromDate("20/05/2021") == null) {
+            startTime = 1602968400000L;
+        } else {
+            startTime = getMillisFromDate("20/05/2021");
+        }
         long endTime = furthestDeadline;
 
         // Get events from google calendar

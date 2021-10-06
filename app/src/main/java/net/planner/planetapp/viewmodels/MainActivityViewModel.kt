@@ -11,6 +11,7 @@ import net.planner.planetapp.IOnPlanCalculatedListener
 import net.planner.planetapp.IOnTasksReceivedListener
 import net.planner.planetapp.adapters.SubtaskPlanDayRep
 import net.planner.planetapp.getDayDate
+import net.planner.planetapp.getMillisFromDate
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.planner.TasksManager
@@ -119,7 +120,6 @@ class MainActivityViewModel: ViewModel() {
 
             var subTaskPerDayList = mutableListOf<SubtaskPlanDayRep>()
             for(entry in subTasksPerDayMap.entries) {
-                // TODO consider adding all days between first and last event here
                 val sortedEvents = entry.value.toSortedSet(Comparator { o1, o2 ->
                     o1.startTime.compareTo(o2.startTime)
                 })
@@ -127,7 +127,11 @@ class MainActivityViewModel: ViewModel() {
                 subTaskPerDayList.add(dayRep)
             }
 
-            showPlanCalculatedDialog.postValue(subTaskPerDayList)
+            val sortedDays = subTaskPerDayList.toSortedSet { o1, o2 ->
+                getMillisFromDate(o1.dayDate)?.compareTo(getMillisFromDate(o2.dayDate)!!) ?: o1.dayDate.compareTo(o2.dayDate)
+            }
+
+            showPlanCalculatedDialog.postValue(sortedDays.toList())
         }
     }
 
