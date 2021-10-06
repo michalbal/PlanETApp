@@ -20,6 +20,8 @@ import java.util.ListIterator;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
+import static net.planner.planetapp.UtilsKt.getTodayTimeMillis;
+
 /**
  * The PlannerCalendar represents a calendar that can hold and tasks and events.
  */
@@ -46,7 +48,7 @@ public class PlannerCalendar {
      * Construct a new calendar with the current system time as the start time.
      */
     public PlannerCalendar() {
-        long startTime = System.currentTimeMillis();
+        long startTime = getTodayTimeMillis();
         long endTime = startTime + DEFAULT_LENGTH;
 
         init(startTime, endTime, RECOMMENDED_SPACE_IN_MILLIS, Collections.emptyList(), Collections.emptyList());

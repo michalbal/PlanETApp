@@ -15,6 +15,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import net.planner.planetapp.UtilsKt;
 import net.planner.planetapp.database.local_database.LocalDBManager;
 import net.planner.planetapp.planner.PlannerEvent;
 import net.planner.planetapp.planner.PlannerObject;
@@ -271,8 +272,9 @@ public class DBmanager {
                         TasksManager.getInstance().setUnwantedTaskIds(userDB.getUnwantedTasks());
                     }
                 }
-                // TODO listen to the list
-                long currentTime = System.currentTimeMillis();
+
+//                long currentTime = System.currentTimeMillis();
+                long currentTime = UtilsKt.getTodayTimeMillis();
                 LinkedList<PlannerTask> plannerTasks = TasksManager.getInstance().parseMoodleTasks(
                         currentTime);
             }

@@ -7,6 +7,7 @@ import com.google.android.gms.common.api.internal.ListenerHolder;
 import net.planner.planetapp.App;
 import net.planner.planetapp.IOnPlanCalculatedListener;
 import net.planner.planetapp.IOnTasksReceivedListener;
+import net.planner.planetapp.MainActivity;
 import net.planner.planetapp.UserPreferencesManager;
 import net.planner.planetapp.UtilsKt;
 import net.planner.planetapp.database.DBmanager;
@@ -304,12 +305,7 @@ public class TasksManager {
         ArrayList<PlannerEvent> events = new ArrayList<>();
 
         // TODO startTime is specific to demo
-        long startTime;
-        if (getMillisFromDate("20/05/2021") == null) {
-            startTime = 1602968400000L;
-        } else {
-            startTime = getMillisFromDate("20/05/2021");
-        }
+        long startTime = UtilsKt.getTodayTimeMillis();
         long endTime = furthestDeadline;
 
         // Get events from google calendar
