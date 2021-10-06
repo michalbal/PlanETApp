@@ -28,8 +28,10 @@
                 android:layout_marginStart="10dp"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/taskDueDate"
                 />
 
             <TextView
@@ -44,6 +46,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/taskTitle"
+                app:layout_constraintBottom_toTopOf="@+id/preference_button"
                 />
 
             <TextView
@@ -51,12 +54,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Preference:"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginStart="10dp"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/taskDueDate"
+                app:layout_constraintEnd_toStartOf="@+id/preference_button"
+                app:layout_constraintTop_toTopOf="@+id/preference_button"
                 />
 
             <Button
@@ -71,6 +75,7 @@
                 android:layout_marginStart="5dp"
                 android:elevation="10dp"
                 android:backgroundTint="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/progressTitle"
                 app:layout_constraintStart_toEndOf="@+id/preferredTitle"
                 app:layout_constraintTop_toBottomOf="@+id/taskDueDate"
                 />
@@ -80,8 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Progress:"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginStart="10dp"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +102,7 @@
                 android:layout_marginEnd="10dp"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/progressTitle"
                 app:layout_constraintBottom_toBottomOf="@+id/progressTitle"
                 />
 
@@ -107,8 +113,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:indeterminate="false"
                 app:indicatorColor="@color/colorPrimaryDark"
                 app:trackColor="@color/white"
