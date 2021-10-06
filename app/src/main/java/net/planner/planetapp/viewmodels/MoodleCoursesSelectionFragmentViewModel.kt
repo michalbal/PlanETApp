@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.fragments.MoodleSignInFragment
 import net.planner.planetapp.getMillisFromDate
+import net.planner.planetapp.getTodayTimeMillis
 import net.planner.planetapp.planner.TasksManager
 
 class MoodleCoursesSelectionFragmentViewModel : ViewModel() {
@@ -80,8 +81,7 @@ class MoodleCoursesSelectionFragmentViewModel : ViewModel() {
         Log.d(TAG, "startGettingTasksFromMoodle called")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val millisToPlanFrom = System.currentTimeMillis()
-//                val millisToPlanFrom = getMillisFromDate("20/05/2021") ?: System.currentTimeMillis()
+                val millisToPlanFrom = getTodayTimeMillis()
                 TasksManager.getInstance().parseMoodleTasks(millisToPlanFrom)
             }
         }

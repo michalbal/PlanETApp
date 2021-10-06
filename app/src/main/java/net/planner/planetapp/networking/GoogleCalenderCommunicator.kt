@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.getDayDate
+import net.planner.planetapp.getTodayTimeMillis
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
@@ -386,7 +387,7 @@ object GoogleCalenderCommunicator {
 
         val contentResolver = caller.contentResolver
         val allEvents = mutableListOf<PlannerEvent>()
-        val strongStartMillis = startMillis ?: System.currentTimeMillis()
+        val strongStartMillis = startMillis ?: getTodayTimeMillis()
         val strongEndMillis = endMillis ?: strongStartMillis + ONE_MONTH_MILLIS
 
         for (id in chosenCalendarIds) {

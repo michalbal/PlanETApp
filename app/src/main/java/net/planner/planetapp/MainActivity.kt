@@ -122,6 +122,10 @@ class MainActivity : AppCompatActivity() {
         mViewModel.onStop()
     }
 
+    fun registerRemainingListeners() {
+        mViewModel.registerRemainingListeners()
+    }
+
 
     private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
@@ -195,8 +199,9 @@ class MainActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.dialog_plan_approval, null)
         val adapter = SubtasksDayAdapter(subTasks, this)
         val recyclerView = dialogView.findViewById(R.id.sub_tasks_per_day_list) as RecyclerView
-        recyclerView.layoutManager  = LinearLayoutManager(this)
+        recyclerView.layoutManager  = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
+        recyclerView.enforceSingleScrollDirection()
 
         Log.d(TAG, "createPlanApprovalDialog: Creating and showing the dialog")
         val dialog = AlertDialog.Builder(this)

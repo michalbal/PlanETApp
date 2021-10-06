@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
 import net.planner.planetapp.getDayDate
 import net.planner.planetapp.getMillisFromDateAndTime
+import net.planner.planetapp.getTodayTimeMillis
 import net.planner.planetapp.networking.GoogleCalenderCommunicator
 import net.planner.planetapp.planner.PlannerEvent
 
@@ -24,7 +25,7 @@ class DayFragmentViewModel : ViewModel() {
 
     var eventsToDisplay = MutableLiveData<MutableCollection<PlannerEvent>>()
 
-    private var dayShown: String = getDayDate(System.currentTimeMillis())
+    private var dayShown: String = getDayDate(getTodayTimeMillis())
 
 
     fun updateEventsForDay(date: String) {

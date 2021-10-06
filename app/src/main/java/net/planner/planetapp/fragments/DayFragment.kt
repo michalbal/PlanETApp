@@ -19,12 +19,9 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.android.synthetic.main.fragment_create_task.*
-import net.planner.planetapp.App
-import net.planner.planetapp.R
+import net.planner.planetapp.*
 import net.planner.planetapp.adapters.NextEventViewAdapter
 import net.planner.planetapp.databinding.DayFragmentBinding
-import net.planner.planetapp.getDayDate
-import net.planner.planetapp.getMillisFromDate
 import net.planner.planetapp.planner.PlannerEvent
 import net.planner.planetapp.viewmodels.DayFragmentViewModel
 import java.util.concurrent.TimeUnit
@@ -42,8 +39,8 @@ class DayFragment : Fragment() {
     private lateinit var viewModel: DayFragmentViewModel
     private lateinit var mBinding: DayFragmentBinding
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-    private var date = getDayDate(System.currentTimeMillis())
-    // TODO keep the adapter also
+//    private var date = getDayDate(System.currentTimeMillis())
+    private var date = getDayDate(getTodayTimeMillis())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +65,7 @@ class DayFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this).get(DayFragmentViewModel::class.java)
 
-        mBinding.dateText.text = getDayDate(System.currentTimeMillis())
+        mBinding.dateText.text = getDayDate(getTodayTimeMillis())
 
         // Init sub tasks Recycler View
         val subTasksRecycler = mBinding.subTasksList
@@ -84,13 +81,13 @@ class DayFragment : Fragment() {
 
         // Setting button reactions
         mBinding.rightImage.setOnClickListener { button ->
-            val currentDateMillis = getMillisFromDate(mBinding.dateText.text.toString()) ?: System.currentTimeMillis()
+            val currentDateMillis = getMillisFromDate(mBinding.dateText.text.toString()) ?: getTodayTimeMillis()
             val nextDayDate = getDayDate(currentDateMillis + ONE_DAY_MOVE)
             updateDateShown(nextDayDate)
         }
 
         mBinding.leftImage.setOnClickListener { button ->
-            val currentDateMillis = getMillisFromDate(mBinding.dateText.text.toString()) ?: System.currentTimeMillis()
+            val currentDateMillis = getMillisFromDate(mBinding.dateText.text.toString()) ?: getTodayTimeMillis()
             val lastDayDate = getDayDate(currentDateMillis- ONE_DAY_MOVE)
             updateDateShown(lastDayDate)
         }
@@ -102,8 +99,8 @@ class DayFragment : Fragment() {
                 try {
                     getMillisFromDate(mBinding.dateText.text.toString())
                 } catch (e: Exception) {
-                    System.currentTimeMillis()
-                } ?: System.currentTimeMillis()
+                    getTodayTimeMillis()
+                } ?: getTodayTimeMillis()
 
 
             val datePicker =
@@ -126,14 +123,14 @@ class DayFragment : Fragment() {
                     try {
                         getMillisFromDate(mBinding.dateText.text.toString())
                     } catch (e: Exception) {
-                        System.currentTimeMillis()
-                    } ?: System.currentTimeMillis()
+                        getTodayTimeMillis()
+                    } ?: getTodayTimeMillis()
                 val navController = findNavController()
                 navController.navigate(DayFragmentDirections.actionDayFragmentToCreateTaskFragment(dateMillis, null))
             }
         }
 
-        updateDateShown(getDayDate(System.currentTimeMillis()))
+        updateDateShown(getDayDate(getTodayTimeMillis()))
     }
 
     private fun updateDateShown(date: String) = when {

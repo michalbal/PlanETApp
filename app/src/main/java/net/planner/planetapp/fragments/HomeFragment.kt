@@ -56,6 +56,8 @@ class HomeFragment : Fragment() {
             adapter.updateEvents(it.toList())
         } })
 
+        viewModel.getEvents()
+
 
         // Init Tasks list Recycler View
         val tasksRecycler = mBinding.tasksList
@@ -68,8 +70,8 @@ class HomeFragment : Fragment() {
                 mBinding.noTasksFoundText.visibility = INVISIBLE
                 // Sort tasks according to date and show from closest
                 val sorted = it.toSortedSet(Comparator { o1, o2 ->
-                    if (o1.deadline < System.currentTimeMillis()) {
-                        if(o2.deadline < System.currentTimeMillis()) {
+                    if (o1.deadline < getTodayTimeMillis()) {
+                        if(o2.deadline < getTodayTimeMillis()) {
                             o1.deadline.compareTo(o2.deadline)
                         } else {
                             -o1.deadline.compareTo(o2.deadline)

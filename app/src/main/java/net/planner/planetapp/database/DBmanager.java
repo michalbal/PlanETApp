@@ -1,5 +1,6 @@
 package net.planner.planetapp.database;
 
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import net.planner.planetapp.IOnPlanCalculatedListener;
+import net.planner.planetapp.IOnPreferenceReceivedFromDB;
+import net.planner.planetapp.IOnTaskReceivedFromDB;
+import net.planner.planetapp.IOnTasksReceivedListener;
+import net.planner.planetapp.UtilsKt;
 import net.planner.planetapp.database.local_database.LocalDBManager;
 import net.planner.planetapp.planner.PlannerEvent;
 import net.planner.planetapp.planner.PlannerObject;
@@ -36,13 +42,69 @@ public class DBmanager {
     FirebaseFirestore db;
     String username;
 
+    // Notifiers on DB update
+    private ArrayList<IOnTaskReceivedFromDB> tasksReceivedListeners = new ArrayList<>();
+    private ArrayList<IOnPreferenceReceivedFromDB> preferencesReceivedListeners = new ArrayList<>();
+
     public DBmanager(String username) {
         db = FirebaseFirestore.getInstance();
         this.username = username;
 
-        db.collection("users").document(username).set(
-                Collections.singletonMap("username", username), SetOptions.merge());
-        // tODO if possible, check if the user's document already exists and if it does update the local db
+        // Update app with saved data or create new register
+        db.collection("users").document(username).get().addOnCompleteListener(
+                new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                        Log.d(TAG, "Completed searching for user in firestore DB");
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Found user!");
+                            readPreferences();
+                            readTasks();
+                        } else {
+                            Log.d(TAG, "Did not find user, initialising");
+                            db.collection("users").document(username).set(
+                                    Collections.singletonMap("username", username), SetOptions.merge());
+                        }
+                    }
+
+                });
+
+    }
+
+    public Boolean addTaskReceivedListener(IOnTaskReceivedFromDB listener) {
+        Log.d(TAG, "addTaskReceivedListener called");
+        if (!tasksReceivedListeners.contains(listener)) {
+            tasksReceivedListeners.add(listener);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean removeTaskReceivedListener(IOnTaskReceivedFromDB listener) {
+        Log.d(TAG, "removeTaskReceivedListener called");
+        if (!tasksReceivedListeners.contains(listener)) {
+            tasksReceivedListeners.remove(listener);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean addPreferenceReceivedListener(IOnPreferenceReceivedFromDB listener) {
+        Log.d(TAG, "addPreferenceReceivedListener called");
+        if (!preferencesReceivedListeners.contains(listener)) {
+            preferencesReceivedListeners.add(listener);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean removePreferenceReceivedListener(IOnPreferenceReceivedFromDB listener) {
+        Log.d(TAG, "addPreferenceReceivedListener called");
+        if (!preferencesReceivedListeners.contains(listener)) {
+            preferencesReceivedListeners.remove(listener);
+            return true;
+        }
+        return false;
     }
 
     public void writeAcceptedTasks(List<PlannerTask> acceptedTasks) {
@@ -97,6 +159,9 @@ public class DBmanager {
                                 TaskDB taskDB = document.toObject(TaskDB.class);
                                 PlannerTask plannerTask = new PlannerTask(taskDB);
                                 TasksManager.getInstance().addTaskFromDB(plannerTask);
+                                for(IOnTaskReceivedFromDB listener : tasksReceivedListeners) {
+                                    listener.onTaskReceived(plannerTask);
+                                }
                             }
                         }
                     }
@@ -175,8 +240,6 @@ public class DBmanager {
                                                    flattenKey(tag.getPreferredTIsettings()),
                                                    flattenKey(tag.getForbiddenTIsettings()));
 
-        // TODO add here to local db as well
-
         db.collection("users").document(username).collection("preferences")
                 .document(preference.getTagName()).set(preference, SetOptions.merge());
     }
@@ -196,6 +259,9 @@ public class DBmanager {
                                                                         .getPreferredTIsettings());
 
                                 TasksManager.getInstance().addPreferenceTag(tag, false);
+                                for(IOnPreferenceReceivedFromDB listener : preferencesReceivedListeners) {
+                                    listener.onPreferenceReceived(preference);
+                                }
                             }
                         }
                     }
@@ -271,8 +337,9 @@ public class DBmanager {
                         TasksManager.getInstance().setUnwantedTaskIds(userDB.getUnwantedTasks());
                     }
                 }
-                // TODO listen to the list
-                long currentTime = System.currentTimeMillis();
+
+//                long currentTime = System.currentTimeMillis();
+                long currentTime = UtilsKt.getTodayTimeMillis();
                 LinkedList<PlannerTask> plannerTasks = TasksManager.getInstance().parseMoodleTasks(
                         currentTime);
             }
