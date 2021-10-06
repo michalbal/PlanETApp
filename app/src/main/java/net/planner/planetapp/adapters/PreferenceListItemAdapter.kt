@@ -47,12 +47,12 @@ class PreferenceListItemAdapter(
         val forbiddenTimesRep = turnTimesMapIntoListTimeRep(item.forbiddenTIsettings)
         val forbiddenTimesRecycler = holder.forbiddenTimesRecycler
         forbiddenTimesRecycler.layoutManager = LinearLayoutManager(forbiddenTimesRecycler.context)
-        forbiddenTimesRecycler.adapter = PreferenceTimeViewAdapter(forbiddenTimesRep, fm)
+        forbiddenTimesRecycler.adapter = PreferenceTimeViewAdapter(forbiddenTimesRep, fm, false)
 
         val preferredTimesRep = turnTimesMapIntoListTimeRep(item.preferredTIsettings)
         val preferredTimesRecycler = holder.preferredTimesRecycler
         preferredTimesRecycler.layoutManager = LinearLayoutManager(preferredTimesRecycler.context)
-        val preferredTimesAdapter = PreferenceTimeViewAdapter(preferredTimesRep, fm)
+        val preferredTimesAdapter = PreferenceTimeViewAdapter(preferredTimesRep, fm, false)
         preferredTimesRecycler.adapter = preferredTimesAdapter
     }
 

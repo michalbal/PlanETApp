@@ -1,6 +1,7 @@
 package net.planner.planetapp.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
@@ -22,7 +23,8 @@ import java.util.HashMap
  */
 class PreferenceTimeViewAdapter(
     private var values: ArrayList<PreferenceTimeRep>,
-    private val fm: FragmentManager
+    private val fm: FragmentManager,
+    private val isEditable: Boolean = true
 ) : RecyclerView.Adapter<PreferenceTimeViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreferenceTimeViewAdapter.ViewHolder {
@@ -39,8 +41,8 @@ class PreferenceTimeViewAdapter(
 
     override fun onBindViewHolder(holder: PreferenceTimeViewAdapter.ViewHolder, position: Int) {
         val item = values[position]
-        holder.startTimeHour.text = item.startHour
-        holder.endTimeHour.text = item.endHour
+
+        initView(holder, item)
 
         holder.startTimeHour.setOnClickListener { view ->
             // Show time picker dialog
@@ -195,6 +197,43 @@ class PreferenceTimeViewAdapter(
 
         picker.show(fm, "Choose start time:")
     }
+
+    private fun initView(holder: ViewHolder, item: PreferenceTimeRep) {
+        holder.startTimeHour.text = item.startHour
+        holder.endTimeHour.text = item.endHour
+
+        holder.startTimeHour.isClickable = isEditable
+        holder.endTimeHour.isClickable = isEditable
+
+        holder.removeButton.isClickable = isEditable
+        if (isEditable) {
+            holder.removeButton.visibility = View.VISIBLE
+        } else {
+            holder.removeButton.visibility = View.INVISIBLE
+        }
+
+        holder.sunCheck.isClickable = isEditable
+        holder.sunCheck.isChecked = item.daysAppliesTo.contains(SUNDAY)
+
+        holder.monCheck.isClickable = isEditable
+        holder.monCheck.isChecked = item.daysAppliesTo.contains(MONDAY)
+
+        holder.tuCheck.isClickable = isEditable
+        holder.tuCheck.isChecked = item.daysAppliesTo.contains(TUESDAY)
+
+        holder.weCheck.isClickable = isEditable
+        holder.weCheck.isChecked = item.daysAppliesTo.contains(WEDNESDAY)
+
+        holder.thCheck.isClickable = isEditable
+        holder.thCheck.isChecked = item.daysAppliesTo.contains(THURSDAY)
+
+        holder.friCheck.isClickable = isEditable
+        holder.friCheck.isChecked = item.daysAppliesTo.contains(FRIDAY)
+
+        holder.satCheck.isClickable = isEditable
+        holder.satCheck.isChecked = item.daysAppliesTo.contains(SATURDAY)
+    }
+
 
     override fun getItemCount(): Int = values.size
 
