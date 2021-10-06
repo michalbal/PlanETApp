@@ -37,18 +37,20 @@ class TasksViewAdapter(
         holder.preferenceName.text = item.tag
 
         // Calculate progress
-//        val todayMillis = System.currentTimeMillis()
         val todayMillis = getTodayTimeMillis()
-        var subTasksNotPassedNum = 0
+        var subTasksPassedNum = 0
         for(event in item.subtaskDates) {
             getMillisFromDate(event)?.let {
-                if (it > todayMillis) {
-                    subTasksNotPassedNum += 1
+                if (it >= todayMillis) {
+                    subTasksPassedNum += 1
                 }
             }
         }
 
-        val progress: Int = (item.subtaskDates.size / subTasksNotPassedNum.toDouble() * 100).toInt()
+        var progress = 0
+        if (subTasksPassedNum != 0) {
+            progress = (item.subtaskDates.size / subTasksPassedNum.toDouble() * 100).toInt()
+        }
 
         holder.progressPercent.text = "$progress%"
         holder.progressBar.progress = progress
