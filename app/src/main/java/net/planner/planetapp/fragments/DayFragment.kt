@@ -67,10 +67,12 @@ class DayFragment : Fragment() {
 
         mBinding.dateText.text = getDayDate(getTodayTimeMillis())
 
+        val mainActivity = activity as? MainActivity
+
         // Init sub tasks Recycler View
         val subTasksRecycler = mBinding.subTasksList
         subTasksRecycler.layoutManager = LinearLayoutManager(context)
-        subTasksRecycler.adapter = NextEventViewAdapter(listOf())
+        subTasksRecycler.adapter = NextEventViewAdapter(listOf(), mainActivity)
 
         // Subscribe to updates to event list
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {

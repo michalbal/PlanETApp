@@ -44,11 +44,12 @@ class HomeFragment : Fragment() {
 
         mBinding.helloText.text = String.format(App.context.getString(R.string.hello_greeting), userName)
         mBinding.inspText.text = insp
+        val mainActivity = activity as? MainActivity
 
         // Init Next Events Recycler View
         val nextEventsRecycler = mBinding.nextEventsList
         nextEventsRecycler.layoutManager = LinearLayoutManager(context)
-        nextEventsRecycler.adapter = NextEventViewAdapter(listOf())
+        nextEventsRecycler.adapter = NextEventViewAdapter(listOf(), mainActivity)
 
         viewModel.eventsToDisplay.observe(viewLifecycleOwner, Observer { it?.let {
             mBinding.noEventsFoundText.visibility = INVISIBLE
@@ -62,7 +63,6 @@ class HomeFragment : Fragment() {
         // Init Tasks list Recycler View
         val tasksRecycler = mBinding.tasksList
         tasksRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        val mainActivity = activity as? MainActivity
         tasksRecycler.adapter = TasksViewAdapter(listOf(), activity = mainActivity)
 
         LocalDBManager.dbLocalTasksData.observe(viewLifecycleOwner, Observer { it?.let {

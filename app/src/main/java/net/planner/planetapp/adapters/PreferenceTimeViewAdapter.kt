@@ -1,6 +1,7 @@
 package net.planner.planetapp.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
@@ -22,7 +23,8 @@ import java.util.HashMap
  */
 class PreferenceTimeViewAdapter(
     private var values: ArrayList<PreferenceTimeRep>,
-    private val fm: FragmentManager
+    private val fm: FragmentManager,
+    private var isEditable: Boolean = true
 ) : RecyclerView.Adapter<PreferenceTimeViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreferenceTimeViewAdapter.ViewHolder {
@@ -37,16 +39,27 @@ class PreferenceTimeViewAdapter(
 
     }
 
+    fun updateIsEditable(isEditableNew: Boolean) {
+        isEditable = isEditableNew
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: PreferenceTimeViewAdapter.ViewHolder, position: Int) {
         val item = values[position]
-        holder.startTimeHour.text = item.startHour
-        holder.endTimeHour.text = item.endHour
+
+        initView(holder, item)
 
         holder.startTimeHour.setOnClickListener { view ->
             // Show time picker dialog
-            val splitted = item.startHour.split(":")
-            val hour = splitted[0].trim().toInt()
-            val minutes = splitted[1].trim().toInt()
+            var hour = 9
+            var minutes = 0
+            try {
+                val splitted = item.endHour.split(":")
+                hour = splitted[0].trim().toInt()
+                minutes = splitted[1].trim().toInt()
+            } catch (e: Exception) {
+                minutes = 0
+            }
 
             val picker =
                 MaterialTimePicker.Builder()
@@ -66,9 +79,15 @@ class PreferenceTimeViewAdapter(
 
         holder.endTimeHour.setOnClickListener { view ->
             // Show time picker dialog
-            val splitted = item.endHour.split(":")
-            val hour = splitted[0].trim().toInt()
-            val minutes = splitted[1].trim().toInt()
+            var hour = 12
+            var minutes = 0
+            try {
+                val splitted = item.endHour.split(":")
+                hour = splitted[0].trim().toInt()
+                minutes = splitted[1].trim().toInt()
+            } catch (e: Exception) {
+                minutes = 0
+            }
 
             val picker =
                 MaterialTimePicker.Builder()
@@ -195,6 +214,43 @@ class PreferenceTimeViewAdapter(
 
         picker.show(fm, "Choose start time:")
     }
+
+    private fun initView(holder: ViewHolder, item: PreferenceTimeRep) {
+        holder.startTimeHour.text = item.startHour
+        holder.endTimeHour.text = item.endHour
+
+        holder.startTimeHour.isClickable = isEditable
+        holder.endTimeHour.isClickable = isEditable
+
+        holder.removeButton.isClickable = isEditable
+        if (isEditable) {
+            holder.removeButton.visibility = View.VISIBLE
+        } else {
+            holder.removeButton.visibility = View.INVISIBLE
+        }
+
+        holder.sunCheck.isClickable = isEditable
+        holder.sunCheck.isChecked = item.daysAppliesTo.contains(SUNDAY)
+
+        holder.monCheck.isClickable = isEditable
+        holder.monCheck.isChecked = item.daysAppliesTo.contains(MONDAY)
+
+        holder.tuCheck.isClickable = isEditable
+        holder.tuCheck.isChecked = item.daysAppliesTo.contains(TUESDAY)
+
+        holder.weCheck.isClickable = isEditable
+        holder.weCheck.isChecked = item.daysAppliesTo.contains(WEDNESDAY)
+
+        holder.thCheck.isClickable = isEditable
+        holder.thCheck.isChecked = item.daysAppliesTo.contains(THURSDAY)
+
+        holder.friCheck.isClickable = isEditable
+        holder.friCheck.isChecked = item.daysAppliesTo.contains(FRIDAY)
+
+        holder.satCheck.isClickable = isEditable
+        holder.satCheck.isChecked = item.daysAppliesTo.contains(SATURDAY)
+    }
+
 
     override fun getItemCount(): Int = values.size
 

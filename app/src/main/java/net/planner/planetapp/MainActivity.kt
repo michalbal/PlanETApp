@@ -78,7 +78,9 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "showTasksDialog - Received new tasks $it")
             it?.let {
                 runOnUiThread {
-                    createTaskSelectionDialog(it)
+                    if (it.isNotEmpty()) {
+                        createTaskSelectionDialog(it)
+                    }
                 }
             }
         })
@@ -208,10 +210,6 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .setTitle("")
             .setNegativeButton(android.R.string.cancel){ dialog, _ ->
-                dialog.cancel()
-            }
-            .setNeutralButton(R.string.plan_approval_neutral_button) { dialog, _ ->
-                // Call for task choosing dialog with all tasks and have user choose the tasks to recalculate
                 dialog.cancel()
             }
             .setPositiveButton(R.string.plan_approval_positive_button) { dialog, _ ->

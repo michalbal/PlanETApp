@@ -324,7 +324,7 @@ object GoogleCalenderCommunicator {
             val location: String = eventsCur.getString(PROJECTION_EVENT_LOCATION_INDEX)
             val color: Int = eventsCur.getInt(PROJECTION_DISPLAY_COLOR_INDEX)
 
-            var taskId: String? = null
+            var taskId: String = ""
             try {
                 val appPackage: String = eventsCur.getString(PROJECTION_APP_CREATED_NAME_INDEX)
                 if (appPackage.equals(App.context.packageName)) {
@@ -402,7 +402,6 @@ object GoogleCalenderCommunicator {
         this.calenderIds = chosenCalendarIds.toMutableSet()
     }
 
-    // TODO add way to recognise what was the last request that did not have permissions and return to performing it.
 
 
     fun requestCalendarReadWritePermission(caller: Activity) {

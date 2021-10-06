@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".fragments.CreatePreferenceFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".fragments.CreatePreferenceFragment">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="net.planner.planetapp.UtilsKt"/>
+        <import type="net.planner.planetapp.UserPreferencesManager"/>
+        <import type="android.text.InputType"/>
+
+
+        <variable
+            name="content"
+            type="net.planner.planetapp.viewmodels.CreatePreferenceViewModel.Content"
+            />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,7 +32,7 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginTop="10dp"
-            android:text="Create a new Preference"
+            android:text="@{content.preferenceScreenTitle}"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +59,8 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:layout_marginEnd="20dp"
             app:boxBackgroundColor="@color/white"
             app:endIconMode="clear_text"
-            app:helperTextEnabled="true"
+            app:helperTextEnabled="@{content.editingPreference ? true : false}"
+            android:clickable="@{content.editingPreference ? true : false}"
             app:helperText="required"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/preference_name_title"
@@ -53,8 +69,8 @@ tools:context=".fragments.CreatePreferenceFragment">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:text=""
+                android:inputType="@{content.editingPreference ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL}"
+                android:text="@{content.preferenceName}"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -78,6 +94,7 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:layout_marginStart="20dp"
             android:layout_marginTop="15dp"
             app:boxBackgroundColor="@color/white"
+            android:clickable="@{content.editingPreference ? true : false}"
             app:layout_constraintStart_toEndOf="@+id/preference_priority_title"
             app:layout_constraintTop_toBottomOf="@+id/edit_preference_name"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
@@ -85,6 +102,8 @@ tools:context=".fragments.CreatePreferenceFragment">
             <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="@{content.editingPreference ? true : false}"
+                android:text="@{content.preferencePriority}"
                 android:inputType="none"
                 />
 
@@ -123,6 +142,8 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:src="@drawable/add_icon"
+            android:clickable="@{content.editingPreference ? true : false}"
+            android:visibility="@{content.editingPreference ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toEndOf="@+id/forbidden_times_title"
             app:layout_constraintTop_toTopOf="@+id/forbidden_times_title" />
 
@@ -159,6 +180,8 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:src="@drawable/add_icon"
+            android:clickable="@{content.editingPreference ? true : false}"
+            android:visibility="@{content.editingPreference ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toEndOf="@+id/preferred_times_title"
             app:layout_constraintTop_toTopOf="@+id/preferred_times_title" />
 
@@ -191,6 +214,21 @@ tools:context=".fragments.CreatePreferenceFragment">
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="Save"
+            android:clickable="@{content.editingPreference ? true : false}"
+            android:visibility="@{content.editingPreference ? View.VISIBLE : View.INVISIBLE}"
+            android:background="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/courses_applies_list" />
+
+        <Button
+            android:id="@+id/edit_preference_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Edit"
+            android:clickable="@{content.editingPreference ? false : true}"
+            android:visibility="@{content.editingPreference ? View.INVISIBLE : View.VISIBLE}"
             android:background="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -199,3 +237,4 @@ tools:context=".fragments.CreatePreferenceFragment">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+    </layout>
