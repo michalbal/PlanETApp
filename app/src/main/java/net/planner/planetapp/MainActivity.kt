@@ -122,6 +122,10 @@ class MainActivity : AppCompatActivity() {
         mViewModel.onStop()
     }
 
+    fun registerRemainingListeners() {
+        mViewModel.registerRemainingListeners()
+    }
+
 
     private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav_view)

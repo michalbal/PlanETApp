@@ -23,7 +23,7 @@ class MoodleSignInFragmentViewModel : ViewModel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    TasksManager.getInstance().initTasksManager(userName, password)
+                    TasksManager.getInstance().connectToMoodle(userName, password)
                     Log.d(TAG, "Found token successfully! Moving to selection screen")
                     canContinue.postValue(true)
                 } catch (e: Exception) {

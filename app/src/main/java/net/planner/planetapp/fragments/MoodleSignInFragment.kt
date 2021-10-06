@@ -12,9 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.planner.planetapp.App
+import net.planner.planetapp.MainActivity
 import net.planner.planetapp.R
 import net.planner.planetapp.UserPreferencesManager
 import net.planner.planetapp.databinding.MoodleSignInFragmentBinding
@@ -49,28 +51,19 @@ class MoodleSignInFragment : Fragment() {
 
             viewModel.getToken(userName, password)
 
-//            lifecycleScope.launch {
-//                withContext(Dispatchers.IO) {
-//                    try {
-//                        TasksManager.getInstance().initTasksManager(userName, password)
-//                        Log.d(TAG, "Found token successfully! Moving to selection screen")
-//                        activity?.runOnUiThread {
-//                            val navController = findNavController()
-//                            navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())
-//                        }
-//                    } catch (e: Exception) {
-//                        activity?.runOnUiThread {
-//                            Toast.makeText(App.context, App.context.getText(R.string.login_error), Toast.LENGTH_LONG).show()
-//                        }
-//                        Log.e(TAG, "Retrieving from Moodle failed, received error ${e.message}")
-//                    }
-//                }
-//            }
         }
 
         viewModel.canContinue.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
+                    val userName = mBinding.editMoodleUserName.editText?.text.toString().trim()
+
+                    GlobalScope.launch(Dispatchers.IO) {
+                        TasksManager.getInstance().initTasksManager(userName)
+                        val mainActivity = activity as? MainActivity
+                        mainActivity?.registerRemainingListeners()
+                    }
+
                     activity?.runOnUiThread {
                         val navController = findNavController()
                         navController.navigate(MoodleSignInFragmentDirections.actionMoodleSignInFragmentToMoodleCoursesSelectionFragment())

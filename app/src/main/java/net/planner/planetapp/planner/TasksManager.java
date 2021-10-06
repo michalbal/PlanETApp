@@ -6,6 +6,8 @@ import com.google.android.gms.common.api.internal.ListenerHolder;
 
 import net.planner.planetapp.App;
 import net.planner.planetapp.IOnPlanCalculatedListener;
+import net.planner.planetapp.IOnPreferenceReceivedFromDB;
+import net.planner.planetapp.IOnTaskReceivedFromDB;
 import net.planner.planetapp.IOnTasksReceivedListener;
 import net.planner.planetapp.MainActivity;
 import net.planner.planetapp.UserPreferencesManager;
@@ -75,21 +77,17 @@ public class TasksManager {
             Log.d(TAG, "We found a saved token, can retrieve data from firebase DB");
             String userName = UserPreferencesManager.INSTANCE.getMoodleUserName();
             dBmanager = new DBmanager(userName);
-            dBmanager.readTasks();
-            dBmanager.readPreferences();
         }
     }
 
-    public void initTasksManager(String username, String password) throws ClientProtocolException, IOException, JSONException {
-        Log.d(TAG, "initTasksManager called");
+    public void connectToMoodle(String username, String password) throws ClientProtocolException, IOException, JSONException {
         token = connector.connectToCSEMoodle(username, password);
         UserPreferencesManager.INSTANCE.setUserMoodleToken(token);
         UserPreferencesManager.INSTANCE.setMoodleUserName(username);
-        dBmanager = new DBmanager(username);
     }
 
     public void initTasksManager(String user) {
-        Log.d(TAG, "initTasksManager called - No token");
+        Log.d(TAG, "initTasksManager called");
         dBmanager = new DBmanager(user);
     }
 
@@ -133,6 +131,22 @@ public class TasksManager {
             return true;
         }
         return false;
+    }
+
+    public Boolean addTaskReceivedListener(IOnTaskReceivedFromDB listener) {
+        return dBmanager.addTaskReceivedListener(listener);
+    }
+
+    public Boolean removeTaskReceivedListener(IOnTaskReceivedFromDB listener) {
+        return dBmanager.removeTaskReceivedListener(listener);
+    }
+
+    public Boolean addPreferenceReceivedListener(IOnPreferenceReceivedFromDB listener) {
+        return dBmanager.addPreferenceReceivedListener(listener);
+    }
+
+    public Boolean removePreferenceReceivedListener(IOnPreferenceReceivedFromDB listener) {
+        return dBmanager.removePreferenceReceivedListener(listener);
     }
 
     public void pullDataFromDB(){
@@ -331,7 +345,6 @@ public class TasksManager {
     }
 
     public void addTaskFromDB(PlannerTask task) {
-        // TODO update task in local db
         tasks.add(task);
         taskInDBids.add(task.getMoodleId());
     }

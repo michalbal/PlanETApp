@@ -7,12 +7,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.planner.planetapp.IOnPlanCalculatedListener
-import net.planner.planetapp.IOnTasksReceivedListener
+import net.planner.planetapp.*
 import net.planner.planetapp.adapters.SubtaskPlanDayRep
-import net.planner.planetapp.getDayDate
-import net.planner.planetapp.getMillisFromDate
+import net.planner.planetapp.database.PreferenceDB
+import net.planner.planetapp.database.TaskDB
+import net.planner.planetapp.database.local_database.LocalDBManager
 import net.planner.planetapp.planner.PlannerEvent
+import net.planner.planetapp.planner.PlannerTag
 import net.planner.planetapp.planner.PlannerTask
 import net.planner.planetapp.planner.TasksManager
 import java.util.*
@@ -31,6 +32,8 @@ class MainActivityViewModel: ViewModel() {
 
     private val mOnTasksReceivedListener = OnTasksReceivedListener()
     private val mOnPlanCalculatedListener = OnPlanCalculatedListener()
+    private val mOnTasksReceivedFromDbListener = OnTaskReceivedFromDBListener()
+    private val mOnPreferenceReceivedFromDBListener = OnPreferenceReceivedFromDB()
 
     private var subTasksToSave: List<PlannerEvent> = listOf()
 
@@ -48,6 +51,13 @@ class MainActivityViewModel: ViewModel() {
         // UnRegister listeners
         TasksManager.getInstance().removeTasksReceivedListener(mOnTasksReceivedListener)
         TasksManager.getInstance().removePlanCalculatedListener(mOnPlanCalculatedListener)
+        TasksManager.getInstance().removeTaskReceivedListener(mOnTasksReceivedFromDbListener)
+        TasksManager.getInstance().removePreferenceReceivedListener(mOnPreferenceReceivedFromDBListener)
+    }
+
+    fun registerRemainingListeners() {
+        TasksManager.getInstance().addTaskReceivedListener(mOnTasksReceivedFromDbListener)
+        TasksManager.getInstance().addPreferenceReceivedListener(mOnPreferenceReceivedFromDBListener)
     }
 
     fun startPlanningScheduleForTasks(tasks: ArrayList<PlannerTask>) {
@@ -133,6 +143,24 @@ class MainActivityViewModel: ViewModel() {
 
             showPlanCalculatedDialog.postValue(sortedDays.toList())
         }
+    }
+
+    private inner class OnTaskReceivedFromDBListener : IOnTaskReceivedFromDB {
+
+        override fun onTaskReceived(task: PlannerTask) {
+            viewModelScope.launch(Dispatchers.IO) {
+                LocalDBManager.insertOrUpdateTask(task)
+            }
+        }
+    }
+
+    private inner class OnPreferenceReceivedFromDB  : IOnPreferenceReceivedFromDB {
+        override fun onPreferenceReceived(preference: PreferenceDB) {
+            viewModelScope.launch(Dispatchers.IO) {
+                LocalDBManager.insertOrUpdatePreference(preference)
+            }
+        }
+
     }
 
 }
