@@ -314,13 +314,33 @@ object GoogleCalenderCommunicator {
         )
 
         while (eventsCur?.moveToNext() == true) {
-            val id: Long = eventsCur.getLong(PROJECTION_EVENT_ID_INDEX)
-            val title: String = eventsCur.getString(PROJECTION_EVENT_TITLE_INDEX)
-            val description: String = eventsCur.getString(PROJECTION_DESCRIPTION_INDEX)
-            val allDay: Int = eventsCur.getInt(PROJECTION_ALL_DAY_INDEX)
-            val availability: Int = eventsCur.getInt(PROJECTION_AVAILABILITY_INDEX)
-            val location: String = eventsCur.getString(PROJECTION_EVENT_LOCATION_INDEX)
-            val color: Int = eventsCur.getInt(PROJECTION_DISPLAY_COLOR_INDEX)
+
+
+            var id = eventID
+            var title = ""
+            var allDay = 1
+            try {
+                id = eventsCur.getLong(PROJECTION_EVENT_ID_INDEX)
+                title = eventsCur.getString(PROJECTION_EVENT_TITLE_INDEX)
+                allDay = eventsCur.getInt(PROJECTION_ALL_DAY_INDEX)
+            } catch(e: Exception) {
+                Log.d(TAG, "Received error ${e.message} cannot get event information")
+            }
+
+            var description = ""
+            var availability = 1
+            var location = ""
+            var color = 1
+            try {
+
+                description = eventsCur.getString(PROJECTION_DESCRIPTION_INDEX)
+                availability = eventsCur.getInt(PROJECTION_AVAILABILITY_INDEX)
+                location = eventsCur.getString(PROJECTION_EVENT_LOCATION_INDEX)
+                color = eventsCur.getInt(PROJECTION_DISPLAY_COLOR_INDEX)
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Received error ${e.message} some not crucial information is missing")
+            }
 
             var taskId: String = ""
             try {
@@ -361,6 +381,9 @@ object GoogleCalenderCommunicator {
     }
 
     fun deleteEvent(activity: Context, eventID: String) {
+        if (!haveCalendarWritePermissions(activity)) {
+            return
+        }
         try {
             val idLong = eventID.toLong()
             val contentResolver = activity.contentResolver
