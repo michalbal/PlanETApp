@@ -18,23 +18,54 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/username_title"
+        android:id="@+id/choose_year_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="150dp"
-        android:text="UserName:"
+        android:text="Choose Year:"
         android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="130dp"
+        app:boxBackgroundColor="@color/white"
+        app:layout_constraintStart_toEndOf="@+id/choose_year_title"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2020/2021"
+        android:inputType="none"
+        />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/username_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:text="UserName:"
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choose_year_title" />
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edit_moodle_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:ems="10"
         app:boxBackgroundColor="@color/white"
@@ -43,7 +74,7 @@
         android:backgroundTint="@color/moodle_orange"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/username_title"
-        app:layout_constraintTop_toTopOf="parent"  >
+        app:layout_constraintTop_toBottomOf="@+id/choose_year_title"  >
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -103,7 +134,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/moodle_image" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_password" />
 
     <Button
         android:id="@+id/skip_button"

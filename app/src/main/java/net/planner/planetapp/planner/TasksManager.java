@@ -80,8 +80,8 @@ public class TasksManager {
         }
     }
 
-    public void connectToMoodle(String username, String password) throws ClientProtocolException, IOException, JSONException {
-        token = connector.connectToCSEMoodle(username, password);
+    public void connectToMoodle(String username, String password, Boolean isThisYear) throws ClientProtocolException, IOException, JSONException {
+        token = connector.connectToCSEMoodle(username, password, isThisYear);
         UserPreferencesManager.INSTANCE.setUserMoodleToken(token);
         UserPreferencesManager.INSTANCE.setMoodleUserName(username);
     }

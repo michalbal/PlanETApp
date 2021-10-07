@@ -15,7 +15,7 @@ class CreatePreferenceViewModel: ViewModel() {
     class Content(preference: PreferencesLocalDB?) : BaseObservable() {
 
         @get:Bindable
-        var preferenceScreenTitle: String = if(preference === null) { "Create a new Preference" } else {  "Edit Preference" }
+        var preferenceScreenTitle: String = if(preference === null) { "Create a new Preference" } else {  "Preference" }
             set(title) {
                 field = title
                 notifyPropertyChanged(BR.preferenceScreenTitle)

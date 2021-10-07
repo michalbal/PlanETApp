@@ -24,7 +24,9 @@ import java.util.LinkedList;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 public class MoodleCommunicator {
-    public static final String MOODLE_URL = "https://moodle2.cs.huji.ac.il/nu20";
+    public static final String MOODLE_URL_THIS_YEAR = "https://moodle2.cs.huji.ac.il/nu20";
+    public static final String MOODLE_URL_NEXT_YEAR = "https://moodle2.cs.huji.ac.il/nu21";
+    String moodleURL = MOODLE_URL_THIS_YEAR;
 
     private static String doHTTPRequest(String url) throws ClientProtocolException, IOException, JSONException {
         String responseBody;
@@ -42,15 +44,20 @@ public class MoodleCommunicator {
         return token;
     }
 
-    public String connectToCSEMoodle(String username, String password) throws ClientProtocolException, IOException, JSONException {
+    public String connectToCSEMoodle(String username, String password, Boolean isThisYear) throws ClientProtocolException, IOException, JSONException {
+        if (isThisYear) {
+            moodleURL = MOODLE_URL_THIS_YEAR;
+        } else {
+            moodleURL = MOODLE_URL_NEXT_YEAR;
+        }
         String url =
-                MOODLE_URL + "/login/token.php?username=" + username + "&password=" + password +
+                moodleURL + "/login/token.php?username=" + username + "&password=" + password +
                 "&service=moodle_mobile_app";
         return doHTTPRequest(url);
     }
 
     public HashMap parseFromMoodle(String token, Boolean onlyCourseNames) {
-        String serverurl = MOODLE_URL + "/webservice/rest/server.php" + "?wstoken=" + token +
+        String serverurl = moodleURL + "/webservice/rest/server.php" + "?wstoken=" + token +
                            "&wsfunction=mod_assign_get_assignments";
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(serverurl).openConnection();

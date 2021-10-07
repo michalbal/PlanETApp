@@ -51,7 +51,7 @@ class CreateTaskFragmentViewModel : ViewModel() {
     class Content(task: TaskLocalDB?) : BaseObservable() {
 
         @get:Bindable
-        var taskScreenTitle: String = if(task === null) { "Create Task" } else {  "Edit Task" }
+        var taskScreenTitle: String = if(task === null) { "Create Task" } else {  "Task" }
             set(title) {
                 field = title
                 notifyPropertyChanged(BR.taskScreenTitle)

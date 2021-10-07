@@ -19,11 +19,12 @@ class MoodleSignInFragmentViewModel : ViewModel() {
 
     var canContinue = MutableLiveData<Boolean>()
 
-    fun getToken(userName: String, password: String){
+    fun getToken(userName: String, password: String, year: String){
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    TasksManager.getInstance().connectToMoodle(userName, password)
+                    val isThisYear = year == "2020/2021"
+                    TasksManager.getInstance().connectToMoodle(userName, password, isThisYear)
                     Log.d(TAG, "Found token successfully! Moving to selection screen")
                     canContinue.postValue(true)
                 } catch (e: Exception) {
