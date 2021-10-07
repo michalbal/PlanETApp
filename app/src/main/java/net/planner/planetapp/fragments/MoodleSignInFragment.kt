@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -44,12 +46,19 @@ class MoodleSignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this).get(MoodleSignInFragmentViewModel::class.java)
 
+        val items = listOf("2020/2021", "2021/2022")
+        val adapter = ArrayAdapter(requireContext(), R.layout.priority_list_item, items)
+        val editYear = mBinding.editYear.editText as? AutoCompleteTextView
+        editYear?.setAdapter(adapter)
+        editYear?.setText("2020/2021", false)
+
         mBinding.loginButton.setOnClickListener { view ->
             Log.d(TAG, "Login was clicked! Getting token from Moodle")
             val userName = mBinding.editMoodleUserName.editText?.text.toString().trim()
             val password = mBinding.editPassword.editText?.text.toString().trim()
+            val year = (mBinding.editYear.editText?.text ?: "2020/2021").toString()
 
-            viewModel.getToken(userName, password)
+            viewModel.getToken(userName, password, year)
 
         }
 
