@@ -25,7 +25,7 @@ const val FRIDAY = "Fri"
 const val SATURDAY = "Sat"
 
 fun getTodayTimeMillis(): Long {
-    return getMillisFromDateAndTime("20/05/2021 14:40") ?: 1602968400000L
+    return System.currentTimeMillis()
 }
 
 fun getDate(timeMillis: Long): String {
