@@ -41,7 +41,7 @@ class TasksViewAdapter(
         var subTasksPassedNum = 0
         for(event in item.subtaskDates) {
             getMillisFromDate(event)?.let {
-                if (it >= todayMillis) {
+                if (it <= todayMillis) {
                     subTasksPassedNum += 1
                 }
             }

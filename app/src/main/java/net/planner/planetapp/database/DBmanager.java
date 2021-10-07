@@ -16,12 +16,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import net.planner.planetapp.App;
 import net.planner.planetapp.IOnPlanCalculatedListener;
 import net.planner.planetapp.IOnPreferenceReceivedFromDB;
 import net.planner.planetapp.IOnTaskReceivedFromDB;
 import net.planner.planetapp.IOnTasksReceivedListener;
 import net.planner.planetapp.UtilsKt;
 import net.planner.planetapp.database.local_database.LocalDBManager;
+import net.planner.planetapp.networking.GoogleCalenderCommunicator;
 import net.planner.planetapp.planner.PlannerEvent;
 import net.planner.planetapp.planner.PlannerObject;
 import net.planner.planetapp.planner.PlannerTag;
@@ -129,8 +131,6 @@ public class DBmanager {
     public void deleteTask(PlannerTask plannerTask) {
         this.deleteAllSubtasks(plannerTask.getMoodleId());
 
-        // todo only after that's over - if we event want to delete from GC - run this:
-
         db.collection("users").document(username).collection("tasks").document(
                 plannerTask.getMoodleId()).delete();
     }
@@ -192,7 +192,7 @@ public class DBmanager {
             @Override public void onSuccess(DocumentSnapshot documentSnapshot) {
                 SubtaskDB subtaskDB = documentSnapshot.toObject(SubtaskDB.class);
                 if (subtaskDB != null) {
-                    // todo delete from GC?
+                    GoogleCalenderCommunicator.INSTANCE.deleteEvent(App.context, subtaskDB.getEventIdGC());
                 }
             }
         });

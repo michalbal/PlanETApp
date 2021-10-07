@@ -402,4 +402,8 @@ public class TasksManager {
         unwantedCourseIds.remove(courseId);
         dBmanager.removeUnwantedCourse(courseId);
     }
+
+    public void removeTaskSubtasks(String taskId) {
+        dBmanager.deleteAllSubtasks(taskId);
+    }
 }

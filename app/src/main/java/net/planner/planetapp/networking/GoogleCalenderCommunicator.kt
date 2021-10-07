@@ -32,8 +32,6 @@ object GoogleCalenderCommunicator {
     private val TAG = "GoogleCalenderCommunicator"
     private val ONE_MONTH_MILLIS = TimeUnit.DAYS.toMillis(30)
 
-    // TODO On init, retrieve desired account names from inner DB if exists
-
     private var calenderIds = mutableSetOf<Long>()
     private var mainCalendarID =
         1L // Calendar to insert new events into by default. Selected as a calendar with the ending gmail.com or  default 1
@@ -353,6 +351,25 @@ object GoogleCalenderCommunicator {
         }
         eventsCur?.close()
         return events
+    }
+
+
+    fun deleteEvents(activity: Context, eventIDs: Collection<String>) {
+        for (id in eventIDs) {
+            deleteEvent(activity, id)
+        }
+    }
+
+    fun deleteEvent(activity: Context, eventID: String) {
+        try {
+            val idLong = eventID.toLong()
+            val contentResolver = activity.contentResolver
+            val eventsUri: Uri = CalendarContract.Events.CONTENT_URI
+            val deleteUri = ContentUris.withAppendedId(eventsUri, idLong)
+            contentResolver.delete(deleteUri, null)
+        } catch (e: Exception) {
+            Log.e(TAG, "Couldn't delete event, received exception ${e.message}")
+        }
     }
 
 

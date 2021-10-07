@@ -34,7 +34,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?): View? {
 
         val userName = UserPreferencesManager.userName
-        val insp = "Every day is a gift, that's why it's called the Present" // TODO have a list of strings
+        val insp = "Every day is a gift, that's why it's called the Present"
 
         viewModel = ViewModelProvider(this).get(HomeFragmentViewModel::class.java)
 
@@ -74,10 +74,14 @@ class HomeFragment : Fragment() {
                         if(o2.deadline < getTodayTimeMillis()) {
                             o1.deadline.compareTo(o2.deadline)
                         } else {
-                            -o1.deadline.compareTo(o2.deadline)
+                            1
                         }
                     } else {
-                        o1.deadline.compareTo(o2.deadline)
+                        if(o2.deadline < getTodayTimeMillis()) {
+                            -1
+                        } else {
+                            o1.deadline.compareTo(o2.deadline)
+                        }
                     }
                 })
                 val adapter = mBinding.tasksList.adapter as TasksViewAdapter
